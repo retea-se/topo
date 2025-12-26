@@ -141,7 +141,12 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Background color is set in map background-color attribute, no style needed
     bg_color = theme.get('background', '#faf8f5')
 
-    # Hillshade style (raster, no symbolizer needed)
+    # Hillshade style (raster layer)
+    styles_xml.append(f"""    <Style name="hillshade">
+      <Rule>
+        <RasterSymbolizer opacity="{hillshade_opacity}" />
+      </Rule>
+    </Style>""")
 
     # Water style
     styles_xml.append(f"""    <Style name="water">

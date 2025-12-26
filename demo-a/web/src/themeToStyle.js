@@ -6,29 +6,32 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
   const isPrintMode = renderMode === 'print';
 
   // Base style
+  // Martin serves TileJSON at /{source} and tiles at /{source}/{z}/{x}/{y}
   const style = {
     version: 8,
     sources: {
       osm: {
         type: 'vector',
-        url: `${tileserverUrl}/catalog/osm/tiles/{z}/{x}/{y}`
+        url: `${tileserverUrl}/osm`  // TileJSON URL - Martin will provide tile URLs
       },
       contours_2m: {
         type: 'vector',
-        url: `${tileserverUrl}/catalog/contours_2m/tiles/{z}/{x}/{y}`
+        url: `${tileserverUrl}/contours_2m`
       },
       contours_10m: {
         type: 'vector',
-        url: `${tileserverUrl}/catalog/contours_10m/tiles/{z}/{x}/{y}`
+        url: `${tileserverUrl}/contours_10m`
       },
       contours_50m: {
         type: 'vector',
-        url: `${tileserverUrl}/catalog/contours_50m/tiles/{z}/{x}/{y}`
+        url: `${tileserverUrl}/contours_50m`
       },
       hillshade: {
         type: 'raster',
         tiles: [`${hillshadeTilesUrl}/tiles/hillshade/${preset}/{z}/{x}/{y}.png`],
-        tileSize: 256
+        tileSize: 256,
+        minzoom: 10,
+        maxzoom: 16
       }
     },
     layers: []
@@ -77,13 +80,12 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     }
   });
 
-  // Parks layer (polygons)
+  // Parks layer - uses 'park' source-layer with 'class' field
   style.layers.push({
     id: 'parks',
     type: 'fill',
     source: 'osm',
-    'source-layer': 'landuse',
-    filter: ['in', ['get', 'landuse'], ['literal', ['park', 'recreation_ground', 'forest', 'nature_reserve']]],
+    'source-layer': 'park',
     paint: {
       'fill-color': theme.parks.fill,
       'fill-opacity': 1.0
@@ -94,15 +96,28 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     id: 'parks-outline',
     type: 'line',
     source: 'osm',
-    'source-layer': 'landuse',
-    filter: ['in', ['get', 'landuse'], ['literal', ['park', 'recreation_ground', 'forest', 'nature_reserve']]],
+    'source-layer': 'park',
     paint: {
       'line-color': theme.parks.stroke,
       'line-width': theme.parks.strokeWidth || 0.3
     }
   });
 
+  // Landcover (forests, grass, etc) - uses 'class' field
+  style.layers.push({
+    id: 'landcover',
+    type: 'fill',
+    source: 'osm',
+    'source-layer': 'landcover',
+    filter: ['in', ['get', 'class'], ['literal', ['grass', 'wood', 'forest']]],
+    paint: {
+      'fill-color': theme.parks.fill,
+      'fill-opacity': 0.6
+    }
+  });
+
   // Roads - minor first, then major (so major appears on top)
+  // transportation layer uses 'class' field, not 'highway'
   if (theme.roads) {
     const minorWidth = typeof theme.roads.strokeWidth === 'object'
       ? theme.roads.strokeWidth.minor
@@ -111,26 +126,26 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
       ? theme.roads.strokeWidth.major
       : theme.roads.strokeWidth;
 
-    // Minor roads
+    // Minor roads (service, track, path, minor)
     style.layers.push({
       id: 'roads-minor',
       type: 'line',
       source: 'osm',
       'source-layer': 'transportation',
-      filter: ['in', ['get', 'highway'], ['literal', ['residential', 'service', 'unclassified', 'track']]],
+      filter: ['in', ['get', 'class'], ['literal', ['service', 'track', 'path', 'minor']]],
       paint: {
         'line-color': theme.roads.stroke,
         'line-width': isPrintMode ? minorWidth * 0.7 : minorWidth
       }
     });
 
-    // Major roads
+    // Major roads (primary, secondary, tertiary, trunk, motorway)
     style.layers.push({
       id: 'roads-major',
       type: 'line',
       source: 'osm',
       'source-layer': 'transportation',
-      filter: ['in', ['get', 'highway'], ['literal', ['primary', 'secondary', 'tertiary', 'trunk', 'motorway']]],
+      filter: ['in', ['get', 'class'], ['literal', ['primary', 'secondary', 'tertiary', 'trunk', 'motorway']]],
       paint: {
         'line-color': theme.roads.stroke,
         'line-width': isPrintMode ? majorWidth * 0.8 : majorWidth
@@ -138,13 +153,13 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     });
   }
 
-  // Buildings
+  // Buildings - source-layer is 'building' (singular)
   if (theme.buildings) {
     style.layers.push({
       id: 'buildings',
       type: 'fill',
       source: 'osm',
-      'source-layer': 'buildings',
+      'source-layer': 'building',
       paint: {
         'fill-color': theme.buildings.fill,
         'fill-opacity': 1.0
@@ -155,7 +170,7 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
       id: 'buildings-outline',
       type: 'line',
       source: 'osm',
-      'source-layer': 'buildings',
+      'source-layer': 'building',
       paint: {
         'line-color': theme.buildings.stroke,
         'line-width': theme.buildings.strokeWidth || 0.5
