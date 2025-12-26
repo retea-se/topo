@@ -104,6 +104,7 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
   });
 
   // Landcover (forests, grass, etc) - uses 'class' field
+  // Slightly more transparent than parks for visual hierarchy
   style.layers.push({
     id: 'landcover',
     type: 'fill',
@@ -112,7 +113,7 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     filter: ['in', ['get', 'class'], ['literal', ['grass', 'wood', 'forest']]],
     paint: {
       'fill-color': theme.parks.fill,
-      'fill-opacity': 0.6
+      'fill-opacity': isPrintMode ? 0.5 : 0.6
     }
   });
 
@@ -178,7 +179,7 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     });
   }
 
-  // Contours - render from major to minor (50m, 10m, 2m)
+  // Contours - render from minor to major (2m first, so 50m appears on top for emphasis)
   // CRITICAL: No labels ever (theme.contours.noLabels is always true)
   if (theme.contours) {
     const contourIntervals = theme.contours.intervals || [2, 10, 50];
@@ -189,16 +190,28 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
       ? theme.contours.strokeWidth.minor
       : theme.contours.strokeWidth * 0.5;
 
-    // Render in reverse order (50m first, so 2m appears on top)
+    // Support per-interval opacity for visual hierarchy
+    const majorOpacity = theme.contours.opacity?.major ?? 0.8;
+    const minorOpacity = theme.contours.opacity?.minor ?? 0.5;
+
+    // Render 2m first (bottom), then 10m, then 50m (top) for proper visual hierarchy
     const intervalToLayer = {
-      50: 'contours_50m',
+      2: 'contours_2m',
       10: 'contours_10m',
-      2: 'contours_2m'
+      50: 'contours_50m'
     };
 
-    contourIntervals.reverse().forEach(interval => {
+    // Sort intervals ascending so major contours render on top
+    const sortedIntervals = [...contourIntervals].sort((a, b) => a - b);
+
+    sortedIntervals.forEach(interval => {
       const sourceLayer = intervalToLayer[interval];
       if (!sourceLayer) return;
+
+      const isMajor = interval === 50;
+      const isMedium = interval === 10;
+      const lineWidth = isMajor ? majorWidth : (isMedium ? minorWidth * 1.3 : minorWidth);
+      const lineOpacity = isMajor ? majorOpacity : (isMedium ? (majorOpacity + minorOpacity) / 2 : minorOpacity);
 
       style.layers.push({
         id: `contours-${interval}m`,
@@ -212,7 +225,8 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
         },
         paint: {
           'line-color': theme.contours.stroke,
-          'line-width': interval === 50 ? majorWidth : minorWidth
+          'line-width': isPrintMode ? lineWidth * 1.2 : lineWidth,
+          'line-opacity': lineOpacity
         }
       });
     });

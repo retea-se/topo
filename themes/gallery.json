@@ -1,0 +1,51 @@
+{
+  "name": "Gallery",
+  "background": "#fdfcfa",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "gallery_print",
+    "description": "Optimized for wall art prints with strong visual hierarchy"
+  },
+  "hillshade": {
+    "opacity": 0.28,
+    "gamma": 0.92,
+    "contrast": 1.12,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#c8dce8",
+    "stroke": "#8eb4c8",
+    "strokeWidth": 0.8
+  },
+  "parks": {
+    "fill": "#dde8d4",
+    "stroke": "#a8c498",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#5a5a5a",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 1.0
+    }
+  },
+  "buildings": {
+    "fill": "#c8c4c0",
+    "stroke": "#787470",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#8a8580",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.6
+    },
+    "opacity": {
+      "major": 0.7,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

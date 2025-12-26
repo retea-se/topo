@@ -7,38 +7,38 @@
     "mood": "calm"
   },
   "hillshade": {
-    "opacity": 0.15,
-    "gamma": 1.0,
-    "contrast": 1.0,
+    "opacity": 0.22,
+    "gamma": 0.95,
+    "contrast": 1.08,
     "blend": "multiply"
   },
   "water": {
-    "fill": "#d4e4f0",
-    "stroke": "#a8c5d8",
-    "strokeWidth": 0.5
+    "fill": "#cce0ed",
+    "stroke": "#94b8cc",
+    "strokeWidth": 0.7
   },
   "parks": {
-    "fill": "#e8f0e0",
-    "stroke": "#c8d8b8",
-    "strokeWidth": 0.3
+    "fill": "#dcebd2",
+    "stroke": "#b0cca0",
+    "strokeWidth": 0.4
   },
   "roads": {
-    "stroke": "#8a8a8a",
+    "stroke": "#707070",
     "strokeWidth": {
-      "major": 1.5,
-      "minor": 0.8
+      "major": 1.8,
+      "minor": 0.9
     }
   },
   "buildings": {
-    "fill": "#d0d0d0",
-    "stroke": "#909090",
+    "fill": "#c8c8c8",
+    "stroke": "#808080",
     "strokeWidth": 0.5
   },
   "contours": {
-    "stroke": "#b0b0b0",
+    "stroke": "#908a85",
     "strokeWidth": {
-      "major": 0.8,
-      "minor": 0.4
+      "major": 1.0,
+      "minor": 0.5
     },
     "intervals": [2, 10, 50],
     "noLabels": true

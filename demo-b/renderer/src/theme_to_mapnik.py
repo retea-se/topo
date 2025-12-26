@@ -149,45 +149,60 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     </Style>""")
 
     # Water style
+    water_stroke_width = theme.get('water', {}).get('strokeWidth', 0.5)
     styles_xml.append(f"""    <Style name="water">
       <Rule>
         <PolygonSymbolizer fill="{water_fill}" />
-        <LineSymbolizer stroke="{water_stroke}" stroke-width="0.5" />
+        <LineSymbolizer stroke="{water_stroke}" stroke-width="{water_stroke_width}" stroke-linejoin="round" />
       </Rule>
     </Style>""")
 
     # Parks style
+    parks_stroke = theme.get('parks', {}).get('stroke', '#c8d8b8')
+    parks_stroke_width = theme.get('parks', {}).get('strokeWidth', 0.3)
     styles_xml.append(f"""    <Style name="parks">
       <Rule>
         <PolygonSymbolizer fill="{parks_fill}" />
+        <LineSymbolizer stroke="{parks_stroke}" stroke-width="{parks_stroke_width}" stroke-linejoin="round" />
       </Rule>
     </Style>""")
 
     # Roads styles
     styles_xml.append(f"""    <Style name="roads-minor">
       <Rule>
-        <LineSymbolizer stroke="{roads_stroke}" stroke-width="{minor_width}" />
+        <LineSymbolizer stroke="{roads_stroke}" stroke-width="{minor_width}" stroke-linejoin="round" stroke-linecap="round" />
       </Rule>
     </Style>""")
 
     styles_xml.append(f"""    <Style name="roads-major">
       <Rule>
-        <LineSymbolizer stroke="{roads_stroke}" stroke-width="{major_width}" />
+        <LineSymbolizer stroke="{roads_stroke}" stroke-width="{major_width}" stroke-linejoin="round" stroke-linecap="round" />
       </Rule>
     </Style>""")
 
     # Buildings style
+    buildings_stroke_width = theme.get('buildings', {}).get('strokeWidth', 0.5)
     styles_xml.append(f"""    <Style name="buildings">
       <Rule>
         <PolygonSymbolizer fill="{buildings_fill}" />
-        <LineSymbolizer stroke="{buildings_stroke}" stroke-width="0.5" />
+        <LineSymbolizer stroke="{buildings_stroke}" stroke-width="{buildings_stroke_width}" />
       </Rule>
     </Style>""")
 
     # Contours style - NO TextSymbolizer (critical: no labels)
+    # Support opacity from theme
+    contours_opacity = theme.get('contours', {}).get('opacity', {})
+    if isinstance(contours_opacity, dict):
+        major_opacity = contours_opacity.get('major', 0.8)
+        minor_opacity = contours_opacity.get('minor', 0.5)
+    else:
+        major_opacity = 0.8
+        minor_opacity = 0.5
+
+    # Blend opacity with stroke color for visual hierarchy
     styles_xml.append(f"""    <Style name="contours">
       <Rule>
-        <LineSymbolizer stroke="{contours_stroke}" stroke-width="{minor_width_contour}" />
+        <LineSymbolizer stroke="{contours_stroke}" stroke-width="{major_width_contour}" stroke-linejoin="round" stroke-linecap="round" stroke-opacity="{major_opacity}" />
       </Rule>
     </Style>""")
 
