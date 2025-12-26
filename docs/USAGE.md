@@ -185,6 +185,72 @@ docker-compose --profile demoA up -d
 # http://localhost:3000?bbox_preset=stockholm_wide
 ```
 
+---
+
+## Bygga Svealand (full regional coverage)
+
+För att generera data för svealand preseten (inkluderar Västerås, Uppsala, Örebro, etc.):
+
+**OBS**: Svealand är ett stort område. Zoomnivåer är begränsade för att hantera datastorlek:
+- Hillshade: z9-14 (istället för z10-16)
+- Contours: z8-13 (istället för z10-16)
+
+### Windows (PowerShell)
+
+```powershell
+# Kör från projektroten
+.\scripts\build_svealand.ps1
+
+# Med force-regenerering av alla filer
+.\scripts\build_svealand.ps1 -Force
+
+# Hoppa över OSM (om bara terrain behöver uppdateras)
+.\scripts\build_svealand.ps1 -SkipOsm
+
+# Dry-run (visa vad som skulle göras)
+.\scripts\build_svealand.ps1 -DryRun
+```
+
+### Linux/Mac (Bash)
+
+```bash
+# Kör från projektroten
+./scripts/build_svealand.sh
+
+# Med force-regenerering av alla filer
+./scripts/build_svealand.sh --force
+
+# Hoppa över OSM (om bara terrain behöver uppdateras)
+./scripts/build_svealand.sh --skip-osm
+
+# Dry-run (visa vad som skulle göras)
+./scripts/build_svealand.sh --dry-run
+```
+
+### Vad scriptet gör
+
+1. Kontrollerar att Docker är igång
+2. Bygger prep-service
+3. Laddar ner/klipper OSM-data för svealand
+4. Genererar OSM vector tiles
+5. Kontrollerar DEM-data
+6. Genererar hillshade
+7. Genererar hillshade tiles (z9-14)
+8. Extraherar höjdkurvor (2m, 10m, 50m)
+9. Genererar contour vector tiles (z8-13)
+10. Verifierar att alla filer skapades
+
+### Efter build
+
+```bash
+# Starta om Demo A för att läsa in nya tiles
+docker-compose --profile demoA down
+docker-compose --profile demoA up -d
+
+# Öppna Demo A med Svealand preset
+# http://localhost:3000?bbox_preset=svealand
+```
+
 ## Använda Demo A (MapLibre)
 
 ### Webbgränssnitt
@@ -212,7 +278,7 @@ curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render
 
 | Parameter | Värden | Standard | Beskrivning |
 |-----------|--------|----------|-------------|
-| bbox_preset | stockholm_core, stockholm_wide | stockholm_core | Geografiskt område |
+| bbox_preset | stockholm_core, stockholm_wide, svealand | stockholm_core | Geografiskt område |
 | theme | paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel | paper | Färgtema |
 | render_mode | screen, print | screen | Renderingsläge |
 | dpi | 72-600 | 150 | Upplösning |
@@ -248,13 +314,47 @@ curl -X POST "http://localhost:5000/render" \
 
 | Parameter | Typ | Standard | Beskrivning |
 |-----------|-----|----------|-------------|
-| bbox_preset | string | stockholm_core | Geografiskt område |
+| bbox_preset | string | stockholm_core | Geografiskt område (stockholm_core, stockholm_wide, svealand) |
 | theme | string | paper | Färgtema |
 | render_mode | string | print | Renderingsläge |
 | dpi | number | 150 | Upplösning |
 | width_mm | number | 420 | Bredd i mm |
 | height_mm | number | 594 | Höjd i mm |
 | format | string | png | Exportformat (png, pdf) |
+
+### Preset-begransningar
+
+Varje preset har granser for DPI och format for att forhindra orimliga exports:
+
+| Preset | Max DPI | Tillatna format |
+|--------|---------|-----------------|
+| stockholm_core | 600 | A4, A3, A2, A1, A0 |
+| stockholm_wide | 300 | A4, A3, A2, A1 |
+| svealand | 150 | A4, A3, A2 |
+
+Om du forsker att exportera med ogiltig DPI eller format far du ett felmeddelande:
+
+```json
+{
+  "error": "DPI 300 exceeds maximum 150 for preset 'svealand'. Reduce DPI or choose a smaller area.",
+  "validation": {
+    "valid": false,
+    "error": "..."
+  }
+}
+```
+
+For mer information, se [PRESET_LIMITS.md](PRESET_LIMITS.md).
+
+### Validerings-API
+
+Du kan validera parametrar innan export:
+
+```bash
+curl -X POST "http://localhost:5000/validate" \
+  -H "Content-Type: application/json" \
+  -d '{"bbox_preset":"svealand","dpi":200,"width_mm":420,"height_mm":594}'
+```
 
 ## Vanliga exportpresets
 

@@ -11,6 +11,14 @@
         select, input { padding: 8px; width: 100%; max-width: 300px; }
         button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
         button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .validation-box { margin: 15px 0; padding: 12px; border-radius: 4px; display: none; }
+        .validation-box.warning { background: #fff3cd; border: 1px solid #ffc107; color: #856404; display: block; }
+        .validation-box.error { background: #f8d7da; border: 1px solid #dc3545; color: #721c24; display: block; }
+        .validation-box.info { background: #d1ecf1; border: 1px solid #17a2b8; color: #0c5460; display: block; }
+        .validation-box ul { margin: 5px 0 0 20px; padding: 0; }
+        .preset-info { font-size: 0.85em; color: #666; margin-top: 4px; }
+        .preset-info strong { color: #333; }
     </style>
 </head>
 <body>
@@ -29,6 +37,7 @@
                 <option value="stockholm_wide">Stockholm Wide</option>
                 <option value="svealand">Svealand</option>
             </select>
+            <div class="preset-info" id="preset-info"></div>
         </div>
         <div class="form-group">
             <label>Render Mode:</label>
@@ -79,15 +88,31 @@
                 </label>
             </div>
         </div>
-        <button type="submit">Export</button>
+        <div id="validation-box" class="validation-box"></div>
+        <button type="submit" id="export-btn">Export</button>
     </form>
 
     <script>
+        // Global state
+        let presetLimits = null;
+        let currentValidation = { valid: true, warnings: [], error: null };
+
+        // Load preset limits
+        fetch('/api/preset-limits')
+            .then(r => r.json())
+            .then(limits => {
+                presetLimits = limits;
+                updatePresetInfo();
+                validateCurrentSettings();
+            })
+            .catch(err => console.error('Failed to load preset limits:', err));
+
         // Load themes dynamically
         fetch('/api/themes')
             .then(r => r.json())
             .then(themes => {
                 const select = document.getElementById('theme');
+                const currentValue = select.value;
                 select.innerHTML = '';
                 themes.forEach(t => {
                     const opt = document.createElement('option');
@@ -95,18 +120,121 @@
                     opt.textContent = t.name;
                     select.appendChild(opt);
                 });
+                if (currentValue && themes.some(t => t.id === currentValue)) {
+                    select.value = currentValue;
+                } else if (themes.some(t => t.id === 'paper')) {
+                    select.value = 'paper';
+                } else if (themes.length > 0) {
+                    select.value = themes[0].id;
+                }
             })
             .catch(err => console.error('Failed to load themes:', err));
 
+        // Update preset info display
+        function updatePresetInfo() {
+            if (!presetLimits || !presetLimits.presets) return;
+
+            const preset = document.getElementById('bbox_preset').value;
+            const presetConfig = presetLimits.presets[preset];
+            const infoEl = document.getElementById('preset-info');
+
+            if (presetConfig) {
+                const limits = presetConfig.limits || {};
+                const data = presetConfig.data_requirements || {};
+                infoEl.innerHTML = `
+                    <strong>Complexity:</strong> ${presetConfig.complexity || 'unknown'} |
+                    <strong>Max DPI:</strong> ${limits.max_dpi || 'N/A'} |
+                    <strong>Formats:</strong> ${(limits.allowed_formats || []).join(', ')} |
+                    <strong>Build time:</strong> ~${data.build_time_minutes || '?'} min
+                `;
+            } else {
+                infoEl.innerHTML = '';
+            }
+        }
+
+        // Validate current form settings
+        async function validateCurrentSettings() {
+            const preset = document.getElementById('bbox_preset').value;
+            const dpi = parseInt(document.getElementById('dpi').value);
+            const width_mm = parseInt(document.getElementById('width_mm').value);
+            const height_mm = parseInt(document.getElementById('height_mm').value);
+
+            try {
+                const response = await fetch('/api/validate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bbox_preset: preset, dpi, width_mm, height_mm })
+                });
+                currentValidation = await response.json();
+            } catch (err) {
+                currentValidation = { valid: true, warnings: [], error: null };
+            }
+
+            updateValidationDisplay();
+        }
+
+        // Update validation display
+        function updateValidationDisplay() {
+            const box = document.getElementById('validation-box');
+            const btn = document.getElementById('export-btn');
+
+            box.className = 'validation-box';
+            box.innerHTML = '';
+
+            if (!currentValidation.valid && currentValidation.error) {
+                box.className = 'validation-box error';
+                box.innerHTML = `<strong>Cannot export:</strong> ${currentValidation.error}`;
+                btn.disabled = true;
+            } else if (currentValidation.warnings && currentValidation.warnings.length > 0) {
+                box.className = 'validation-box warning';
+                box.innerHTML = '<strong>Warnings:</strong><ul>' +
+                    currentValidation.warnings.map(w => `<li>${w}</li>`).join('') +
+                    '</ul>';
+                btn.disabled = false;
+            } else if (currentValidation.info) {
+                const info = currentValidation.info;
+                box.className = 'validation-box info';
+                box.innerHTML = `<strong>Output:</strong> ${info.width_px} x ${info.height_px} px` +
+                    (info.detected_format ? ` (${info.detected_format})` : '') +
+                    (info.estimated_render_time ? ` | Est. time: ${info.estimated_render_time}s` : '');
+                btn.disabled = false;
+            } else {
+                btn.disabled = false;
+            }
+        }
+
+        // Add event listeners for validation
+        ['bbox_preset', 'dpi', 'width_mm', 'height_mm'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => {
+                updatePresetInfo();
+                validateCurrentSettings();
+            });
+        });
+
         document.getElementById('export-form').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const themeSelect = document.getElementById('theme');
+            const themeValue = themeSelect.value;
+
+            if (!themeValue || themeValue === 'Loading...') {
+                alert('Please wait for themes to load, or select a theme');
+                return;
+            }
+
+            // Check validation before proceeding
+            if (!currentValidation.valid) {
+                alert('Export not allowed: ' + currentValidation.error);
+                return;
+            }
+
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData.entries());
+            data.theme = themeValue;
             data.dpi = parseInt(data.dpi);
             data.width_mm = parseInt(data.width_mm);
             data.height_mm = parseInt(data.height_mm);
 
-            // Collect layer visibility
             data.layers = {
                 hillshade: document.getElementById('layer-hillshade').checked,
                 water: document.getElementById('layer-water').checked,
@@ -116,6 +244,10 @@
                 contours: document.getElementById('layer-contours').checked
             };
 
+            const btn = document.getElementById('export-btn');
+            btn.disabled = true;
+            btn.textContent = 'Exporting...';
+
             try {
                 const renderResponse = await fetch('/api/render', {
                     method: 'POST',
@@ -124,6 +256,11 @@
                 });
 
                 if (!renderResponse.ok) {
+                    const contentType = renderResponse.headers.get('content-type');
+                    if (contentType && contentType.includes('application/json')) {
+                        const errorJson = await renderResponse.json();
+                        throw new Error(errorJson.error || 'Export failed');
+                    }
                     const errorText = await renderResponse.text();
                     throw new Error(errorText);
                 }
@@ -136,8 +273,14 @@
                 a.click();
             } catch (error) {
                 alert('Export failed: ' + error.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Export';
             }
         });
+
+        // Initial preset info update
+        updatePresetInfo();
     </script>
 </body>
 </html>

@@ -1,0 +1,117 @@
+{
+  "presets": {
+    "stockholm_core": {
+      "description": "Central Stockholm (Gamla Stan, Sodermalm, Ostermalm, Norrmalm)",
+      "bbox_wgs84": [17.90, 59.32, 18.08, 59.35],
+      "area_deg2": 0.0054,
+      "complexity": "low",
+      "limits": {
+        "max_dpi": 600,
+        "allowed_formats": ["A4", "A3", "A2", "A1", "A0"],
+        "max_zoom_hillshade": 16,
+        "max_zoom_contours": 16,
+        "recommended_dpi": {
+          "A4": 300,
+          "A3": 300,
+          "A2": 300,
+          "A1": 300,
+          "A0": 150
+        },
+        "warning_thresholds": {
+          "dpi_warning": 450,
+          "estimated_render_time_seconds": {
+            "A2_150": 15,
+            "A2_300": 45,
+            "A1_150": 30,
+            "A1_300": 90
+          }
+        }
+      },
+      "data_requirements": {
+        "estimated_disk_gb": 0.5,
+        "build_time_minutes": 5
+      }
+    },
+    "stockholm_wide": {
+      "description": "Greater Stockholm (city center, suburbs, archipelago waters)",
+      "bbox_wgs84": [17.75, 59.28, 18.25, 59.40],
+      "area_deg2": 0.06,
+      "complexity": "medium",
+      "limits": {
+        "max_dpi": 300,
+        "allowed_formats": ["A4", "A3", "A2", "A1"],
+        "max_zoom_hillshade": 16,
+        "max_zoom_contours": 16,
+        "recommended_dpi": {
+          "A4": 300,
+          "A3": 300,
+          "A2": 150,
+          "A1": 150
+        },
+        "warning_thresholds": {
+          "dpi_warning": 200,
+          "format_warning": ["A0"],
+          "estimated_render_time_seconds": {
+            "A2_150": 30,
+            "A2_300": 120,
+            "A1_150": 60,
+            "A1_300": 240
+          }
+        }
+      },
+      "data_requirements": {
+        "estimated_disk_gb": 2.5,
+        "build_time_minutes": 15
+      }
+    },
+    "svealand": {
+      "description": "Svealand region (Vasteras, Uppsala, Orebro, Eskilstuna, Nykoping)",
+      "bbox_wgs84": [14.5, 58.5, 19.0, 61.0],
+      "area_deg2": 11.25,
+      "complexity": "high",
+      "limits": {
+        "max_dpi": 150,
+        "allowed_formats": ["A4", "A3", "A2"],
+        "max_zoom_hillshade": 14,
+        "max_zoom_contours": 13,
+        "recommended_dpi": {
+          "A4": 150,
+          "A3": 150,
+          "A2": 100
+        },
+        "warning_thresholds": {
+          "dpi_warning": 100,
+          "format_warning": ["A1", "A0"],
+          "estimated_render_time_seconds": {
+            "A2_100": 120,
+            "A2_150": 300,
+            "A3_150": 90
+          }
+        }
+      },
+      "data_requirements": {
+        "estimated_disk_gb": 15,
+        "build_time_minutes": 120
+      }
+    }
+  },
+  "format_dimensions_mm": {
+    "A4": { "width": 210, "height": 297 },
+    "A3": { "width": 297, "height": 420 },
+    "A2": { "width": 420, "height": 594 },
+    "A1": { "width": 594, "height": 841 },
+    "A0": { "width": 841, "height": 1189 }
+  },
+  "validation_rules": {
+    "hard_limits": {
+      "max_pixels_total": 100000000,
+      "max_render_time_seconds": 600,
+      "max_file_size_mb": 500
+    },
+    "error_messages": {
+      "dpi_exceeded": "DPI {requested} exceeds maximum {max} for preset {preset}. Reduce DPI or choose a smaller area.",
+      "format_not_allowed": "Format {format} is not supported for preset {preset}. Allowed formats: {allowed}.",
+      "pixels_exceeded": "Requested image size ({pixels} pixels) exceeds maximum ({max} pixels). Reduce DPI or format size."
+    }
+  }
+}

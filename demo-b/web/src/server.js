@@ -46,6 +46,12 @@ app.post('/api/render', async (req, res) => {
     });
 
     if (!response.ok) {
+      // Try to parse as JSON for validation errors
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorJson = await response.json();
+        return res.status(response.status).json(errorJson);
+      }
       const errorText = await response.text();
       return res.status(response.status).send(errorText);
     }
@@ -63,9 +69,39 @@ app.post('/api/render', async (req, res) => {
   }
 });
 
+// Proxy validate requests to the API service
+app.post('/api/validate', async (req, res) => {
+  try {
+    const response = await fetch(`${API_URL}/validate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body)
+    });
+
+    const json = await response.json();
+    res.status(response.status).json(json);
+  } catch (error) {
+    console.error('Validate proxy error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Proxy preset-limits requests to the API service
+app.get('/api/preset-limits', async (req, res) => {
+  try {
+    const response = await fetch(`${API_URL}/preset-limits`);
+    const json = await response.json();
+    res.status(response.status).json(json);
+  } catch (error) {
+    console.error('Preset-limits proxy error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Demo B web server listening on port ${PORT}`);
 });
+
 
 
 
