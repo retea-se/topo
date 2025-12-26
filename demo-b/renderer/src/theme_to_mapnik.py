@@ -24,8 +24,9 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Note: Background is handled by map background-color attribute, no layer needed
 
     # Hillshade layer (raster)
+    # Note: opacity is applied via RasterSymbolizer, NOT as a Layer attribute (invalid in Mapnik)
     hillshade_opacity = theme.get('hillshade', {}).get('opacity', 0.15)
-    layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857" opacity="{hillshade_opacity}">
+    layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857">
       <StyleName>hillshade</StyleName>
       <Datasource>
         <Parameter name="type">gdal</Parameter>
