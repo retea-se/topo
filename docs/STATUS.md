@@ -8,7 +8,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
-**Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar, men terrain-data (DEM, hillshade, contours) saknas. Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) för detaljer.
+**Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar stabilt (100% tile success rate), men terrain-data (DEM, hillshade, contours) saknas. UI hanterar saknade terrain gracefully (inga 404-spam). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) för detaljer.
 
 ### NYA funktioner (2025-12-27)
 

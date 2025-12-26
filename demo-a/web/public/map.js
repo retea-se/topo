@@ -18,7 +18,13 @@ async function loadTheme(name) {
 async function updateMapStyle(theme, preset, renderMode) {
   if (!map) return;
 
-  const config = await fetch('/api/config').then(r => r.json());
+  const [config, coverage] = await Promise.all([
+    fetch('/api/config').then(r => r.json()),
+    fetch(`/api/coverage/${preset}`).then(r => r.json()).catch(() => null)
+  ]);
+
+  // Store coverage globally for UI toggles
+  window.currentCoverage = coverage || { osm: true, contours: false, hillshade: false };
 
   // Use themeToMapLibreStyle converter for full theme support
   if (typeof window.themeToMapLibreStyle === 'function') {
@@ -27,11 +33,16 @@ async function updateMapStyle(theme, preset, renderMode) {
       config.tileserverUrl,
       config.hillshadeTilesUrl,
       preset,
-      renderMode
+      renderMode,
+      window.currentCoverage
     );
 
     // Set style and update layer visibility once style is loaded
     map.once('style.load', () => {
+      // Update toggle states based on coverage
+      if (window.updateToggleStates) {
+        window.updateToggleStates(window.currentCoverage);
+      }
       if (window.updateLayerVisibility) {
         window.updateLayerVisibility();
       }
@@ -163,6 +174,10 @@ Promise.all([
       }
       if (currentTheme) {
         await updateMapStyle(currentTheme, currentPreset, currentRenderMode);
+        // Update toggle states after style update
+        if (window.updateToggleStates && window.currentCoverage) {
+          window.updateToggleStates(window.currentCoverage);
+        }
       }
     });
 
@@ -184,13 +199,36 @@ Promise.all([
       contours: document.getElementById('toggle-contours')
     };
 
+    // Update toggle states based on coverage
+    function updateToggleStates(coverage) {
+      if (!coverage) return;
+      
+      // Disable/enable toggles based on coverage
+      if (layerToggles.hillshade) {
+        layerToggles.hillshade.disabled = !coverage.hillshade;
+        if (!coverage.hillshade && layerToggles.hillshade.checked) {
+          layerToggles.hillshade.checked = false;
+        }
+      }
+      
+      if (layerToggles.contours) {
+        layerToggles.contours.disabled = !coverage.contours;
+        if (!coverage.contours && layerToggles.contours.checked) {
+          layerToggles.contours.checked = false;
+        }
+      }
+      
+      // OSM layers (water, roads, buildings, parks) are always available if OSM exists
+      // No need to disable them
+    }
+
     // Make updateLayerVisibility globally available for updateMapStyle
     window.updateLayerVisibility = function() {
       if (!map || !map.isStyleLoaded()) return;
 
       const visibility = layer => layerToggles[layer]?.checked ? 'visible' : 'none';
 
-      // Toggle hillshade
+      // Toggle hillshade (only if layer exists)
       if (map.getLayer('hillshade')) {
         map.setLayoutProperty('hillshade', 'visibility', visibility('hillshade'));
       }
@@ -223,13 +261,16 @@ Promise.all([
         }
       });
 
-      // Toggle contour layers (all intervals)
+      // Toggle contour layers (all intervals) - only if layers exist
       ['contours-2m', 'contours-10m', 'contours-50m'].forEach(layerId => {
         if (map.getLayer(layerId)) {
           map.setLayoutProperty(layerId, 'visibility', visibility('contours'));
         }
       });
     };
+
+    // Update toggle states when coverage changes
+    window.updateToggleStates = updateToggleStates;
 
     Object.keys(layerToggles).forEach(layer => {
       layerToggles[layer].addEventListener('change', () => {

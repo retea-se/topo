@@ -2,41 +2,63 @@
  * Convert theme JSON to MapLibre style specification.
  */
 
-function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, renderMode = 'screen') {
+function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, renderMode = 'screen', coverage = null) {
   const isPrintMode = renderMode === 'print';
 
-  // Determine which contour sources to use based on preset
-  const contourPrefix = preset === 'stockholm_wide' ? 'contours_wide' : 'contours';
+  // Determine which sources to use based on preset
+  let osmSource = 'osm';  // Default to stockholm_wide
+  let contourPrefix = 'contours';  // Default for stockholm_core
+
+  if (preset === 'stockholm_wide') {
+    osmSource = 'osm';
+    contourPrefix = 'contours_wide';
+  } else if (preset === 'svealand') {
+    osmSource = 'osm_svealand';
+    contourPrefix = 'contours_svealand';
+  }
+
+  // Default coverage: assume OSM available, terrain unknown
+  // If coverage is provided, use it; otherwise assume terrain might be missing
+  const hasContours = coverage ? coverage.contours : false;
+  const hasHillshade = coverage ? coverage.hillshade : false;
+  const hasOsm = coverage ? coverage.osm : true; // OSM assumed available
 
   // Base style
   // Martin serves TileJSON at /{source} and tiles at /{source}/{z}/{x}/{y}
+  // Note: 'osm' source points to stockholm_wide.mbtiles which contains complete_ways data
   const style = {
     version: 8,
     sources: {
       osm: {
         type: 'vector',
-        url: `${tileserverUrl}/osm`  // TileJSON URL - Martin will provide tile URLs
+        url: `${tileserverUrl}/${osmSource}`  // TileJSON URL - Martin will provide tile URLs
       },
-      contours_2m: {
-        type: 'vector',
-        url: `${tileserverUrl}/${contourPrefix}_2m`
-      },
-      contours_10m: {
-        type: 'vector',
-        url: `${tileserverUrl}/${contourPrefix}_10m`
-      },
-      contours_50m: {
-        type: 'vector',
-        url: `${tileserverUrl}/${contourPrefix}_50m`
-      },
-      hillshade: {
-        type: 'raster',
-        tiles: [`${hillshadeTilesUrl}/tiles/hillshade/${preset}/{z}/{x}/{y}.png`],
-        tileSize: 256,
-        scheme: 'tms',
-        minzoom: 10,
-        maxzoom: 16
-      }
+      // Only add contour sources if coverage indicates they exist
+      ...(hasContours ? {
+        contours_2m: {
+          type: 'vector',
+          url: `${tileserverUrl}/${contourPrefix}_2m`
+        },
+        contours_10m: {
+          type: 'vector',
+          url: `${tileserverUrl}/${contourPrefix}_10m`
+        },
+        contours_50m: {
+          type: 'vector',
+          url: `${tileserverUrl}/${contourPrefix}_50m`
+        }
+      } : {}),
+      // Only add hillshade source if coverage indicates it exists
+      ...(hasHillshade ? {
+        hillshade: {
+          type: 'raster',
+          tiles: [`${hillshadeTilesUrl}/tiles/hillshade/${preset}/{z}/{x}/{y}.png`],
+          tileSize: 256,
+          scheme: 'tms',
+          minzoom: 10,
+          maxzoom: 16
+        }
+      } : {})
     },
     layers: []
   };
@@ -50,16 +72,18 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     }
   });
 
-  // Hillshade layer (raster)
-  style.layers.push({
-    id: 'hillshade',
-    type: 'raster',
-    source: 'hillshade',
-    paint: {
-      'raster-opacity': theme.hillshade.opacity || 0.15
-      // Note: gamma and contrast adjustments would need custom shaders or pre-processing
-    }
-  });
+  // Hillshade layer (raster) - only if available
+  if (hasHillshade && style.sources.hillshade) {
+    style.layers.push({
+      id: 'hillshade',
+      type: 'raster',
+      source: 'hillshade',
+      paint: {
+        'raster-opacity': theme.hillshade.opacity || 0.15
+        // Note: gamma and contrast adjustments would need custom shaders or pre-processing
+      }
+    });
+  }
 
   // Water layer (polygons)
   style.layers.push({
@@ -185,7 +209,8 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
 
   // Contours - render from minor to major (2m first, so 50m appears on top for emphasis)
   // CRITICAL: No labels ever (theme.contours.noLabels is always true)
-  if (theme.contours) {
+  // Only add contour layers if coverage indicates contours are available
+  if (theme.contours && hasContours) {
     const contourIntervals = theme.contours.intervals || [2, 10, 50];
     const majorWidth = typeof theme.contours.strokeWidth === 'object'
       ? theme.contours.strokeWidth.major

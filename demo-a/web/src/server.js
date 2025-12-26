@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -64,6 +65,70 @@ app.get('/api/themes', (req, res) => {
   } catch (err) {
     console.error('Error reading themes directory:', err);
     res.status(500).json({ error: 'Failed to load themes' });
+  }
+});
+
+// Helper function to check if URL returns 200
+function checkUrl(url, timeout = 3000) {
+  return new Promise((resolve) => {
+    const urlObj = new URL(url);
+    const client = urlObj.protocol === 'https:' ? require('https') : http;
+    const req = client.get(url, { timeout }, (res) => {
+      resolve(res.statusCode === 200 || res.statusCode === 204);
+      res.on('data', () => {}); // Consume response
+      res.on('end', () => {});
+    });
+    req.on('error', () => resolve(false));
+    req.on('timeout', () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
+// API endpoint to check coverage for a preset
+// Returns which layers are available (OSM, contours, hillshade)
+app.get('/api/coverage/:preset', async (req, res) => {
+  const preset = req.params.preset;
+  const tileserverUrl = TILESERVER_URL_INTERNAL;
+  const hillshadeUrl = HILLSHADE_URL_INTERNAL;
+  
+  const coverage = {
+    preset,
+    osm: false,
+    contours: false,
+    hillshade: false
+  };
+
+  try {
+    // Check OSM source
+    const osmSource = preset === 'svealand' ? 'osm_svealand' : preset === 'stockholm_wide' ? 'osm' : 'osm_core';
+    coverage.osm = await checkUrl(`${tileserverUrl}/${osmSource}`);
+
+    // Check contour sources (only if preset-specific)
+    let contourSource = 'contours_10m';
+    if (preset === 'svealand') {
+      contourSource = 'contours_svealand_10m';
+    } else if (preset === 'stockholm_wide') {
+      contourSource = 'contours_wide_10m';
+    }
+    coverage.contours = await checkUrl(`${tileserverUrl}/${contourSource}`);
+
+    // Check hillshade (test one tile at reasonable zoom)
+    // For svealand, use a tile that should exist if hillshade is available
+    const testTileUrl = `${hillshadeUrl}/tiles/hillshade/${preset}/10/567/297.png`;
+    coverage.hillshade = await checkUrl(testTileUrl);
+
+    res.json(coverage);
+  } catch (err) {
+    console.error('Error checking coverage:', err);
+    // Return safe defaults (OSM assumed available, terrain assumed missing)
+    res.json({
+      preset,
+      osm: true,
+      contours: false,
+      hillshade: false
+    });
   }
 });
 
