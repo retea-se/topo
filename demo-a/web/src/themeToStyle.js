@@ -5,6 +5,9 @@
 function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, renderMode = 'screen') {
   const isPrintMode = renderMode === 'print';
 
+  // Determine which contour sources to use based on preset
+  const contourPrefix = preset === 'stockholm_wide' ? 'contours_wide' : 'contours';
+
   // Base style
   // Martin serves TileJSON at /{source} and tiles at /{source}/{z}/{x}/{y}
   const style = {
@@ -16,15 +19,15 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
       },
       contours_2m: {
         type: 'vector',
-        url: `${tileserverUrl}/contours_2m`
+        url: `${tileserverUrl}/${contourPrefix}_2m`
       },
       contours_10m: {
         type: 'vector',
-        url: `${tileserverUrl}/contours_10m`
+        url: `${tileserverUrl}/${contourPrefix}_10m`
       },
       contours_50m: {
         type: 'vector',
-        url: `${tileserverUrl}/contours_50m`
+        url: `${tileserverUrl}/${contourPrefix}_50m`
       },
       hillshade: {
         type: 'raster',
