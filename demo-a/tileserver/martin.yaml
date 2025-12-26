@@ -25,7 +25,7 @@ mbtiles:
     osm_core: /data/tiles/osm/stockholm_core.mbtiles
     osm_wide: /data/tiles/osm/stockholm_wide.mbtiles
     osm_svealand: /data/tiles/osm/svealand.mbtiles
-    # Named sources for contours - svealand (commented out until terrain data is generated)
-    # contours_svealand_2m: /data/tiles/contours/svealand_2m.mbtiles
-    # contours_svealand_10m: /data/tiles/contours/svealand_10m.mbtiles
-    # contours_svealand_50m: /data/tiles/contours/svealand_50m.mbtiles
+    # Named sources for contours - svealand
+    contours_svealand_2m: /data/tiles/contours/svealand_2m.mbtiles
+    contours_svealand_10m: /data/tiles/contours/svealand_10m.mbtiles
+    contours_svealand_50m: /data/tiles/contours/svealand_50m.mbtiles

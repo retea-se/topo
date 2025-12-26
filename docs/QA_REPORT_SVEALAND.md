@@ -1,210 +1,136 @@
-# QA Report - Svealand Preset
+# QA Report: Svealand Terrain Coverage
 
-**Latest QA Run**: `qa_20251226_195259_svealand_osm_only` (2025-12-26 19:52)
-**Previous QA Run**: `qa_20251227_120000_svealand` (2025-12-27 12:00)
-**Status**: ⚠️ **PARTIAL COVERAGE** (OSM ✅, Terrain ❌)
+**Date:** 2025-12-26  
+**Preset:** `svealand`  
+**Bbox:** 14.5, 58.5, 19.0, 61.0 (WGS84)
 
-## Executive Summary
+## Status: IN PROGRESS
 
-Svealand preset har **OSM-lager fungerande** men **terrain-data saknas**. Systemet fungerar för OSM-baserad kartrendering, men hillshade och contours är inte tillgängliga eftersom DEM-data inte har genererats.
+### ✅ Completed
 
-### GO/NO-GO Decision
+1. **GLO30Provider Implementation**
+   - Added `GLO30Provider` class to `prep-service/src/dem_provider.py`
+   - Integrated Copernicus Data Space Ecosystem (CDSE) API
+   - Support for downloading, merging, and reprojecting GLO-30 tiles
+   - Updated `download_dem.py` to support `--provider glo30`
 
-**GO för OSM-lager** ✅
-**NO-GO för terrain-lager** ❌
+2. **Documentation**
+   - Created `docs/SVEALAND_DEM_REQUIREMENTS.md` with DEM specifications
+   - Created `scripts/download_dem_svealand.ps1` for automated download
+   - Updated `demo-a/tileserver/martin.yaml` to include svealand contour sources
 
-## Test Results
+### ⏳ Pending (Requires DEM Download)
 
-### 1. OSM Tiles ✅
+**Prerequisite:** DEM file must be downloaded first using Copernicus credentials.
 
-- **File**: `/data/tiles/osm/svealand.mbtiles`
-- **Size**: 653 MB (653,447,168 bytes)
-- **Last Modified**: 2025-12-26 18:28
-- **Martin Catalog**: ✅ Configured as `osm_svealand`
-- **Tile Health Check (Improved)**: 60/60 tiles OK (100% success rate)
-  - Bounds: [14.03, 54.40, 25.21, 65.63]
-  - Zoom range: 10-15
-  - Format: pbf
-  - 50 tiles are "empty" (normal for large areas - tiles without data return 200 OK but are small)
-  - **Verdict**: PASS ✅
+#### Step 1: DEM Download
+- **Command:** `docker-compose run --rm prep python3 /app/src/download_dem.py --preset svealand --provider glo30`
+- **Requires:** `COPERNICUS_USERNAME` and `COPERNICUS_PASSWORD` environment variables
+- **Output:** `/data/dem/manual/svealand_eudem.tif` (EPSG:3857, ~1-3 GB compressed)
+- **Status:** ⏳ Waiting for credentials
 
-### 2. Terrain Data ❌
+#### Step 2: Hillshade Generation
+- **Command:** `docker-compose run --rm prep python3 /app/src/generate_hillshade.py --preset svealand`
+- **Output:** `/data/terrain/hillshade/svealand_hillshade.tif`
+- **Status:** ⏳ Waiting for DEM
 
-- **DEM**: NOT FOUND
-- **Hillshade raster**: NOT FOUND
-- **Hillshade tiles**: NOT FOUND
-- **Contour GeoJSON**: NOT FOUND
-- **Contour mbtiles**: NOT FOUND
+#### Step 3: Hillshade Tiles
+- **Command:** `docker-compose run --rm prep sh -c "gdal2tiles.py --zoom=9-14 --profile=mercator --webviewer=none --resampling=near /data/terrain/hillshade/svealand_hillshade.tif /data/tiles/hillshade/svealand"`
+- **Output:** `/data/tiles/hillshade/svealand/{z}/{x}/{y}.png`
+- **Zoom levels:** 9-14 (limited for large area)
+- **Status:** ⏳ Waiting for hillshade
 
-**Root Cause**: DEM file missing at `/data/dem/manual/svealand_eudem.tif`
+#### Step 4: Contour Extraction
+- **Command:** `docker-compose run --rm prep python3 /app/src/extract_contours.py --preset svealand`
+- **Output:** 
+  - `/data/terrain/contours/svealand_2m.geojson`
+  - `/data/terrain/contours/svealand_10m.geojson`
+  - `/data/terrain/contours/svealand_50m.geojson`
+- **Status:** ⏳ Waiting for DEM
 
-### 3. Frontend QA
+#### Step 5: Contour Tiles
+- **Command:** See `prep-service/scripts/generate_contour_tiles.sh` (modified for svealand zoom levels)
+- **Output:**
+  - `/data/tiles/contours/svealand_2m.mbtiles`
+  - `/data/tiles/contours/svealand_10m.mbtiles`
+  - `/data/tiles/contours/svealand_50m.mbtiles`
+- **Zoom levels:** 8-13 (limited for large area)
+- **Status:** ⏳ Waiting for contours
 
-#### Demo A ✅
+### 🔍 QA Verification (To Be Completed)
 
-- **URL**: `http://localhost:3000?bbox_preset=svealand&theme=paper`
-- **Status**: ✅ Loads correctly
-- **OSM Tiles**: ✅ Load successfully (200 OK)
-- **Coverage Endpoint**: ✅ `/api/coverage/svealand` returns `{osm: true, contours: false, hillshade: false}`
-- **Network Requests**: ✅ **ZERO 404-requests** for contours/hillshade (graceful handling implemented!)
-- **UI Toggles**: ✅ Hillshade/Contours disabled when terrain missing, Roads/Water/Buildings work correctly
-- **Screenshots**: ✅ Captured (see below)
+#### Tile Health Check
+- [ ] Verify at least 12 tiles per layer (hillshade, contours 2m/10m/50m)
+- [ ] Check no 404 errors for tile requests
+- [ ] Verify tile coverage matches bbox
 
-#### Demo B ⚠️
+#### Visual Verification
+- [ ] Screenshot: All layers ON (hillshade + contours + OSM)
+- [ ] Screenshot: Hillshade OFF (contours + OSM only)
+- [ ] Screenshot: Contours OFF (hillshade + OSM only)
+- [ ] Verify terrain renders correctly in Demo A
 
-- **URL**: `http://localhost:3001`
-- **Status**: ✅ Loads correctly
-- **Export**: ❌ API returns 500 error (renderer needs graceful handling for missing terrain)
-- **Screenshot**: ✅ UI captured
+#### File Verification
+- [ ] DEM file exists and has correct CRS (EPSG:3857)
+- [ ] Hillshade file exists and is valid GeoTIFF
+- [ ] Contour GeoJSON files exist (2m, 10m, 50m)
+- [ ] Contour MBTiles files exist (2m, 10m, 50m)
+- [ ] Hillshade tiles directory exists with tiles
 
-## Screenshots
+## Expected File Sizes
 
-All screenshots saved in: `exports/screenshots/qa_20251227_120000_svealand/`
+Based on Svealand bbox (approximately 4.5° x 2.5°):
 
-### Demo A Screenshots
+| File | Estimated Size | Notes |
+|------|----------------|-------|
+| `svealand_eudem.tif` | 1-3 GB | Compressed (LZW) |
+| `svealand_hillshade.tif` | 500 MB - 1 GB | Compressed (LZW) |
+| `svealand_2m.geojson` | 500 MB - 2 GB | Large due to 2m interval |
+| `svealand_10m.geojson` | 100-500 MB | Moderate size |
+| `svealand_50m.geojson` | 10-50 MB | Smallest |
+| `svealand_2m.mbtiles` | 200-800 MB | Vector tiles |
+| `svealand_10m.mbtiles` | 50-200 MB | Vector tiles |
+| `svealand_50m.mbtiles` | 5-20 MB | Vector tiles |
+| Hillshade tiles (z9-14) | 500 MB - 2 GB | Total directory size |
 
-- ✅ `demoA_svealand_paper_allLayers.png` - All layers visible
-- ✅ `demoA_svealand_paper_hillshadeOff.png` - Hillshade toggle test
-- ✅ `demoA_svealand_paper_contoursOff.png` - Contours toggle test
-- ✅ `demoA_svealand_paper_buildingsOff.png` - Buildings toggle test
-- ✅ `demoA_svealand_paper_roadsOff.png` - Roads toggle test
-- ✅ `demoA_svealand_paper_waterOff.png` - Water toggle test
+## Build Time Estimates
 
-### Demo B Screenshots
-
-- ✅ `demoB_svealand_ui.png` - UI with svealand preset selected
-- ⚠️ `demoB_svealand_export_a2_150dpi.png` - Export file (needs manual download from browser)
-
-## Tile Health Check Results
-
-### Latest Run (2025-12-26 19:52)
-
-**File**: `exports/screenshots/qa_20251226_195259_svealand_osm_only/tile_health_svealand_2025-12-26T18-53-21.json`
-
-### Summary
-
-- **Total tiles tested**: 60 (20 points × 3 zoom levels)
-- **Success**: 60/60 (100%)
-- **Failed**: 0/60 (0%)
-- **Empty tiles**: 50/60 (normal for large areas)
-- **Verdict**: PASS ✅
-
-### Improvements Made
-
-1. **Automatic bounds detection**: Fetches TileJSON to get actual bounds and zoom levels
-2. **Smart test points**: Generates 20 test points within actual bounds
-3. **Correct zoom levels**: Tests minzoom (10), middle (12), maxzoom (15)
-4. **Empty tile handling**: Empty tiles (200 OK but < 100 bytes) counted as success
-
-### Previous Run (2025-12-27 12:00)
-
-**File**: `exports/screenshots/qa_20251227_120000_svealand/tile_health_svealand.json`
-
-- **Total tiles tested**: 90 (18 per source × 5 sources)
-- **Success**: 12/90 (13%)
-- **Failed**: 78/90 (87%)
-- **Issue**: Tested zoom 9 (below minzoom 10), causing false failures
-
-## Issues Found
-
-### 1. Terrain Data Missing ❌
-
-**Problem**: DEM file for svealand not found
-**Impact**: No hillshade or contours available
-**Solution**:
-1. Download DEM for svealand (Copernicus GLO-30)
-2. Place at `/data/dem/manual/svealand_eudem.tif`
-3. Run `./scripts/build_svealand.sh --skip-osm`
-
-**Documentation**: See `exports/screenshots/qa_20251227_120000_svealand/terrain_missing_report.md`
-
-### 2. Martin Config Updated ✅
-
-**Problem**: Martin tried to load missing contour sources, causing errors
-**Fix**: Commented out missing contour sources in `demo-a/tileserver/martin.yaml`
-**Status**: ✅ Fixed - Martin now starts correctly
-
-### 3. Graceful UI When Terrain Missing ✅
-
-**Problem**: Frontend made 404-requests for missing terrain sources
-**Fix**:
-- Added `/api/coverage/:preset` endpoint to check layer availability
-- Updated `themeToMapLibreStyle()` to only add sources that exist
-- UI toggles disabled when sources missing
-**Status**: ✅ Fixed - Zero 404-requests, graceful degradation
+| Step | Estimated Time | Notes |
+|------|----------------|-------|
+| DEM Download | 10-30 min | Depends on network speed |
+| Hillshade Generation | 5-15 min | Depends on DEM size |
+| Hillshade Tiles | 30-60 min | Limited zoom (z9-14) |
+| Contour Extraction | 10-30 min | 2m interval is slowest |
+| Contour Tiles | 20-40 min | Limited zoom (z8-13) |
+| **Total** | **1.5-3 hours** | Excluding DEM download |
 
 ## Next Steps
 
-1. **Download DEM for svealand**
-   - Use Copernicus Data Space API (if credentials available)
-   - Or manual download from https://dataspace.copernicus.eu/
-   - See `scripts/prepare_dem_svealand.sh` for instructions
-
-2. **Generate terrain data**
-   ```bash
-   ./scripts/build_svealand.sh --skip-osm
+1. **Set Copernicus credentials:**
+   ```powershell
+   $env:COPERNICUS_USERNAME = "your-email@example.com"
+   $env:COPERNICUS_PASSWORD = "your-password"
    ```
 
-3. **Re-run QA**
-   - Uncomment contour sources in Martin config
-   - Re-run tile health check
-   - Verify all terrain layers work
+2. **Download DEM:**
+   ```powershell
+   .\scripts\download_dem_svealand.ps1
+   ```
 
-4. **Complete Demo B export verification**
-   - Manually download export from browser
-   - Verify dimensions (2480×3508 for A2 @ 150 DPI)
-   - Save as `demoB_svealand_export_a2_150dpi.png`
+3. **Generate terrain (use build script):**
+   ```powershell
+   .\scripts\build_svealand.ps1 -SkipOsm
+   ```
 
-## Files Created
+4. **Run QA verification:**
+   - Tile health check
+   - Visual verification in Demo A
+   - Update this report with results
 
-### Latest Run (2025-12-26 19:52)
+## Notes
 
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/tile_health_svealand_2025-12-26T18-53-21.json`
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/demoA_svealand_paper_allLayers.png`
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/demoA_svealand_paper_roadsOff.png`
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/demoA_svealand_paper_waterOff.png`
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/demoA_svealand_paper_buildingsOff.png`
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/demoB_svealand_ui.png`
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/demoB_svealand_export_a2_150dpi.png` (from previous run)
-- `exports/screenshots/qa_20251226_195259_svealand_osm_only/LEVERANS.md`
-- `scripts/tile_health_check_svealand.js` (improved version)
-- `scripts/check_mbtiles_metadata.py` (new utility)
-- `demo-a/web/src/server.js` (added `/api/coverage/:preset` endpoint)
-- `demo-a/web/src/themeToStyle.js` (graceful handling of missing sources)
-- `demo-a/web/public/map.js` (toggle state management)
-
-### Previous Run (2025-12-27 12:00)
-
-- `exports/screenshots/qa_20251227_120000_svealand/tile_health_svealand.json`
-- `exports/screenshots/qa_20251227_120000_svealand/status_check.md`
-- `exports/screenshots/qa_20251227_120000_svealand/terrain_missing_report.md`
-- `exports/screenshots/qa_20251227_120000_svealand/tile_health_summary.md`
-- `exports/screenshots/qa_20251227_120000_svealand/demoA_svealand_paper_*.png` (6 files)
-- `exports/screenshots/qa_20251227_120000_svealand/demoB_svealand_ui.png`
-
-## Commands Run
-
-```bash
-# Created QA directory
-New-Item -ItemType Directory -Path 'exports\screenshots\qa_20251227_120000_svealand'
-
-# Verified OSM tiles
-docker-compose run --rm --entrypoint /bin/bash prep -c "ls -lh /data/tiles/osm/svealand.mbtiles"
-
-# Fixed Martin config
-# Commented out missing contour sources in demo-a/tileserver/martin.yaml
-docker-compose --profile demoA restart demo-a-tileserver
-
-# Ran tile health check
-node scripts/tile_health_check_svealand.js exports/screenshots/qa_20251227_120000_svealand
-```
-
-## Conclusion
-
-Svealand preset är **delvis fungerande**:
-- ✅ OSM-lager fungerar korrekt
-- ✅ Frontend QA passerade för OSM-lager
-- ❌ Terrain-data saknas (blockerar hillshade/contours)
-
-**Recommendation**: Generera terrain-data för full coverage. OSM-lager kan användas redan nu.
-
+- Svealand is a large region, so zoom levels are limited to reduce data size
+- Hillshade: z9-14 (instead of z10-16)
+- Contours: z8-13 (instead of z10-16)
+- Martin tileserver configuration updated to include svealand contour sources
+- Frontend (themeToStyle.js) already supports svealand preset
