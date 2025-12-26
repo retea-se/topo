@@ -251,6 +251,58 @@ docker-compose --profile demoA up -d
 # http://localhost:3000?bbox_preset=svealand
 ```
 
+## Export Presets (Phase 9)
+
+The system provides predefined export presets for common use cases:
+
+| Preset | Format | Theme | DPI | Beskrivning |
+|--------|--------|-------|-----|-------------|
+| A2_Paper_v1 | A2 Landscape | paper | 150 | Klassisk vaggkarta |
+| A3_Blueprint_v1 | A3 Landscape | blueprint-muted | 150 | Teknisk ritning (last) |
+| A1_Terrain_v1 | A1 Portrait | gallery | 150 | Stor terrangkarta |
+| A4_Quick_v1 | A4 Portrait | paper | 150 | Snabbutskrift |
+
+### Preset-struktur
+
+Varje preset definierar:
+- **format** - Pappersformat (A0-A4)
+- **DPI** - Upplosning (72-600)
+- **theme** - Fargtema
+- **layer visibility** - Vilka lager som visas
+- **allowed bbox presets** - Tillåtna geografiska omraden
+- **constraints** - Lasningar (DPI, format, tema, lager)
+
+### API Endpoints
+
+```bash
+# Lista alla presets
+curl http://localhost:3000/api/export-presets
+
+# Hamta specifikt preset
+curl http://localhost:3000/api/export-presets/A2_Paper_v1
+
+# Validera preset med overrides
+curl -X POST http://localhost:3000/api/validate-preset \
+  -H "Content-Type: application/json" \
+  -d '{"preset_id": "A2_Paper_v1", "overrides": {"dpi": 200}}'
+```
+
+### Constraint-system
+
+Presets kan ha lasta falt:
+
+| Constraint | Effekt |
+|------------|--------|
+| `dpi_locked` | DPI kan inte andras |
+| `format_locked` | Format kan inte andras |
+| `layers_locked` | Lager kan inte togglas |
+| `bbox_locked` | Omrade kan inte andras |
+| `theme_locked` | Tema kan inte andras |
+
+**Exempel:** A3_Blueprint_v1 har `dpi_locked: true` och `format_locked: true` for deterministisk output.
+
+---
+
 ## Print Editor (Interactive Map Editor)
 
 **Åtkomst:** http://localhost:3000/editor

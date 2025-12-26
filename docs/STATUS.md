@@ -1,14 +1,45 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-26 (Interactive Print Editor)
+**Senast uppdaterad**: 2025-12-26 23:30 CET
 
 ## Sammanfattning
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
 
+### Phase 9 - Export Presets ✅ DONE
+
+**Reproducerbarhet verifierad**: Demo B, SHA256 identisk for alla testade presets (2025-12-26)
+
+| Funktion | Status |
+|----------|--------|
+| Preset-filer (4 st) | ✅ DONE |
+| GET /api/export-presets | ✅ DONE |
+| GET /api/export-presets/{id} | ✅ DONE |
+| POST /api/validate-preset | ✅ DONE |
+| QA test script | ✅ DONE |
+| Reproducerbarhet (SHA256) | ✅ VERIFIED |
+| UI-integration | ✅ DONE |
+
+**Presets:**
+- A2_Paper_v1 - Klassisk vaggkarta (A2, 150 DPI, paper-tema)
+- A3_Blueprint_v1 - Teknisk ritning (A3, 150 DPI, blueprint-muted, last)
+- A1_Terrain_v1 - Stor terrangkarta (A1, 150 DPI, gallery-tema)
+- A4_Quick_v1 - Snabbutskrift (A4, 150 DPI, paper-tema)
+
+**SHA256 Verification (2025-12-26):**
+- A2_Paper_v1 (stockholm_core): `14fb5a04ee0df6c87a5f2758649618966511c52213d812aa9d994bbb4affc8b7`
+- A1_Terrain_v1 (stockholm_wide): `5e899f5fc0d2e9462a6fcda7ad4f45fcd3051ee4fe8bc99d704efee1d7536fec`
+
+**API Endpoints:**
+- `GET /api/export-presets` - Lista alla presets
+- `GET /api/export-presets/:id` - Hamta specifikt preset
+- `POST /api/validate-preset` - Validera preset med overrides
+
+**Test:** `node scripts/qa_preset_export.js`
+
 **Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
-**Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar stabilt (100% tile success rate), men terrain-data (DEM, hillshade, contours) saknas. **GLO30Provider implementerad** för automatisk DEM-nedladdning från Copernicus. Terrain-pipelinen är redo men väntar på DEM-nedladdning (kräver COPERNICUS_USERNAME och COPERNICUS_PASSWORD). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) och [SVEALAND_DEM_REQUIREMENTS.md](SVEALAND_DEM_REQUIREMENTS.md) för detaljer.
+**Svealand status**: ✅ **Full coverage** - Alla lager (OSM + DEM + hillshade + contours) är tillgängliga och verifierade. DEM nedladdat från Copernicus GLO-30. Se [TODO_SVEALAND_FULL_COVERAGE.md](TODO_SVEALAND_FULL_COVERAGE.md) för detaljer.
 
 ### NYA funktioner (2025-12-26) - Interactive Print Editor
 
@@ -49,7 +80,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 - Screenshots: `exports/screenshots/qa_editor_20251226_195128/`
 - Export verifierad: `export_stockholm_core_blueprint-muted_420x594mm_150dpi_2025-12-26T19-49-24.png` (9.6 MB)
 
-Se [TODO_PRINT_EDITOR_FIXES.md](TODO_PRINT_EDITOR_FIXES.md), [TODO_EXPORT_EDITOR.md](TODO_EXPORT_EDITOR.md), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
+Se [TODO_PRINT_EDITOR_FIXES.md](TODO_PRINT_EDITOR_FIXES.md), [TODO_EXPORT_EDITOR.md](../archive/TODO_EXPORT_EDITOR_completed.md) (arkiverad), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
 
 ### Tidigare funktioner (2025-12-27)
 
@@ -71,19 +102,21 @@ Verifierad datatäckning per preset:
 
 | Datatyp | stockholm_core | stockholm_wide | svealand |
 |---------|----------------|----------------|----------|
-| OSM PBF | ✅ 3.5 MB | ✅ 17 MB | ✅ ~150 MB (est.) |
-| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB | ✅ 653 MB (verifierad 2025-12-27) |
-| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB | ❌ MISSING |
-| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB | ❌ MISSING |
-| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 | ❌ MISSING |
-| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m | ❌ MISSING |
-| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB | ❌ MISSING |
+| OSM PBF | ✅ 3.5 MB | ✅ 17 MB | ✅ ~150 MB |
+| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB | ✅ 653 MB |
+| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB | ✅ 944 MB |
+| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB | ✅ 177 MB |
+| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 | ✅ z10-14 (62,632 tiles) |
+| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m | ✅ 10m/50m |
+| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB | ✅ 123 MB (10m + 50m) |
 
 ### DEM-datakälla
 
-Stockholm Wide DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Open Data (2025-12-26).
+Stockholm Wide och Svealand DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Open Data (2025-12-26).
 
 **Attribution**: Copernicus DEM - GLO-30 Public © DLR e.V. 2014-2018 and Airbus Defence and Space GmbH 2017-2018, provided under COPERNICUS by the European Union and ESA.
+
+**Svealand coverage**: 15 tiles (N58-N60 x E014-E018), merged and clipped to bbox [14.5, 58.5, 19.0, 61.0].
 
 ---
 
@@ -274,12 +307,21 @@ Screenshots sparade i: `exports/screenshots/`
 
 ## Senaste fixar
 
-### 2025-12-27
-1. **GLO30Provider implementerad** - Automatisk DEM-nedladdning från Copernicus Data Space Ecosystem (CDSE) API. Stöd för GLO-30 tiles, merging och reprojektion till EPSG:3857. Se [SVEALAND_DEM_REQUIREMENTS.md](SVEALAND_DEM_REQUIREMENTS.md).
-2. **Svealand terrain-pipeline redo** - Alla scripts och konfigurationer på plats för terrain-generering. Väntar på DEM-nedladdning (kräver Copernicus credentials). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md).
+### 2025-12-26 (Evening)
+1. **Svealand Full Coverage Complete** - Alla terrain-lager genererade och verifierade:
+   - DEM: 15 Copernicus GLO-30 tiles nedladdade (313 MB), mergade till 944 MB GeoTIFF
+   - Hillshade: 177 MB raster, 62,632 XYZ tiles (z10-14)
+   - Contours: 10m (100 MB mbtiles), 50m (23 MB mbtiles)
+2. **QA Test Suite** - Demo A: 9/10 PASS, Demo B: 7/7 PASS
+3. **Tile Health Check** - 100% success rate (60/60 tiles)
+4. **Martin config uppdaterad** - Svealand contour sources (10m, 50m) aktiverade
+
+### 2025-12-27 (Earlier)
+1. **GLO30Provider implementerad** - Automatisk DEM-nedladdning från Copernicus Data Space Ecosystem (CDSE) API.
+2. **Svealand terrain-pipeline redo** - Alla scripts och konfigurationer på plats för terrain-generering.
 3. **Martin config uppdaterad** - Svealand contour sources aktiverade i `demo-a/tileserver/martin.yaml`.
-4. **Svealand QA genomförd** - Verifierat OSM-lager fungerar (653 MB tiles, 12/18 tiles OK i health check). Terrain-data saknas (DEM, hillshade, contours). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md).
-5. **JavaScript-varning fixad** - Demo B Web: Korrigerat tema-validering i formulär. Inga konsol-fel längre.
+4. **Svealand QA genomförd** - Verifierat OSM-lager fungerar (653 MB tiles).
+5. **JavaScript-varning fixad** - Demo B Web: Korrigerat tema-validering i formulär.
 
 ### 2025-12-26
 
@@ -295,3 +337,5 @@ Screenshots sparade i: `exports/screenshots/`
 ## Nästa steg
 
 Se [ROADMAP.md](ROADMAP.md) för planerade funktioner.
+
+**Nästa utvecklingsfas**: Se [NEXT_PHASE_PLAN.md](NEXT_PHASE_PLAN.md) för detaljerad plan med fokus på produktifiering, skalbarhet och UX-förbättringar.

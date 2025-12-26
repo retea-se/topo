@@ -125,7 +125,7 @@ npm install @playwright/test --save-dev
 | `demo-a/web/public/editor.js` | Editor JavaScript (821 lines) |
 | `scripts/test_print_editor.spec.js` | Playwright E2E tests (21 tests) |
 | `playwright.config.js` | Playwright configuration |
-| `docs/TODO_EXPORT_EDITOR.md` | Implementation plan |
+| `docs/archive/TODO_EXPORT_EDITOR_completed.md` | Implementation plan (arkiverad) |
 | `docs/EDITOR_TEST_INSTRUCTIONS.md` | Manual test cases |
 | `docs/QA_REPORT_EDITOR.md` | This report |
 
