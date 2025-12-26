@@ -25,7 +25,7 @@ for (let i = 0; i < args.length; i++) {
         preset = args[i + 1];
     }
     if (args[i] === '--demo' && args[i + 1]) {
-        demoFilter = args[i + 1].toUpperCase();
+        demoFilter = args[i + 1].toLowerCase();
     }
 }
 
@@ -260,7 +260,14 @@ async function testDemoB(browser) {
     console.log('\nTest 4: Validation checks...');
     try {
         await page.selectOption('#bbox_preset', 'svealand');
+        await page.waitForTimeout(500);  // Wait for preset change to process
+
+        // Clear and fill DPI field, then trigger change event
         await page.fill('#dpi', '400');  // Should trigger validation error for svealand
+        await page.evaluate(() => {
+            const dpiInput = document.getElementById('dpi');
+            dpiInput.dispatchEvent(new Event('change', { bubbles: true }));
+        });
         await page.waitForTimeout(2000);
 
         const validationBox = await page.textContent('#validation-box');
@@ -277,6 +284,10 @@ async function testDemoB(browser) {
         // Reset to valid params
         await page.selectOption('#bbox_preset', preset);
         await page.fill('#dpi', '150');
+        await page.evaluate(() => {
+            const dpiInput = document.getElementById('dpi');
+            dpiInput.dispatchEvent(new Event('change', { bubbles: true }));
+        });
     } catch (e) {
         results.demoB.errors.push({ test: 'validation', error: e.message });
         console.log('  [ERROR]', e.message);
@@ -408,18 +419,18 @@ async function main() {
     console.log('========================================');
     console.log(`Timestamp: ${timestamp}`);
     console.log(`Preset: ${preset}`);
-    console.log(`Testing: ${demoFilter === 'both' ? 'Demo A and Demo B' : `Demo ${demoFilter}`}`);
+    console.log(`Testing: ${demoFilter === 'both' ? 'Demo A and Demo B' : `Demo ${demoFilter.toUpperCase()}`}`);
 
     await ensureDir(outputDir);
 
     const browser = await chromium.launch({ headless: true });
 
     try {
-        if (demoFilter === 'both' || demoFilter === 'A') {
+        if (demoFilter === 'both' || demoFilter === 'a') {
             await testDemoA(browser);
         }
 
-        if (demoFilter === 'both' || demoFilter === 'B') {
+        if (demoFilter === 'both' || demoFilter === 'b') {
             await testDemoB(browser);
         }
 
