@@ -49,6 +49,8 @@ services:
     profiles: ["demoA"]
     volumes:
       - ./themes:/app/themes:ro
+      - ./demo-a/web/public:/app/public:ro
+      - ./config:/app/config:ro
     environment:
       - TILESERVER_URL=http://demo-a-tileserver:3000
       - HILLSHADE_TILES_URL=http://demo-a-hillshade-server:80
@@ -105,6 +107,7 @@ services:
       - exports:/exports
       - ./themes:/app/themes:ro
       - ./prep-service/config:/app/config:ro
+      - ./config/export_presets:/app/config/export_presets:ro
     profiles: ["demoB"]
     environment:
       - POSTGRES_HOST=demo-b-db

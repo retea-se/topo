@@ -2,6 +2,7 @@ const express = require('express');
 const { chromium } = require('playwright');
 const path = require('path');
 const fs = require('fs');
+const { buildExportFilename } = require('./filenameBuilder');
 
 const app = express();
 const PORT = process.env.PORT || 8082;
@@ -41,7 +42,8 @@ app.get('/render', async (req, res) => {
     title = '',
     subtitle = '',
     attribution = '',
-    layers = '{}'
+    layers = '{}',
+    preset_id
   } = req.query;
 
   const width_px = Math.round(width_mm * dpi / 25.4);
@@ -157,11 +159,25 @@ app.get('/render', async (req, res) => {
     await browser.close();
     console.log(`[Exporter] Browser closed, screenshot size: ${screenshot.length} bytes`);
 
-    // Generate filename with timestamp
-    const now = new Date();
-    const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
-    const presetName = custom_bbox ? 'custom' : bbox_preset;
-    const filename = `export_${presetName}_${theme}_${width_mm}x${height_mm}mm_${dpi}dpi_${timestamp}.png`;
+    // Generate standardized filename
+    const effectiveBboxPreset = custom_bbox ? 'custom' : (bbox_preset || 'stockholm_core');
+    const format = 'png'; // Demo A always exports PNG
+
+    const filename = buildExportFilename({
+      bbox_preset: effectiveBboxPreset,
+      preset_id: preset_id,
+      dpi: parseInt(dpi),
+      format: format,
+      requestParams: {
+        dpi: dpi,
+        format: format,
+        theme: theme,
+        width_mm: width_mm,
+        height_mm: height_mm,
+        layers: layers
+      }
+    });
+
     const filepath = path.join(EXPORTS_DIR, filename);
 
     // Save to disk

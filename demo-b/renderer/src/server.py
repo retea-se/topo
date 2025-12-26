@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from mapnik_renderer import MapnikRenderer
 from theme_to_mapnik import load_theme
+from filename_builder import build_export_filename
 
 app = Flask(__name__)
 renderer = MapnikRenderer()
@@ -220,6 +221,7 @@ def render():
         width_mm = float(data.get('width_mm', 420))
         height_mm = float(data.get('height_mm', 594))
         format_type = data.get('format', 'png')
+        preset_id = data.get('preset_id')  # Optional export preset ID
 
         # Composition elements
         title = data.get('title', '')
@@ -295,11 +297,28 @@ def render():
         }
         mimetype = mimetypes.get(format_type, 'application/octet-stream')
 
+        # Generate standardized filename
+        effective_bbox_preset = 'custom' if custom_bbox else preset
+        filename = build_export_filename(
+            bbox_preset=effective_bbox_preset,
+            dpi=dpi,
+            format_type=format_type,
+            preset_id=preset_id,
+            request_params={
+                'dpi': dpi,
+                'format': format_type,
+                'theme': theme_name,
+                'width_mm': width_mm,
+                'height_mm': height_mm,
+                'layers': layers
+            }
+        )
+
         return send_file(
             io.BytesIO(result),
             mimetype=mimetype,
             as_attachment=True,
-            download_name=f"map_export_{preset}.{format_type}"
+            download_name=filename
         )
     except Exception as e:
         import traceback

@@ -5,6 +5,9 @@ const http = require('http');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// JSON body parser for POST endpoints
+app.use(express.json());
 const TILESERVER_URL = process.env.TILESERVER_URL || 'http://localhost:8080';
 const HILLSHADE_TILES_URL = process.env.HILLSHADE_TILES_URL || 'http://localhost:8081';
 
@@ -65,6 +68,246 @@ app.get('/api/themes', (req, res) => {
   } catch (err) {
     console.error('Error reading themes directory:', err);
     res.status(500).json({ error: 'Failed to load themes' });
+  }
+});
+
+// ============================================================================
+// Export Presets API (Phase 9)
+// ============================================================================
+
+const EXPORT_PRESETS_DIR = '/app/config/export_presets';
+
+// Helper: Load all export presets
+function loadExportPresets() {
+  const presets = [];
+  try {
+    const files = fs.readdirSync(EXPORT_PRESETS_DIR);
+    for (const f of files) {
+      if (f.startsWith('_') || !f.endsWith('.json')) continue;
+      const filepath = path.join(EXPORT_PRESETS_DIR, f);
+      const data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+      presets.push(data);
+    }
+  } catch (err) {
+    console.error('Error loading export presets:', err);
+  }
+  return presets;
+}
+
+// Helper: Load a specific export preset by ID
+function loadExportPreset(presetId) {
+  const filepath = path.join(EXPORT_PRESETS_DIR, `${presetId}.json`);
+  if (!fs.existsSync(filepath)) {
+    return null;
+  }
+  return JSON.parse(fs.readFileSync(filepath, 'utf8'));
+}
+
+// Helper: Validate overrides against preset constraints
+function validateOverrides(preset, overrides) {
+  const errors = [];
+  const warnings = [];
+  const constraints = preset.constraints;
+
+  // DPI validation
+  if (overrides.dpi !== undefined) {
+    if (constraints.dpi_locked) {
+      errors.push({
+        field: 'dpi',
+        message: `DPI ar last for preset '${preset.display_name}' och kan inte andras.`
+      });
+    } else if (overrides.dpi < constraints.dpi_min || overrides.dpi > constraints.dpi_max) {
+      errors.push({
+        field: 'dpi',
+        message: `DPI ${overrides.dpi} ar utanfor tillatet intervall. Valj ett varde mellan ${constraints.dpi_min} och ${constraints.dpi_max}.`
+      });
+    }
+  }
+
+  // Format validation
+  if (overrides.format !== undefined) {
+    if (constraints.format_locked) {
+      errors.push({
+        field: 'format',
+        message: `Format ar last for preset '${preset.display_name}' och kan inte andras.`
+      });
+    } else if (!constraints.allowed_formats.includes(overrides.format)) {
+      errors.push({
+        field: 'format',
+        message: `Format '${overrides.format}' stods inte. Tillgangliga format: ${constraints.allowed_formats.join(', ')}.`
+      });
+    }
+  }
+
+  // Layers validation
+  if (overrides.layers !== undefined && constraints.layers_locked) {
+    errors.push({
+      field: 'layers',
+      message: `Lager ar lasta for preset '${preset.display_name}' och kan inte andras.`
+    });
+  }
+
+  // Theme validation
+  if (overrides.theme !== undefined && constraints.theme_locked) {
+    errors.push({
+      field: 'theme',
+      message: `Tema ar last for preset '${preset.display_name}' och kan inte andras.`
+    });
+  }
+
+  // BBox validation
+  if (overrides.bbox_preset !== undefined && constraints.bbox_locked) {
+    errors.push({
+      field: 'bbox_preset',
+      message: `Geografiskt omrade ar last for preset '${preset.display_name}' och kan inte andras.`
+    });
+  }
+
+  // Deprecation warning
+  if (preset.deprecated) {
+    warnings.push({
+      type: 'deprecated',
+      message: `Preset '${preset.id}' ar utfasat. Anvand '${preset.superseded_by || 'nyare version'}' istallet.`
+    });
+  }
+
+  return { errors, warnings };
+}
+
+// Helper: Merge preset with overrides
+function mergePresetWithOverrides(preset, overrides) {
+  const result = JSON.parse(JSON.stringify(preset)); // Deep copy
+
+  if (overrides.dpi !== undefined) {
+    result.render.dpi = overrides.dpi;
+  }
+  if (overrides.format !== undefined) {
+    result.render.format = overrides.format;
+  }
+  if (overrides.layers !== undefined) {
+    Object.assign(result.layers, overrides.layers);
+  }
+  if (overrides.theme !== undefined) {
+    result.theme = overrides.theme;
+  }
+  if (overrides.bbox_preset !== undefined) {
+    result.bbox_preset = overrides.bbox_preset;
+  }
+
+  return result;
+}
+
+// GET /api/export-presets - List all available export presets
+app.get('/api/export-presets', (req, res) => {
+  try {
+    const presets = loadExportPresets();
+    const summary = presets.map(p => ({
+      id: p.id,
+      display_name: p.display_name,
+      description: p.description || '',
+      version: p.version,
+      deprecated: p.deprecated || false,
+      superseded_by: p.superseded_by || null,
+      bbox_preset: p.bbox_preset,
+      theme: p.theme,
+      paper_format: p.paper.format
+    }));
+    res.json({ presets: summary });
+  } catch (err) {
+    console.error('Error listing export presets:', err);
+    res.status(500).json({ error: 'Failed to load export presets' });
+  }
+});
+
+// GET /api/export-presets/:id - Get a specific export preset
+app.get('/api/export-presets/:id', (req, res) => {
+  try {
+    const preset = loadExportPreset(req.params.id);
+    if (!preset) {
+      return res.status(404).json({
+        error: 'Preset not found',
+        message: `Export preset '${req.params.id}' hittades inte.`
+      });
+    }
+    res.json({ preset });
+  } catch (err) {
+    console.error('Error loading export preset:', err);
+    res.status(500).json({ error: 'Failed to load export preset' });
+  }
+});
+
+// POST /api/validate-preset - Validate preset with optional overrides
+app.post('/api/validate-preset', (req, res) => {
+  try {
+    const { preset_id, overrides = {} } = req.body;
+
+    if (!preset_id) {
+      return res.status(400).json({
+        valid: false,
+        errors: [{ field: 'preset_id', message: 'preset_id ar obligatoriskt.' }]
+      });
+    }
+
+    const preset = loadExportPreset(preset_id);
+    if (!preset) {
+      return res.status(404).json({
+        valid: false,
+        errors: [{ field: 'preset_id', message: `Export preset '${preset_id}' hittades inte.` }]
+      });
+    }
+
+    // Validate overrides against constraints
+    const { errors, warnings } = validateOverrides(preset, overrides);
+
+    if (errors.length > 0) {
+      return res.json({
+        valid: false,
+        errors,
+        warnings
+      });
+    }
+
+    // Merge and create effective config
+    const effective_config = mergePresetWithOverrides(preset, overrides);
+
+    // Calculate pixel dimensions for validation
+    const width_px = Math.round(effective_config.paper.width_mm * effective_config.render.dpi / 25.4);
+    const height_px = Math.round(effective_config.paper.height_mm * effective_config.render.dpi / 25.4);
+    const megapixels = (width_px * height_px) / 1000000;
+    const MAX_MEGAPIXELS = 100;
+
+    if (megapixels > MAX_MEGAPIXELS) {
+      errors.push({
+        field: 'render',
+        message: `Den resulterande bilden (${megapixels.toFixed(1)} megapixel) overskrider maxgransen (${MAX_MEGAPIXELS} megapixel). Minska DPI eller pappersformat.`
+      });
+      return res.json({
+        valid: false,
+        errors,
+        warnings
+      });
+    }
+
+    // Add dimension info to response
+    effective_config._computed = {
+      width_px,
+      height_px,
+      megapixels: megapixels.toFixed(2),
+      modified: Object.keys(overrides).length > 0
+    };
+
+    res.json({
+      valid: true,
+      errors: [],
+      warnings,
+      effective_config
+    });
+  } catch (err) {
+    console.error('Error validating preset:', err);
+    res.status(500).json({
+      valid: false,
+      errors: [{ field: 'server', message: 'Internt serverfel vid validering.' }]
+    });
   }
 });
 
