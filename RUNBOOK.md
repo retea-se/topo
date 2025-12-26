@@ -382,3 +382,4 @@ docker run --rm -v "$(pwd)":/work -w /work mwendler/imagemagick identify export_
 
 
 
+

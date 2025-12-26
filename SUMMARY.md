@@ -126,3 +126,138 @@ Both demos share:
 - Volume mounts configured for `/data` and `/exports`
 - Services communicate via Docker network names
 - Ports exposed: 3000 (demo-a-web), 3001 (demo-b-web), 5000 (demo-b-api), 8080 (martin), 8081 (nginx), 8082 (demo-a-exporter)
+
+---
+
+# Visual Refinement Summary (2025-12-26)
+
+## Overview
+
+Visual design refinements to improve map quality for wall art / print exports. Focus on contrast, line weights, contour density, and hillshade strength.
+
+## Problems Identified
+
+### Initial Visual Issues
+| Issue | Original Value | Problem |
+|-------|---------------|---------|
+| Hillshade opacity | 0.10-0.15 | Nearly invisible terrain shading |
+| Contour stroke | #b0b0b0 on #faf8f5 | Only 5-8% contrast ratio |
+| Contour widths | 0.4px minor / 0.8px major | Too thin at print scale |
+| Visual hierarchy | Everything similarly muted | No focal points or depth |
+
+### Infrastructure Issues Found During Testing
+- Exporter captured UI controls in screenshots
+- Tile server URLs hardcoded to `localhost`, failing in Docker-internal context
+- Theme URL parameters ignored by web app
+
+---
+
+## Changes Made
+
+### 1. New Theme: Gallery (`themes/gallery.json`)
+
+Print-optimized theme for wall art:
+- Hillshade opacity: 0.28
+- Contour stroke: #8a8580 with 1.2px major / 0.6px minor
+- Contour opacity: 0.7 major / 0.4 minor (visual hierarchy)
+- Roads: 2.0px major / 1.0px minor
+- Stronger water/parks fills
+
+### 2. Updated Themes
+
+**Paper (`themes/paper.json`):**
+| Property | Before | After | Change |
+|----------|--------|-------|--------|
+| Hillshade opacity | 0.15 | 0.22 | +47% |
+| Contour stroke | #b0b0b0 | #908a85 | Warmer |
+| Contour widths | 0.4/0.8 | 0.5/1.0 | +25% |
+| Roads stroke | #8a8a8a | #707070 | Darker |
+
+**Ink (`themes/ink.json`):**
+- Hillshade: 0.12 → 0.18
+- Contours: #999999 → #707070
+
+**Charcoal (`themes/charcoal.json`):**
+- Hillshade: 0.18 → 0.25, blend: soft-light
+- Roads: #7a7a7a → #909090
+- Added contour opacity support
+
+### 3. Demo A Style Converter (`demo-a/web/src/themeToStyle.js`)
+
+- Contours render minor→major (50m on top for emphasis)
+- 3-tier opacity hierarchy (2m/10m/50m)
+- Print mode: 1.2× line width boost
+- Intermediate 10m width: 1.3× minor
+
+### 4. Demo B Mapnik Converter (`demo-b/renderer/src/theme_to_mapnik.py`)
+
+- Rounded line joins/caps on all features
+- Theme-defined stroke widths
+- Contour opacity support
+
+### 5. Exporter Fix (`demo-a/exporter/src/server.js`)
+
+```javascript
+// Hide UI controls for clean export
+await page.addStyleTag({
+  content: `.controls { display: none !important; }`
+});
+
+// Screenshot only map element
+const mapElement = await page.$('#map');
+const screenshot = await mapElement.screenshot({ type: 'png' });
+```
+
+### 6. Tile URL Fix (`demo-a/web/src/server.js`)
+
+Dynamic URLs based on request origin:
+- Docker-internal: `http://demo-a-tileserver:3000`
+- Browser: `http://localhost:8080`
+
+### 7. URL Parameter Support (`demo-a/web/public/map.js`)
+
+Reads `theme`, `bbox_preset`, `render_mode` from URL query params.
+
+---
+
+## Test Commands
+
+```bash
+# Gallery theme A2 @ 150 DPI
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=gallery&render_mode=print&dpi=150&width_mm=420&height_mm=594" -o gallery_a2.png
+
+# Charcoal (dark) theme
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=charcoal&render_mode=print&dpi=150&width_mm=420&height_mm=594" -o charcoal_a2.png
+
+# Rebuild after changes
+docker-compose --profile demoA build demo-a-web demo-a-exporter
+docker-compose --profile demoA up -d --force-recreate demo-a-web demo-a-exporter
+```
+
+---
+
+## Theme Comparison
+
+| Theme | Background | Mood | Best For |
+|-------|------------|------|----------|
+| Paper | #faf8f5 (cream) | Calm | General wall art |
+| Gallery | #fdfcfa (off-white) | Strong hierarchy | High-quality prints |
+| Ink | #ffffff (white) | Minimal | Modern interiors |
+| Charcoal | #2a2a2a (dark gray) | Elegant | Dark-themed spaces |
+| Dark | #1a1a1a (black) | Dramatic | Statement pieces |
+
+---
+
+## Files Modified
+
+```
+themes/gallery.json              # NEW
+themes/paper.json                # Updated values
+themes/ink.json                  # Updated values
+themes/charcoal.json             # Updated values
+demo-a/web/src/themeToStyle.js   # Contour hierarchy
+demo-a/web/src/server.js         # Dynamic tile URLs
+demo-a/web/public/map.js         # URL param support
+demo-a/exporter/src/server.js    # Hide UI, map-only screenshot
+demo-b/renderer/src/theme_to_mapnik.py  # Stroke styles
+```

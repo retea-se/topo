@@ -74,9 +74,12 @@ app.get('/render', async (req, res) => {
       });
     });
 
-    // Disable animations
+    // Disable animations and hide UI controls for clean export
     await page.addStyleTag({
-      content: '* { animation: none !important; transition: none !important; }'
+      content: `
+        * { animation: none !important; transition: none !important; }
+        .controls { display: none !important; }
+      `
     });
 
     // Wait for fonts
@@ -85,11 +88,11 @@ app.get('/render', async (req, res) => {
     // Additional wait to ensure all rendering is complete
     await page.waitForTimeout(2000);
 
-    const screenshot = await page.screenshot({
-      type: 'png',
-      fullPage: false,
-      omitBackground: false
-    });
+    // Screenshot only the map element for clean export
+    const mapElement = await page.$('#map');
+    const screenshot = mapElement
+      ? await mapElement.screenshot({ type: 'png', omitBackground: false })
+      : await page.screenshot({ type: 'png', fullPage: false, omitBackground: false });
 
     await browser.close();
 

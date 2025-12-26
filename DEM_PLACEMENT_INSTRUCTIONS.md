@@ -96,3 +96,4 @@ docker compose run --rm prep /app/scripts/generate_contour_tiles.sh stockholm_co
 - `DEM_MANUAL_DOWNLOAD.md` - Detailed manual download instructions
 - `BRING_UP_AND_TEST.md` - Complete setup guide
 
+

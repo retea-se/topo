@@ -33,3 +33,4 @@ osm2pgsql \
 
 echo "OSM import complete"
 
+
