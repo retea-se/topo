@@ -1,12 +1,31 @@
 # Roadmap
 
-**Senast uppdaterad**: 2025-12-26
+**Senast uppdaterad**: 2025-12-27 (morgon)
 
 ## Statusförklaring
 
-- ⬜ Planerad
-- 🟡 Pågår
-- ✅ Klar
+- ⬜ TODO
+- 🟡 DOING
+- ✅ DONE
+
+---
+
+## Phase 6 - Full Coverage Pipeline
+
+**Mål**: Säkerställa full karttäckning för alla lager över hela Stockholm Wide.
+
+| Uppgift | Status |
+|---------|--------|
+| OSM tiles för stockholm_core | ✅ DONE |
+| OSM tiles för stockholm_wide | ✅ DONE |
+| DEM för stockholm_core | ✅ DONE |
+| DEM för stockholm_wide | ⬜ TODO (manuell nedladdning krävs) |
+| Hillshade tiles för stockholm_core | ✅ DONE |
+| Hillshade tiles för stockholm_wide | ⬜ TODO (kräver DEM) |
+| Contour tiles för stockholm_core | ✅ DONE |
+| Contour tiles för stockholm_wide | ⬜ TODO (kräver DEM) |
+| Entry-script `build_full_coverage.ps1/.sh` | ✅ DONE |
+| Coverage audit dokumenterad | ✅ DONE |
 
 ---
 
@@ -18,18 +37,18 @@
 
 | Uppgift | Status |
 |---------|--------|
-| Layer toggle: Hillshade | ✅ Klar |
-| Layer toggle: Water | ✅ Klar |
-| Layer toggle: Roads | ✅ Klar |
-| Layer toggle: Buildings | ✅ Klar |
-| Layer toggle: Contours | ✅ Klar |
-| Layer toggle: Parks | ⬜ Planerad |
+| Layer toggle: Hillshade | ✅ DONE |
+| Layer toggle: Water | ✅ DONE |
+| Layer toggle: Roads | ✅ DONE |
+| Layer toggle: Buildings | ✅ DONE |
+| Layer toggle: Contours | ✅ DONE |
+| Layer toggle: Parks | ⬜ TODO |
 
 ### Demo B
 
 | Uppgift | Status |
 |---------|--------|
-| Layer toggles (motsvarande Demo A) | ⬜ Planerad |
+| Layer toggles (motsvarande Demo A) | ⬜ TODO |
 
 ### Krav
 
@@ -46,11 +65,13 @@
 
 | Komponent | Status |
 |-----------|--------|
-| Ram (valbar, tema-styrd) | ⬜ Planerad |
-| Titel | ⬜ Planerad |
-| Undertitel / plats | ⬜ Planerad |
-| Skala (endast vid pitch = 0) | ⬜ Planerad |
-| Attribution (OSM, Copernicus) | ⬜ Planerad |
+| Ram (valbar, tema-styrd) | ⬜ TODO |
+| Titel | ⬜ TODO |
+| Undertitel / plats | ⬜ TODO |
+| Skala (endast vid pitch = 0) | ⬜ TODO |
+| Attribution (OSM, Copernicus) | ⬜ TODO |
+| Marginal/safe-zone system | ⬜ TODO |
+| Metadata-overlay (koordinater, datum) | ⬜ TODO |
 
 ### Designprinciper
 
@@ -67,24 +88,536 @@
 
 | Preset | Status |
 |--------|--------|
-| A2_gallery_v1 | ⬜ Planerad |
-| A3_blueprint_v1 | ⬜ Planerad |
-| A2_paper_v1 | ⬜ Planerad |
+| A2 Gallery | ⬜ TODO |
+| A3 Blueprint | ⬜ TODO |
+| A2 Paper | ⬜ TODO |
+| A1 Panorama | ⬜ TODO |
 
 ### Varje preset definierar
 
 - Theme
-- Format
-- DPI
-- Dimensioner
+- Format (A2, A3, A1, custom)
+- DPI (150, 300)
+- Dimensioner (mm)
 - Layer-visibility
+- Ram-stil
 - (Demo A) pitch/bearing
 
 ### Krav
 
-- Presets valbara i UI
+- Presets valbara i UI dropdown
 - Versionsbara (t.ex. `_v1`, `_v2`)
 - Reproducerbara över tid
+- Export-filnamn inkluderar preset-namn
+
+---
+
+## Design & Style Catalog (Vision & Exploratory)
+
+Denna sektion beskriver **framtida kartstilar, renderingstekniker och visuella uttryck** som systemet är kapabelt att producera eller utökas mot.
+
+Detta är **inte en sekventiell TODO-lista**, utan en **design- och renderingskatalog** som:
+
+- guidar produktutveckling
+- dokumenterar möjligheter i arkitekturen
+- fungerar som gemensamt språk mellan teknik, design och användare
+
+### Grundprincip
+All rendering kan delas upp i följande pipeline:
+
+**Data → Style → Render → Compose → Post-process**
+
+- **Data**: DEM (Copernicus), OSM (PostGIS / MBTiles)
+- **Style**: Theme JSON / Mapnik / MapLibre styles
+- **Render**: MapLibre (Demo A), Mapnik (Demo B), GDAL
+- **Compose**: Lagerordning, blending, opacity
+- **Post-process**: Layout, ram, text, filter, export
+
+---
+
+### 1. DEM-baserade stilar (Terrain-first)
+
+Kartor där **höjddata är primärt visuellt element**.
+
+#### Pure Contour
+Enbart höjdkurvor mot vit/svart bakgrund. Minimalistiskt à la Topographia Design. Ekvidistans som parameter.
+
+**Implementation:**
+
+```bash
+gdal_contour -i 25 -a elev dem.tif contours.shp
+```
+
+Rendera med Mapnik/Cairo, `stroke-width` + `stroke-color`.
+
+#### Gradient Contour
+Höjdkurvor där linjetjockleken eller opaciteten varierar med höjd. Tunnare linjer högre upp.
+
+**Implementation:**
+Attributera varje kontur med elevation-värde. Style: `stroke-width: interpolate(elevation, min, max, 2px, 0.5px)`.
+
+#### Filled Contour / Hypsometric Tint
+Områden mellan höjdkurvor fylls med färg. Klassisk kartografisk stil.
+
+**Implementation:**
+
+- `gdal_contour` → polygonize med GDAL/OGR
+- Eller: direkt färgmappning på raster med color-relief:
+
+```bash
+gdaldem color-relief dem.tif palette.txt output.tif
+```
+
+#### Hillshade Classic
+Shaded relief med simulerad belysning (nordväst standard).
+
+**Implementation:**
+
+```bash
+gdaldem hillshade dem.tif hillshade.tif -az 315 -alt 45
+```
+
+Alternativ: numpy + richdem för mer kontroll.
+
+#### Hillshade + Contour Combo
+Hillshade som bakgrund med subtila konturer ovanpå.
+
+**Implementation:**
+Generera båda separat, composita med PIL/Cairo. Hillshade som bakgrund (opacity 0.3-0.5), konturer ovanpå.
+
+#### Terrain RGB
+Höjd mappas till RGB-värden. Psykedeliskt.
+
+**Implementation:**
+Normalize DEM till 0-1. R = sin(elevation * π), G = sin(elevation * π + 2π/3), etc. Eller: HSV med hue baserad på elevation.
+
+#### Contour Fade
+Konturer som bleknar mot kanterna. Vignette-effekt.
+
+**Implementation:**
+Beräkna avstånd från centrum för varje pixel. Multiplicera opacity med `(1 - distance/max_distance)`. Eller: radiell gradient som mask.
+
+#### Paper Cut / Layered
+Simulera papperslager med skuggor.
+
+**Implementation:**
+Generera polygon per höjdband. Varje band får drop-shadow: offset 2px, blur 4px. Rendera från lägsta till högsta.
+
+#### Embossed / Relief
+Simulerad prägling med ljus/skugga.
+
+**Implementation:**
+Duplicera linjer. Offset +1px i båda riktningar: en vit, en svart. Originalet i mitten. Alternativ: Sobel edge detection på hillshade.
+
+**Teknik**
+
+- GDAL (`gdal_contour`, `gdaldem`)
+- richdem / numpy
+- Mapnik raster + vector
+- Cairo / PIL compositing
+
+**Status**: ⬜ Exploratory (arkitektur redo)
+
+---
+
+### 2. OSM-baserade stilar (Vector-first)
+
+Kartor där **vägar, byggnader, vatten och markanvändning** är i fokus.
+
+#### Street Minimal
+Endast vägnät, inga etiketter. Linjetjocklek baserad på väghierarki.
+
+**Implementation:**
+
+- Overpass API eller osm2pgsql → PostGIS
+- Filtrera: `highway IN (motorway, trunk, primary, secondary, tertiary, residential)`
+- Mapnik/Mapbox GL style med `line-width` per highway-typ
+
+#### Street + Water
+Gatukartan kompletterad med vattendrag och sjöar i kontrastfärg.
+
+**Implementation:**
+Lägg till: `natural=water`, `waterway=river|stream`. Rendera vatten först (fill), sedan gator (stroke).
+
+#### Street + Parks
+Gator plus grönområden/parker från OSM.
+
+**Implementation:**
+`leisure=park`, `landuse=grass|forest`. Fyll polygoner i grön ton, gator ovanpå.
+
+#### Figure–Ground (Nolli-stil)
+Byggnader som fyllda former, allt annat vitt. Nolli-stil.
+
+**Implementation:**
+`building=*` från OSM. Endast fill, ingen stroke. Solid svart på vit bakgrund.
+
+#### Waterway Focus
+Vattendrag i fokus med DEM-baserad dränering.
+
+**Implementation:**
+pysheds eller richdem för flow accumulation. Kombinera med `waterway=*` från OSM. Linjetjocklek baserad på Strahler order.
+
+#### Personal Route Overlay (GPX)
+Användare laddar upp GPX, renderas ovanpå kartan.
+
+**Implementation:**
+gpxpy för parsing. Extrahera koordinater, transformera till kartprojektion. Rita linje med distinkt färg/stil ovanpå baskartan.
+
+**Teknik**
+
+- OSM → PostGIS / Planetiler
+- MapLibre styles (Demo A)
+- Mapnik vector layers (Demo B)
+
+**Status**: 🟡 Delvis stödd (data finns, fler styles behövs)
+
+---
+
+### 3. Kombinerade stilar (DEM + OSM)
+
+Systemets **kärndifferentiering** – terräng + stad tillsammans.
+
+#### Topo Street Blend
+Höjdkurvor i bakgrunden, gatukarta i förgrunden.
+
+**Implementation:**
+
+Rendera konturer med låg opacity (0.2-0.4). Gator ovanpå i full opacity. Compositing: `PIL.Image.alpha_composite()` eller Cairo.
+
+#### Terrain Street
+Hillshade som bakgrund, stiliserat vägnät ovanpå.
+
+**Implementation:**
+
+Hillshade → multiply blend mode med vit bakgrund. Gator i kontrasterande färg ovanpå.
+
+#### Bathymetric Combo
+Kombinera DEM för land med djupdata för vatten.
+
+**Implementation:**
+EMODnet eller GEBCO för bathymetri. Merge rasters: land DEM + negativa värden för hav. Sömlös färgskala över noll.
+
+**Teknik**
+
+- DEM som bakgrund
+- OSM ovanpå
+- Alpha blending / layer ordering
+
+**Status**: 🟡 Iterativt – pågående fokusområde
+
+---
+
+### 4. Stiliserade & konstnärliga teman
+
+Teman som primärt är **estetiska uttryck**, ej nya datakällor.
+
+#### Blueprint / Blueprint Muted
+Vit på mörkblå bakgrund. Teknisk ritningskänsla.
+
+**Implementation:**
+Bakgrund: `#1e3a5f` eller liknande. Alla linjer: `#ffffff` eller `#a0c4e8`. Lägg till grid-overlay för extra effekt.
+
+#### Neon / Synthwave
+Mörk bakgrund, lysande linjer med glöd-effekt.
+
+**Implementation:**
+Bakgrund: `#0d0221`. Linjer: `#ff00ff`, `#00ffff`, `#ffff00`. Glöd: duplicera linje-lager, blur (Gaussian), lägg under original. CSS: `filter: drop-shadow(0 0 10px #ff00ff)`.
+
+#### Vintage USGS
+Klassiska topografiska kartor. Sepia-toner, åldrad papperstruktur.
+
+**Implementation:**
+Färgpalett: `#d4c4a8` (bakgrund), `#5c4033` (linjer). Paper texture overlay med multiply blend. Serif-font för labels (Liberation Serif, etc).
+
+#### Mono Elevation
+En färg i olika nyanser baserat på höjd.
+
+**Implementation:**
+`gdaldem color-relief` med monokrom palett. Eller: normalize elevation 0-255, mappa till single hue HSL.
+
+#### Inverted
+Inverterade färger.
+
+**Implementation:**
+PIL: `ImageOps.invert(image)`. Eller byt stroke/fill-färger i stylesheet.
+
+#### Gold Foil
+Simulerad guldfolie på mörk bakgrund.
+
+**Implementation:**
+Linjer: linear-gradient `#d4af37` → `#ffd700` → `#b8860b`. Bakgrund: `#1a1a2e` eller `#0a0a0a`. Subtle noise texture overlay för metallkänsla.
+
+#### Silver Foil / Copper / Rose Gold
+Silver/krom eller varm metallisk ton.
+
+**Implementation:**
+Linjer: `#c0c0c0` → `#e8e8e8` (silver) eller `#b87333` (copper) eller `#e0bfb8` (rose gold). Samma teknik som gold foil.
+
+#### Duotone
+Två kontrastfärger, inga gråskalor.
+
+**Implementation:**
+Konvertera till gråskala, threshold vid 50%. Mappa svart → färg1, vitt → färg2. PIL: `ImageOps.colorize(grayscale, color1, color2)`.
+
+#### Gradient Wash
+Mjuk gradient som bakgrund, kartlinjer i vitt/svart ovanpå.
+
+**Implementation:**
+Generera gradient med numpy/PIL. `linspace` mellan två färger, reshape till bild. Composita karta ovanpå.
+
+#### Risograph
+Kornig, off-register estetik.
+
+**Implementation:**
+Separera lager per färg. Offset varje lager 1-3px slumpmässigt. Lägg till grain: numpy noise overlay. Begränsad palett: 2-3 spot colors.
+
+#### Woodblock / Linocut
+Träsnitt-känsla. Tjocka, ojämna linjer.
+
+**Implementation:**
+Linjer med `stroke-dasharray` för ojämnhet. Eller: displacement map på linjer. Textur-overlay som simulerar trä/fiber.
+
+#### Watercolor Bleed
+Akvarellaktiga fyllningar som blöder utanför.
+
+**Implementation:**
+Buffra polygoner slumpmässigt (shapely.buffer med noise). Gaussian blur på fyllda områden. Låg opacity, overlay blend mode.
+
+#### Pencil Sketch
+Handritade linjer med lätt textur.
+
+**Implementation:**
+Jittered stroke: lägg till perlin noise på koordinater. Varierande stroke-width längs linjen. Lätt skugga: duplicera, offset, blur, låg opacity.
+
+#### Chalk on Blackboard
+Krita på svart/mörkgrön tavla.
+
+**Implementation:**
+Bakgrund: `#2d4a3e` (green board) eller `#1a1a1a`. Linjer: `#ffffff` med noise/texture. `stroke-opacity` varierar slumpmässigt 0.7-1.0.
+
+#### Newspaper / Halftone
+Rasterpunkter istället för solida fyllningar.
+
+**Implementation:**
+PIL: konvertera till gråskala. Mappa intensitet till punktstorlek i grid. Alternativ: pillow-halftone bibliotek.
+
+#### Bauhaus
+Primärfärger, geometriskt, modernistiskt.
+
+**Implementation:**
+Palett: `#ff0000`, `#0000ff`, `#ffff00`, `#000000`, `#ffffff`. Tjocka linjer, geometriska former. Sans-serif font (Futura-liknande).
+
+#### Art Deco
+Guld/svart/cream, 1920-talselegans.
+
+**Implementation:**
+Palett: `#d4af37`, `#1a1a1a`, `#f5f5dc`. Geometriska dekorativa element i hörn. Stiliserade linjer med ornament.
+
+#### Japandi
+Dämpad palett, mycket whitespace.
+
+**Implementation:**
+Palett: `#d4c8be`, `#8b8b8b`, `#2d2d2d`, `#ffffff`. Tunna linjer (0.5-1px). Stor marginal runt kartan.
+
+#### Scandi Minimal
+Ljust, luftigt, en accentfärg.
+
+**Implementation:**
+Bakgrund: `#ffffff`. Linjer: `#e0e0e0` (light grey). Accent: `#d4a574` (mustard) eller `#a8b5a0` (sage).
+
+#### Swiss / International
+Strikt grid, sans-serif, funktionellt.
+
+**Implementation:**
+Grid-overlay: 10x10 ljusgrå linjer. Font: Helvetica/Inter/Arial. Begränsad palett, hög kontrast.
+
+#### Cyberpunk
+Mörk bakgrund, hög kontrast, glitch-element.
+
+**Implementation:**
+Bakgrund: `#0a0a0a`. Linjer: `#00ff00`, `#ff0055`, `#00ffff`. Scanlines: horisontella linjer var 4px, opacity 0.1. RGB-split: offset R/G/B kanaler 1-2px.
+
+#### Vaporwave
+Pastellgradienter, 90-tals nostalgi.
+
+**Implementation:**
+Gradient: `#ff71ce` → `#01cdfe` → `#05ffa1`. Grid-perspektiv i bakgrunden. Font: bold, italic, outline.
+
+#### Topographic Camo
+Höjdkurvor i kamouflagefärger.
+
+**Implementation:**
+Palett: `#4b5320`, `#8b7355`, `#6b4423`, `#2d2d2d`. Fylld contour med camo-gradient. Alternativ: randomisera färg per konturband.
+
+#### Negative Space
+Endast vatten visas, eller endast land.
+
+**Implementation:**
+Filtrera bort allt utom vatten (eller tvärtom). Vit bakgrund, svart fyllning (eller tvärtom). Konceptuellt enkelt, visuellt starkt.
+
+#### Thermal / Infrared
+Värmekamera-palett.
+
+**Implementation:**
+Color ramp: `#000000` → `#4b0082` → `#0000ff` → `#00ffff` → `#ffff00` → `#ffffff`. `gdaldem color-relief` med thermal palette.
+
+#### Ocean Depth
+Inverterad logik – högre terräng är mörkare.
+
+**Implementation:**
+Invertera DEM: `max_elev - elevation`. Blå palett: ljusblå (högt/grunt) → mörkblå (lågt/djupt).
+
+#### Glitch
+Avsiktliga förskjutningar, RGB-split.
+
+**Implementation:**
+Slumpmässiga horisontella slices, offset X. Separera R/G/B, offset olika riktningar. Korrupta segment: random noise blocks.
+
+#### Dot Matrix
+Linjer ersatta med punkter (stippling).
+
+**Implementation:**
+Sample punkter längs linjer med jämna intervall. Punktstorlek kan variera med elevation. Alternativ: Poisson disk sampling.
+
+#### ASCII Art
+Terräng representerad med tecken.
+
+**Implementation:**
+Quantize elevation till teckenuppsättning: `" .:-=+*#%@"`. Rendera till monospace text, spara som bild. Nördigt easter egg.
+
+#### Night Mode
+Mörk bakgrund, dämpad kontrast.
+
+**Implementation:**
+Bakgrund: `#121212`. Linjer: `#888888` eller dämpad accent. Undvik rent vitt.
+
+#### High Contrast Accessibility
+Maximal kontrast för synnedsättning.
+
+**Implementation:**
+Endast svart (`#000000`) och vitt (`#ffffff`). Eller: WCAG-godkända kontrastpar. Tjockare linjer (2-3px minimum).
+
+#### Seasonal
+Paletter baserade på årstider.
+
+**Implementation:**
+- Vår: `#90ee90`, `#ffd700`, `#f0fff0`
+- Sommar: `#00bfff`, `#228b22`, `#ffff00`
+- Höst: `#ff8c00`, `#8b4513`, `#daa520`
+- Vinter: `#f0f8ff`, `#b0c4de`, `#708090`
+
+#### National Colors
+Palett baserad på lands flaggfärger.
+
+**Implementation:**
+Lookup-tabell: `country_code → [color1, color2, color3]`. Sverige: `#006aa7`, `#fecc00`. Dynamisk baserat på kartans centrum eller user input.
+
+**Not**
+Dessa implementeras som **Theme Recipes** (JSON + render-regler), inte som separat kod.
+
+**Status**: ⬜ Designkatalog (icke-blockerande)
+
+---
+
+### 5. Export Presets (Produktfunktion)
+
+Fördefinierade paket som kombinerar:
+
+- Theme
+- Lager (on/off)
+- Format
+- DPI & storlek
+- Layout
+
+**Exempel**
+
+- "A2 Gallery"
+- "A3 Blueprint"
+- "A4 Technical"
+- "Poster Minimal"
+
+**Status**: 🟡 Delvis implementerat, utökas
+
+---
+
+### 6. Print Layout & Presentation
+
+Utökad layout-motor för tryck och presentation.
+
+**Innehåll**
+
+- Ram / marginaler
+- Titel, underrubrik
+- Skala & nordpil
+- Attribution / metadata
+- Paper texture overlays
+
+**Teknik**
+
+- PIL / Cairo
+- SVG → raster
+- Parametriserad layout
+
+**Status**: 🟡 Pågående
+
+---
+
+### 7. Avancerat / Lång sikt
+
+Experimentella eller tunga funktioner.
+
+#### Isometric 3D
+Isometrisk vy från DEM, extruderad terräng.
+
+**Implementation:**
+
+pyvista eller matplotlib 3D surface plot. Kameravinkel: azimuth 45°, elevation 30°. Rendera till bild, eller exportera STL för 3D-print.
+
+#### Ridge Line / Horizon
+Silhuetter av bergsryggar staplade.
+
+**Implementation:**
+
+Sampla DEM i horisontella snitt (N→S eller W→E). Varje snitt blir en linje. Stapla med offset i Y-led. Dölj linjer bakom högre "framför".
+
+#### Bathymetric Combo (avancerat)
+Kombinera DEM för land med djupdata för vatten.
+
+**Implementation:**
+EMODnet eller GEBCO för bathymetri. Merge rasters: land DEM + negativa värden för hav. Sömlös färgskala över noll.
+
+#### STL-export för 3D-print
+Exportera terräng som 3D-modell.
+
+**Implementation:**
+
+DEM → mesh (numpy-stl eller trimesh). Exportera STL-format. Användare kan 3D-printa kartan.
+
+**Status**: ⬜ Research / Future
+
+---
+
+### 8. Anpassningsparametrar
+
+Parametrar som kan justeras per stil eller export.
+
+| Parameter | Implementation |
+|-----------|----------------|
+| Färgpalett | JSON/YAML config, runtime swap |
+| Ekvidistans | `gdal_contour -i` parameter |
+| Linjetjocklek | Mapnik/stylesheet `stroke-width` |
+| Orientation | PIL rotate / crop aspect ratio |
+| Text/rubrik | PIL `ImageDraw.text()` eller SVG |
+| Belysningsvinkel | `gdaldem hillshade -az` parameter |
+| Opacitet per lager | Alpha compositing vid merge |
+
+---
+
+### Viktiga begrepp
+
+- **Theme**: Färger, linjetjocklek, opacity
+- **Style**: Hur lager renderas (Mapnik / MapLibre)
+- **Preset**: Theme + layout + format + lager
 
 ---
 
@@ -121,9 +654,25 @@
 
 ## Changelog
 
+### 2025-12-27 (tidig morgon)
+
+- ✅ **Design & Style Catalog** kompletterad med detaljerade implementeringsförslag
+- ✅ Varje stil inkluderar nu konkreta kommandon, färgkoder och tekniker
+- ✅ 30+ stiliserade teman dokumenterade med implementation-detaljer
+- ✅ Anpassningsparametrar-tabell tillagd
+- ✅ Avancerade funktioner (3D, STL-export) dokumenterade
+
+### 2025-12-26 (kväll)
+
+- ✅ **Coverage Audit** dokumenterad i STATUS.md
+- ✅ Entry-script `build_full_coverage.ps1/.sh` skapad
+- ✅ ROADMAP uppdaterad med TODO/DOING/DONE-format
+- ✅ Phase 6 (Full Coverage Pipeline) dokumenterad
+- ⬜ Stockholm Wide terrain saknar DEM (manuell åtgärd krävs)
+
 ### 2025-12-26 (eftermiddag)
 
-- ✅ **Stockholm Wide preset** fullt implementerad
+- ✅ **Stockholm Wide preset** fullt implementerad (OSM-lager)
 - ✅ Martin config uppdaterad för preset-aware contours
 - ✅ themeToStyle.js uppdaterad för preset-aware tile sources
 - ✅ Demo B renderer uppdaterad för preset-aware hillshade

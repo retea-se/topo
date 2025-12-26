@@ -47,6 +47,36 @@ docker-compose run --rm prep /app/scripts/generate_contour_tiles.sh stockholm_co
 
 **OBS**: DEM-data kräver manuell nedladdning. Se `DEM_MANUAL_DOWNLOAD.md` i projektets rot.
 
+## Bygga full karttäckning
+
+För att generera all data (OSM + terrain för båda presets):
+
+### Entry-script (rekommenderat)
+
+```powershell
+# Windows (PowerShell)
+.\scripts\build_full_coverage.ps1
+
+# Med force-regenerering
+.\scripts\build_full_coverage.ps1 -Force
+
+# Dry-run
+.\scripts\build_full_coverage.ps1 -DryRun
+```
+
+```bash
+# Linux/Mac (Bash)
+./scripts/build_full_coverage.sh
+
+# Med force-regenerering
+./scripts/build_full_coverage.sh --force
+```
+
+**OBS**: Terrain-lager (hillshade, contours) kräver DEM-data.
+Se `DEM_MANUAL_DOWNLOAD.md` för instruktioner.
+
+---
+
 ## Bygga Stockholm Wide (full förorts-coverage)
 
 För att generera data för stockholm_wide preseten (inkluderar förorter):

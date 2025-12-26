@@ -5,7 +5,34 @@
 ## Sammanfattning
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
-**Stockholm Wide** preset stöds nu fullt ut i båda demos med full coverage för förorter.
+
+**Stockholm Wide status**: OSM-lager har full täckning. Terrain-lager (hillshade, contours) saknar DEM-data för wide-området och måste genereras manuellt (se instruktioner nedan).
+
+---
+
+## Coverage Audit (2025-12-26)
+
+Verifierad datatäckning per preset:
+
+| Datatyp | stockholm_core | stockholm_wide |
+|---------|----------------|----------------|
+| OSM PBF | ✅ 3.5 MB | ✅ 17 MB |
+| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB |
+| DEM (GeoTIFF) | ✅ 2.1 MB | ❌ **SAKNAS** |
+| Hillshade raster | ✅ 682 KB | ❌ Kräver DEM |
+| Hillshade tiles (XYZ) | ✅ z10-16 | ❌ Kräver DEM |
+| Contours GeoJSON | ✅ 2m/10m/50m | ❌ Kräver DEM |
+| Contours tiles (mbtiles) | ✅ 540 MB | ❌ Kräver DEM |
+
+### Åtgärd för Stockholm Wide terrain
+
+1. Ladda ner EU-DEM för stockholm_wide-området (se `DEM_MANUAL_DOWNLOAD.md`)
+2. Placera filen som: `/data/dem/manual/stockholm_wide_eudem.tif`
+3. Kör: `.\scripts\build_stockholm_wide.ps1 -SkipOsm`
+
+Detta genererar hillshade och contours för hela wide-området.
+
+---
 
 ## Fungerande funktioner
 
@@ -49,18 +76,18 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 ### Data & Tiles
 
-| Komponent | Status |
-|-----------|--------|
-| OSM-data (Stockholm Core) | Genererad |
-| OSM-data (Stockholm Wide) | Genereras via script |
-| DEM-data | Manuellt placerad |
-| Hillshade tiles (Core) | Genererade |
-| Hillshade tiles (Wide) | Genereras via script |
-| OSM tiles (Core) | Genererade |
-| OSM tiles (Wide) | Genereras via script |
-| Contour tiles (Core) | Genererade |
-| Contour tiles (Wide) | Genereras via script |
-| PostGIS-import | Fungerar |
+| Komponent | stockholm_core | stockholm_wide |
+|-----------|----------------|----------------|
+| OSM PBF | ✅ Genererad | ✅ Genererad |
+| OSM tiles | ✅ Genererade | ✅ Genererade |
+| DEM-data | ✅ Manuellt placerad | ❌ **Saknas** |
+| Hillshade raster | ✅ Genererad | ⏳ Kräver DEM |
+| Hillshade tiles | ✅ Genererade | ⏳ Kräver DEM |
+| Contour GeoJSON | ✅ Genererade | ⏳ Kräver DEM |
+| Contour tiles | ✅ Genererade | ⏳ Kräver DEM |
+| PostGIS-import | ✅ Fungerar | ✅ Fungerar |
+
+**Not**: stockholm_wide terrain-lager genereras automatiskt när DEM-filen placeras och `build_stockholm_wide.ps1` körs.
 
 ### Presets
 
@@ -124,6 +151,24 @@ Alla 9 teman är tillgängliga i båda demos:
 - DEM-data kräver manuell nedladdning (EU-DEM Copernicus-åtkomst)
 - stockholm_wide-preset genererar större tiles
 
+## Visuell verifiering (2025-12-26)
+
+Screenshots tagna för verifiering:
+
+| Screenshot | Storlek | Status |
+|------------|---------|--------|
+| demoA_core_paper.png | 693 KB | ✅ Alla lager synliga |
+| demoA_wide_paper.png | 701 KB | ✅ OSM synligt, terrain saknas |
+| demoB_core_paper.png | 173 KB | ✅ Alla lager synliga |
+| demoB_wide_paper.png | 45 KB | ⚠️ Endast OSM (DEM saknas) |
+
+**Not**: stockholm_wide visar endast OSM-lager (vägar, byggnader, vatten) eftersom DEM saknas.
+Efter DEM-installation och `build_stockholm_wide.ps1 -SkipOsm` kommer hillshade och contours att visas.
+
+Screenshots sparade i: `exports/screenshots/`
+
+---
+
 ## Senaste fixar (2025-12-26)
 
 1. **Hillshade 404-fix** - Korrigerat TMS-schema för rätt y-koordinater
@@ -131,6 +176,8 @@ Alla 9 teman är tillgängliga i båda demos:
 3. **Dimensions-fix** - `round()` istället för `int()` för exakta pixlar
 4. **Dynamiska teman** - `/api/themes` endpoint i båda demos
 5. **SQL-fix** - Borttagna `ST_Hash()`-anrop som inte finns i PostGIS
+6. **Coverage Audit** - Dokumenterad datatäckning per preset
+7. **Entry-script** - `build_full_coverage.ps1/.sh` för enkel databyggning
 
 ## Nästa steg
 

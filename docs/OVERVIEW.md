@@ -28,53 +28,58 @@ Demo A är optimerad för snabb feedback. Du kan panorera, zooma och till och me
 
 Demo B är designat för produktionskvalitet. Samma input ger alltid exakt samma output (byte-identiskt), vilket är kritiskt för reproducerbarhet och arkivering.
 
-## Arkitektur
+## Arkitektur & Dataflöde
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         prep-service                            │
-│                                                                 │
-│  ┌─────────────┐    ┌─────────────┐    ┌──────────────────┐    │
-│  │ download_   │    │ download_   │    │ generate_        │    │
-│  │ osm.py      │    │ dem.py      │    │ hillshade.py     │    │
-│  └──────┬──────┘    └──────┬──────┘    └────────┬─────────┘    │
-│         │                  │                    │              │
-│         ▼                  ▼                    ▼              │
-│  ┌─────────────┐    ┌─────────────┐    ┌──────────────────┐    │
-│  │ clip_osm.py │    │ extract_    │    │ generate_*_      │    │
-│  │             │    │ contours.py │    │ tiles.sh         │    │
-│  └──────┬──────┘    └──────┬──────┘    └────────┬─────────┘    │
-│         │                  │                    │              │
-│         ▼                  ▼                    ▼              │
-│    OSM .pbf           Contours            MBTiles/XYZ         │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-         ┌────────────────────┴────────────────────┐
-         │                                         │
-         ▼                                         ▼
-┌─────────────────────────┐          ┌─────────────────────────┐
-│       Demo A            │          │       Demo B            │
-│                         │          │                         │
-│  ┌─────────────────┐    │          │  ┌─────────────────┐    │
-│  │ Martin          │    │          │  │ PostGIS         │    │
-│  │ (tileserver)    │    │          │  │ (osm2pgsql)     │    │
-│  └────────┬────────┘    │          │  └────────┬────────┘    │
-│           │             │          │           │             │
-│           ▼             │          │           ▼             │
-│  ┌─────────────────┐    │          │  ┌─────────────────┐    │
-│  │ MapLibre        │    │          │  │ Mapnik          │    │
-│  │ (webbläsare)    │    │          │  │ (Python)        │    │
-│  └────────┬────────┘    │          │  └────────┬────────┘    │
-│           │             │          │           │             │
-│           ▼             │          │           ▼             │
-│  ┌─────────────────┐    │          │  ┌─────────────────┐    │
-│  │ Playwright      │    │          │  │ Flask API       │    │
-│  │ (export)        │    │          │  │ (export)        │    │
-│  └─────────────────┘    │          │  └─────────────────┘    │
-│                         │          │                         │
-│  Port: 3000, 8082       │          │  Port: 3001, 5000       │
-└─────────────────────────┘          └─────────────────────────┘
+                         ┌──────────────────────┐
+                         │    Externa källor    │
+                         │                      │
+                         │  OSM (Geofabrik)     │
+                         │  DEM (EU Copernicus) │
+                         └──────────┬───────────┘
+                                    │
+                                    ▼
+┌───────────────────────────────────────────────────────────────────┐
+│                         prep-service                               │
+│                                                                   │
+│  1. Download         2. Process           3. Generate Tiles       │
+│  ────────────        ───────────          ─────────────────       │
+│  download_osm.py     clip_osm.py          generate_osm_tiles.sh   │
+│  download_dem.py     generate_hillshade   generate_hillshade_tiles│
+│                      extract_contours     generate_contour_tiles  │
+│                                                                   │
+│  Output:                                                          │
+│  ├── /data/osm/{preset}.osm.pbf                                  │
+│  ├── /data/terrain/hillshade/{preset}_hillshade.tif              │
+│  ├── /data/terrain/contours/{preset}_{2m,10m,50m}.geojson        │
+│  ├── /data/tiles/osm/{preset}.mbtiles                            │
+│  ├── /data/tiles/hillshade/{preset}/{z}/{x}/{y}.png              │
+│  └── /data/tiles/contours/{preset}_{2m,10m,50m}.mbtiles          │
+└───────────────────────────────────────────────────────────────────┘
+                                    │
+         ┌──────────────────────────┴──────────────────────────┐
+         │                                                      │
+         ▼                                                      ▼
+┌─────────────────────────────┐            ┌─────────────────────────────┐
+│       Demo A (WebGL)        │            │       Demo B (Mapnik)       │
+│                             │            │                             │
+│  Martin (tiles) ───────┐    │            │  PostGIS (osm2pgsql) ──┐    │
+│  Nginx (hillshade) ───┐│    │            │                        │    │
+│                       ││    │            │                        │    │
+│                       ▼▼    │            │                        ▼    │
+│  MapLibre (browser) ──────► │            │  Mapnik (Python) ─────────► │
+│                             │            │                             │
+│  Playwright (export) ─────► │            │  Flask API (export) ─────► │
+│                             │            │                             │
+│  Portar: 3000, 8080-8082    │            │  Portar: 3001, 5000-5001    │
+└─────────────────────────────┘            └─────────────────────────────┘
 ```
+
+### Dataflöde sammanfattning
+
+1. **OSM**: Geofabrik → clip → Planetiler → MBTiles → Martin (Demo A) / osm2pgsql (Demo B)
+2. **DEM**: Copernicus EU-DEM → gdalwarp → gdaldem hillshade → gdal2tiles → XYZ PNG
+3. **Contours**: DEM → gdal_contour → GeoJSON → Tippecanoe → MBTiles
 
 ## Datakällor
 
