@@ -9,6 +9,7 @@
     - Contour extraction and tiles
 
     The script can be run incrementally - it will skip steps that have already been completed.
+    Includes preflight checks, progress logging, and timing.
 
 .PARAMETER Force
     Force regeneration of all data, even if files already exist.
@@ -21,6 +22,9 @@
 
 .PARAMETER DryRun
     Show what would be done without actually running commands.
+
+.PARAMETER NoPreflight
+    Skip preflight checks (disk space, memory, Docker).
 
 .EXAMPLE
     .\build_stockholm_wide.ps1
@@ -36,22 +40,49 @@ param(
     [switch]$Force,
     [switch]$SkipOsm,
     [switch]$SkipTerrain,
-    [switch]$DryRun
+    [switch]$DryRun,
+    [switch]$NoPreflight
 )
 
 $ErrorActionPreference = "Stop"
 $PRESET = "stockholm_wide"
 
-# Colors for output
-function Write-Step { param($msg) Write-Host "`n=== $msg ===" -ForegroundColor Cyan }
-function Write-OK { param($msg) Write-Host "[OK] $msg" -ForegroundColor Green }
-function Write-Skip { param($msg) Write-Host "[SKIP] $msg" -ForegroundColor Yellow }
-function Write-Error { param($msg) Write-Host "[ERROR] $msg" -ForegroundColor Red }
-function Write-Info { param($msg) Write-Host "[INFO] $msg" -ForegroundColor Gray }
-
 # Check if running from project root
 $projectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 Set-Location $projectRoot
+
+# Try to load build utilities
+$utilsPath = Join-Path $projectRoot "scripts\lib\build_utils.ps1"
+$useUtils = $false
+if (Test-Path $utilsPath) {
+    . $utilsPath
+    $useUtils = $true
+    Initialize-BuildRun -Preset $PRESET
+}
+
+# Fallback functions if utils not loaded
+if (-not $useUtils) {
+    function Write-Step { param($msg) Write-Host "`n=== $msg ===" -ForegroundColor Cyan }
+    function Write-OK { param($msg) Write-Host "[OK] $msg" -ForegroundColor Green }
+    function Write-Skip { param($msg) Write-Host "[SKIP] $msg" -ForegroundColor Yellow }
+    function Write-Error { param($msg) Write-Host "[ERROR] $msg" -ForegroundColor Red }
+    function Write-Info { param($msg) Write-Host "[INFO] $msg" -ForegroundColor Gray }
+    function Write-Log { param($msg, $Level = "INFO")
+        switch ($Level) {
+            "ERROR" { Write-Host "[ERROR] $msg" -ForegroundColor Red }
+            "WARN"  { Write-Host "[WARN] $msg" -ForegroundColor Yellow }
+            "OK"    { Write-Host "[OK] $msg" -ForegroundColor Green }
+            "STEP"  { Write-Host "=== $msg ===" -ForegroundColor Cyan }
+            default { Write-Host "[INFO] $msg" -ForegroundColor Gray }
+        }
+    }
+    function Start-BuildStep { param($StepName) Write-Host "`n=== $StepName ===" -ForegroundColor Cyan }
+    function Complete-BuildStep { param($StepName, [switch]$Skipped) }
+    function Fail-BuildStep { param($StepName, $Error) }
+    function Test-Preflight { param($Preset) return $true }
+    function Show-BuildPlan { param($Preset, [switch]$SkipOsm, [switch]$SkipTerrain) }
+    function Get-BuildSummary { }
+}
 
 Write-Host @"
 
@@ -76,24 +107,43 @@ if ($DryRun) {
     Write-Host "[DRY RUN MODE - No actual commands will be executed]" -ForegroundColor Magenta
 }
 
-# Check Docker is running
-Write-Step "Checking prerequisites"
-try {
-    $null = docker info 2>$null
-    Write-OK "Docker is running"
-} catch {
-    Write-Error "Docker is not running. Please start Docker Desktop."
-    exit 1
+# Show build plan
+if ($useUtils) {
+    Show-BuildPlan -Preset $PRESET -SkipOsm:$SkipOsm -SkipTerrain:$SkipTerrain
 }
 
+# Preflight checks
+if (-not $NoPreflight -and -not $DryRun) {
+    Start-BuildStep "Preflight checks"
+    $preflightOk = Test-Preflight -Preset $PRESET -RequiredDiskGB 3 -RequiredMemoryGB 4
+    if (-not $preflightOk) {
+        Write-Log "Preflight checks failed. Use -NoPreflight to skip." -Level "ERROR"
+        exit 1
+    }
+    Complete-BuildStep "Preflight checks"
+}
+
+# Check Docker is running
+Start-BuildStep "Checking prerequisites"
+try {
+    $null = docker info 2>$null
+    Write-Log "Docker is running" -Level "OK"
+} catch {
+    Write-Log "Docker is not running. Please start Docker Desktop." -Level "ERROR"
+    exit 1
+}
+Complete-BuildStep "Checking prerequisites"
+
 # Build prep service if needed
-Write-Step "Building prep service"
+Start-BuildStep "Building prep service"
 if ($DryRun) {
-    Write-Info "Would run: docker-compose build prep"
+    Write-Log "Would run: docker-compose build prep"
+    Complete-BuildStep "Building prep service" -Skipped
 } else {
     docker-compose build prep
-    if ($LASTEXITCODE -ne 0) { Write-Error "Failed to build prep service"; exit 1 }
-    Write-OK "Prep service built"
+    if ($LASTEXITCODE -ne 0) { Fail-BuildStep "Building prep service" "docker-compose build failed"; exit 1 }
+    Write-Log "Prep service built" -Level "OK"
+    Complete-BuildStep "Building prep service"
 }
 
 # ============================================================================
