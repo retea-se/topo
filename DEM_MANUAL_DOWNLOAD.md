@@ -1,163 +1,244 @@
-# Manual EU-DEM Download Instructions
+# EU-DEM Terrain Data Acquisition
 
 ## Overview
 
-EU-DEM (European Digital Elevation Model) v1.1 provides elevation data at ~25m resolution. For local development, you can manually download and prepare the DEM file.
+This document describes how to obtain and prepare EU-DEM (European Digital Elevation Model) terrain data for use with the topo project. The DEM is required for:
+- Hillshade generation (terrain shading)
+- Contour extraction (elevation lines)
+- Both Demo A (MapLibre) and Demo B (Mapnik) pipelines
 
-## Step 1: Download EU-DEM Tile
+## Quick Start
 
-1. Visit: https://land.copernicus.eu/imagery-in-situ/eu-dem
-2. Navigate to the download section
-3. Download the tile covering Stockholm, Sweden
-   - Tile naming convention: `eu_dem_v11_E40N20.TIF` (example)
-   - Stockholm is approximately at: 59.3°N, 18.0°E
-   - You may need tile: `E20N60` or similar (check coverage map)
+### Option A: Automated Download (Recommended)
 
-**Note:** Registration may be required. The file is typically 200-500MB.
+If you have Copernicus Data Space credentials:
 
-## Step 2: Reproject to EPSG:3857
-
-EU-DEM tiles are in EPSG:3035 (Lambert Azimuthal Equal Area). You need to reproject to EPSG:3857 (Web Mercator) for use in this system.
-
-### Using GDAL (recommended)
+```powershell
+# Windows (PowerShell)
+$env:COPERNICUS_USERNAME = "your-email@example.com"
+$env:COPERNICUS_PASSWORD = "your-password"
+.\scripts\prepare_dem_stockholm_wide.ps1
+```
 
 ```bash
-# Basic reprojection
-gdalwarp -t_srs EPSG:3857 \
-         -r bilinear \
-         -co COMPRESS=LZW \
-         -co TILED=YES \
-         input_eudem.tif \
-         stockholm_core_eudem.tif
-
-# With bbox clipping (recommended for smaller file size)
-# Get bbox for stockholm_core: 17.90, 59.32, 18.08, 59.35 (WGS84)
-# Convert to EPSG:3857 for -te flag
-gdalwarp -t_srs EPSG:3857 \
-         -te 1992637.8 8185645.6 2013379.6 8204138.4 \
-         -r bilinear \
-         -co COMPRESS=LZW \
-         -co TILED=YES \
-         input_eudem.tif \
-         stockholm_core_eudem.tif
+# Linux/Mac
+export COPERNICUS_USERNAME="your-email@example.com"
+export COPERNICUS_PASSWORD="your-password"
+./scripts/prepare_dem_stockholm_wide.sh
 ```
 
-**Bbox conversion (EPSG:3857 approximate for Stockholm):**
-- Min X: ~1990000 (17.90°E → ~1992637m)
-- Min Y: ~8185000 (59.32°N → ~8185645m)
-- Max X: ~2014000 (18.08°E → ~2013379m)
-- Max Y: ~8204000 (59.35°N → ~8204138m)
+### Option B: Semi-Automated (Manual Download + Scripted Processing)
 
-### Using Docker (if GDAL not installed locally)
+1. Download EU-DEM tile manually (see below)
+2. Process with script:
+
+```powershell
+# Windows
+.\scripts\prepare_dem_stockholm_wide.ps1 -InputFile "C:\Downloads\eu_dem_v11.tif"
+```
 
 ```bash
-# Place input file in current directory
-docker run --rm -v "$(pwd)":/data osgeo/gdal:3.8.0-ubuntu24.04 \
-  gdalwarp -t_srs EPSG:3857 \
-           -r bilinear \
-           -co COMPRESS=LZW \
-           -co TILED=YES \
-           /data/input_eudem.tif \
-           /data/stockholm_core_eudem.tif
+# Linux/Mac
+./scripts/prepare_dem_stockholm_wide.sh --input /path/to/downloaded/dem.tif
 ```
 
-## Step 3: Place File in Data Volume
+---
 
-### Option A: Copy to Docker Volume
+## Copernicus Data Space Account
+
+To use automated download, register at: https://dataspace.copernicus.eu/
+
+Free account provides access to:
+- Copernicus DEM GLO-30 (30m resolution, global)
+- Sentinel imagery
+- Various other Earth observation data
+
+**Note:** Store credentials securely. Never commit them to git.
+
+---
+
+## Manual Download Sources
+
+### EU-DEM v1.1 (25m, Europe only)
+
+**Portal:** https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1
+
+1. Create free account at Copernicus Land Portal
+2. Navigate to EU-DEM v1.1 section
+3. Use interactive map or tile index to find Stockholm area
+4. Download tile: **E40N40** (covers Scandinavia)
+
+**Tile details:**
+- Resolution: ~25m
+- CRS: EPSG:3035 (ETRS89-LAEA)
+- Size: ~500MB-1GB per tile
+- Format: GeoTIFF
+
+### Copernicus DEM GLO-30 (30m, global)
+
+**Portal:** https://dataspace.copernicus.eu/
+
+1. Login to Data Space
+2. Search catalog for "COP-DEM GLO-30"
+3. Filter by area of interest (Stockholm: 59.3°N, 18.0°E)
+4. Download intersecting tiles
+
+**Tile details:**
+- Resolution: 30m
+- CRS: EPSG:4326 (WGS84)
+- Coverage: Global
+- Format: GeoTIFF
+
+---
+
+## Processing Workflow
+
+### Step 1: Determine Coverage
+
+For `stockholm_wide` preset:
+- **Bbox (WGS84):** 17.75, 59.28, 18.25, 59.40
+- **Bbox (EPSG:3857):** ~1975000, 8148000, 2032000, 8222000
+
+### Step 2: Reproject and Clip
+
+The pipeline requires DEM in EPSG:3857 (Web Mercator). Use GDAL:
 
 ```bash
-# Find volume path
-docker volume inspect topo_data
-
-# On Linux/Mac, copy file:
-sudo cp stockholm_core_eudem.tif /var/lib/docker/volumes/topo_data/_data/dem/manual/
-
-# On Windows (Docker Desktop), use bind mount or copy via container:
-docker-compose run --rm prep mkdir -p /data/dem/manual
-docker cp stockholm_core_eudem.tif $(docker-compose ps -q prep):/data/dem/manual/
+# Using Docker (recommended)
+docker run --rm -v topo_data:/data -v /path/to/downloads:/input \
+    osgeo/gdal:ubuntu-small-3.8.0 \
+    gdalwarp \
+        -t_srs EPSG:3857 \
+        -te 1975000 8148000 2032000 8222000 \
+        -tr 25 25 \
+        -r bilinear \
+        -co COMPRESS=LZW \
+        -co TILED=YES \
+        /input/eu_dem_v11_E40N40.TIF \
+        /data/dem/manual/stockholm_wide_eudem.tif
 ```
-
-### Option B: Use Bind Mount (Development)
-
-Modify `docker-compose.yml` to add a bind mount for dem/manual:
-
-```yaml
-prep:
-  volumes:
-    - data:/data
-    - ./local_data/dem:/data/dem/manual:ro  # Add this line
-```
-
-Then place file in `./local_data/dem/stockholm_core_eudem.tif`
-
-## Step 4: Verify File
 
 ```bash
-# Check file exists
-docker-compose run --rm prep ls -lh /data/dem/manual/stockholm_core_eudem.tif
-
-# Verify CRS
-docker-compose run --rm prep gdalinfo /data/dem/manual/stockholm_core_eudem.tif | grep "PROJCS\|EPSG"
-# Expected output should mention "3857" or "WGS 84 / Pseudo-Mercator"
-
-# Check file size (should be reasonable, ~50-200MB for clipped area)
-docker-compose run --rm prep du -h /data/dem/manual/stockholm_core_eudem.tif
+# Using local GDAL installation
+gdalwarp \
+    -t_srs EPSG:3857 \
+    -te 1975000 8148000 2032000 8222000 \
+    -tr 25 25 \
+    -r bilinear \
+    -co COMPRESS=LZW \
+    -co TILED=YES \
+    eu_dem_v11_E40N40.TIF \
+    stockholm_wide_eudem.tif
 ```
 
-## Step 5: Generate Checksum (Optional)
+### Step 3: Place in Data Volume
 
 ```bash
-docker-compose run --rm prep sha256sum /data/dem/manual/stockholm_core_eudem.tif > /data/dem/manual/stockholm_core_eudem.tif.sha256
+# Copy to Docker volume
+docker cp stockholm_wide_eudem.tif $(docker-compose ps -q prep):/data/dem/manual/
+
+# Or use bind mount in docker-compose.yml
 ```
 
-## Step 6: Use in Pipeline
-
-Once the file is in place, the prep-service will automatically use it:
+### Step 4: Verify
 
 ```bash
-# This will now find the local file
-docker-compose run --rm prep python3 /app/src/download_dem.py --preset stockholm_core --provider local
-
-# Continue with hillshade generation
-docker-compose run --rm prep python3 /app/src/generate_hillshade.py --preset stockholm_core
+docker-compose run --rm prep gdalinfo /data/dem/manual/stockholm_wide_eudem.tif
 ```
 
-## Troubleshooting
+Expected output should show:
+- Driver: GeoTIFF
+- CRS: EPSG:3857 or "WGS 84 / Pseudo-Mercator"
+- Size: approximately 2000-3000 x 2000-3000 pixels
 
-**Problem: File not found**
-- Verify path: `/data/dem/manual/stockholm_core_eudem.tif`
-- Check file permissions (should be readable)
-- Ensure Docker volume is mounted correctly
-
-**Problem: Wrong CRS**
-- Verify with `gdalinfo` command above
-- If not EPSG:3857, reproject using gdalwarp
-
-**Problem: File too large**
-- Clip to exact bbox using `-te` flag in gdalwarp
-- Use compression: `-co COMPRESS=LZW`
-
-**Problem: Out of memory during reprojection**
-- Process in chunks using gdalwarp with `-wo NUM_THREADS=ALL_CPUS`
-- Or use lower resolution: `-tr 50 50` (50m instead of 25m)
-
-## Alternative: Use Pre-processed DEM
-
-If you have access to a pre-processed DEM in EPSG:3857 covering Stockholm, you can use it directly:
-
-1. Ensure it's in EPSG:3857 (Web Mercator)
-2. Place at: `/data/dem/manual/stockholm_core_eudem.tif`
-3. The system will use it automatically
+---
 
 ## File Naming Convention
 
-The system expects: `{preset}_eudem.tif`
+| Preset | Expected Filename |
+|--------|-------------------|
+| stockholm_core | `stockholm_core_eudem.tif` |
+| stockholm_wide | `stockholm_wide_eudem.tif` |
 
-- `stockholm_core` → `stockholm_core_eudem.tif`
-- `stockholm_wide` → `stockholm_wide_eudem.tif`
+Files must be placed in: `/data/dem/manual/`
 
-For different presets, adjust the filename accordingly.
+---
 
+## Preset Specifications
 
+| Preset | Bbox (WGS84) | Bbox (EPSG:3857, approx) | Description |
+|--------|--------------|--------------------------|-------------|
+| stockholm_core | 17.90, 59.32, 18.08, 59.35 | 1992637, 8185645, 2013379, 8204138 | Central Stockholm |
+| stockholm_wide | 17.75, 59.28, 18.25, 59.40 | 1975000, 8148000, 2032000, 8222000 | Greater Stockholm |
 
+---
 
+## After DEM Acquisition
+
+Once the DEM file is in place, generate terrain data:
+
+```powershell
+# Windows
+.\scripts\build_stockholm_wide.ps1 -SkipOsm
+```
+
+```bash
+# Linux/Mac
+./scripts/build_stockholm_wide.sh --skip-osm
+```
+
+This will generate:
+- Hillshade raster (`/data/terrain/hillshade/stockholm_wide_hillshade.tif`)
+- Hillshade XYZ tiles (`/data/tiles/hillshade/stockholm_wide/`)
+- Contour GeoJSON (`/data/terrain/contours/stockholm_wide_*.geojson`)
+- Contour MBTiles (`/data/tiles/contours/stockholm_wide_*.mbtiles`)
+
+---
+
+## Troubleshooting
+
+### "DEM file not found"
+
+- Verify file exists: `docker-compose run --rm prep ls /data/dem/manual/`
+- Check filename matches preset convention
+- Ensure Docker volume is mounted correctly
+
+### "Wrong CRS"
+
+- DEM must be in EPSG:3857 (Web Mercator)
+- Use `gdalinfo` to verify: look for "EPSG:3857" or "Pseudo-Mercator"
+- Reproject if needed using gdalwarp
+
+### "Automated download failed"
+
+- Verify credentials are correct
+- Check Copernicus Data Space status: https://status.dataspace.copernicus.eu/
+- Try manual download as fallback
+
+### "Out of memory during processing"
+
+- Use chunked processing: add `-wm 256` to gdalwarp for 256MB memory limit
+- Or reduce resolution: `-tr 50 50` for 50m instead of 25m
+
+---
+
+## Attribution
+
+When using this data in outputs, include attribution:
+
+**EU-DEM v1.1:**
+> European Digital Elevation Model (EU-DEM), version 1.1
+> © European Union, Copernicus Land Monitoring Service, European Environment Agency (EEA)
+
+**Copernicus DEM GLO-30:**
+> © DLR e.V. 2014-2018 and © Airbus Defence and Space GmbH 2017-2018
+> provided under COPERNICUS by the European Union and ESA; all rights reserved
+
+---
+
+## See Also
+
+- `docs/USAGE.md` - General usage guide
+- `docs/STATUS.md` - Current system status
+- `scripts/prepare_dem_stockholm_wide.ps1` - Automated acquisition script
+- `prep-service/scripts/download_copernicus_dem.py` - Download script (Python)

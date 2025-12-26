@@ -73,7 +73,55 @@ För att generera all data (OSM + terrain för båda presets):
 ```
 
 **OBS**: Terrain-lager (hillshade, contours) kräver DEM-data.
-Se `DEM_MANUAL_DOWNLOAD.md` för instruktioner.
+Se avsnittet "Skaffa DEM-data" nedan eller `DEM_MANUAL_DOWNLOAD.md` för detaljer.
+
+---
+
+## Skaffa DEM-data (terrain)
+
+DEM (Digital Elevation Model) krävs för hillshade och contours. Det finns två sätt att skaffa detta:
+
+### Automatiserad nedladdning (rekommenderat)
+
+Kräver Copernicus Data Space-konto (gratis registrering på https://dataspace.copernicus.eu/):
+
+```powershell
+# Windows (PowerShell)
+$env:COPERNICUS_USERNAME = "din-email@example.com"
+$env:COPERNICUS_PASSWORD = "ditt-lösenord"
+.\scripts\prepare_dem_stockholm_wide.ps1
+```
+
+```bash
+# Linux/Mac
+export COPERNICUS_USERNAME="din-email@example.com"
+export COPERNICUS_PASSWORD="ditt-lösenord"
+./scripts/prepare_dem_stockholm_wide.sh
+```
+
+### Semi-automatiserad (manuell nedladdning)
+
+1. Ladda ner EU-DEM från: https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1
+2. Ladda ner tile **E40N40** (täcker Skandinavien)
+3. Bearbeta med script:
+
+```powershell
+# Windows
+.\scripts\prepare_dem_stockholm_wide.ps1 -InputFile "C:\Downloads\eu_dem_v11.tif"
+```
+
+```bash
+# Linux/Mac
+./scripts/prepare_dem_stockholm_wide.sh --input /path/to/downloaded.tif
+```
+
+### Efter DEM-installation
+
+Generera terrain-data:
+
+```powershell
+.\scripts\build_stockholm_wide.ps1 -SkipOsm
+```
 
 ---
 

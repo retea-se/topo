@@ -26,11 +26,21 @@ Verifierad datatäckning per preset:
 
 ### Åtgärd för Stockholm Wide terrain
 
-1. Ladda ner EU-DEM för stockholm_wide-området (se `DEM_MANUAL_DOWNLOAD.md`)
-2. Placera filen som: `/data/dem/manual/stockholm_wide_eudem.tif`
+**Automatiserad (rekommenderat):**
+```powershell
+# Kräver Copernicus Data Space-konto
+$env:COPERNICUS_USERNAME = "din-email@example.com"
+$env:COPERNICUS_PASSWORD = "ditt-lösenord"
+.\scripts\prepare_dem_stockholm_wide.ps1
+.\scripts\build_stockholm_wide.ps1 -SkipOsm
+```
+
+**Semi-automatiserad (manuell nedladdning):**
+1. Ladda ner EU-DEM från https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1
+2. Kör: `.\scripts\prepare_dem_stockholm_wide.ps1 -InputFile "sökväg\till\nedladdad.tif"`
 3. Kör: `.\scripts\build_stockholm_wide.ps1 -SkipOsm`
 
-Detta genererar hillshade och contours för hela wide-området.
+Se `DEM_MANUAL_DOWNLOAD.md` för detaljerade instruktioner.
 
 ---
 
@@ -148,7 +158,8 @@ Alla 9 teman är tillgängliga i båda demos:
 
 ### Allmänt
 
-- DEM-data kräver manuell nedladdning (EU-DEM Copernicus-åtkomst)
+- DEM-data kan laddas ner automatiskt med Copernicus Data Space-konto (se `DEM_MANUAL_DOWNLOAD.md`)
+- Alternativt: manuell nedladdning med semi-automatiserad processering
 - stockholm_wide-preset genererar större tiles
 
 ## Visuell verifiering (2025-12-26)
