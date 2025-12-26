@@ -14,7 +14,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 | Funktion | Status |
 |----------|--------|
-| **Interactive Print Editor** | ✅ Implementerat |
+| **Interactive Print Editor** | ✅ **FIXAD** (2025-12-26 kväll) |
 | Bbox drawing tool (MapLibre Draw) | ✅ Implementerat |
 | Editor panel UI (titel, skala, attribution) | ✅ Implementerat |
 | Paper size presets (A0-A4) | ✅ Implementerat |
@@ -22,14 +22,34 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 | DPI selector (72-600) | ✅ Implementerat |
 | Format selector (PNG/PDF/SVG) | ✅ Implementerat |
 | Scale auto-calculation | ✅ Implementerat |
-| PDF export endpoint | ✅ Implementerat |
-| SVG export endpoint | ✅ Implementerat |
+| PDF export endpoint | ✅ Implementerat (via Demo B) |
+| SVG export endpoint | ✅ Implementerat (via Demo B) |
 | Custom bbox support | ✅ Implementerat |
-| Playwright test suite | ✅ Implementerat |
+| Playwright test suite | ✅ **25/25 PASS** |
+| **Viewport stabilitet vid theme-byte** | ✅ **FIXAD** |
+| **Print composition overlay** | ✅ **NY** |
+| **PNG export via fetch+blob** | ✅ **FIXAD** |
 
 **Åtkomst**: http://localhost:3000/editor
 
-Se [TODO_EXPORT_EDITOR.md](TODO_EXPORT_EDITOR.md), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
+#### Print Editor Fixes (2025-12-26)
+
+**Rapporterade problem:**
+1. Preview reset:ades vid pan/zoom, theme-byte eller inställningsändringar
+2. Print layout (ram/titel/skala/attribution) visades inte i preview
+3. Export-knappen skapade ingen fil
+
+**Utförda fixar:**
+1. **Viewport Stabilitet**: `updateMapStyle()` sparar nu `{center, zoom, bearing, pitch}` före `setStyle()` och återställer efter `style.load` event. Viewport-drift = 0.000000.
+2. **Print Composition Overlay**: Ny `updatePrintComposition()` funktion visar ram, titel, skala och attribution i preview.
+3. **Export Fix**: Ändrat från `window.location.href` till `fetch()` + blob download. CORS-headers tillagda i exporter.
+
+**QA Verifiering:**
+- Playwright: 25/25 tester PASS
+- Screenshots: `exports/screenshots/qa_editor_20251226_195128/`
+- Export verifierad: `export_stockholm_core_blueprint-muted_420x594mm_150dpi_2025-12-26T19-49-24.png` (9.6 MB)
+
+Se [TODO_PRINT_EDITOR_FIXES.md](TODO_PRINT_EDITOR_FIXES.md), [TODO_EXPORT_EDITOR.md](TODO_EXPORT_EDITOR.md), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
 
 ### Tidigare funktioner (2025-12-27)
 

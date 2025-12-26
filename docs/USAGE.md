@@ -251,6 +251,54 @@ docker-compose --profile demoA up -d
 # http://localhost:3000?bbox_preset=svealand
 ```
 
+## Print Editor (Interactive Map Editor)
+
+**Åtkomst:** http://localhost:3000/editor
+
+Print Editor är ett interaktivt verktyg för att skapa kartexporter med full kontroll över layout och innehåll.
+
+### Funktioner
+
+- **Område**: Välj preset (Stockholm Core/Wide, Svealand) eller rita custom bbox
+- **Komposition**: Ange titel, undertitel och attribution
+- **Tema**: Välj bland 9 färgteman
+- **Lager**: Slå av/på hillshade, vatten, parker, vägar, byggnader, höjdkurvor
+- **Export**: PNG (via Demo A), PDF/SVG (via Demo B)
+- **Pappersformat**: A0-A4 + custom, Portrait/Landscape
+- **Upplösning**: 72-600 DPI
+
+### Hur man använder
+
+1. **Öppna editorn**: http://localhost:3000/editor
+2. **Välj område**: Använd Preset-dropdown eller klicka "Draw Bbox" för custom
+3. **Anpassa komposition**: Fyll i titel och undertitel
+4. **Välj stil**: Välj tema och aktivera/avaktivera lager
+5. **Ställ in export**: Välj pappersformat, orientering, DPI och format
+6. **Förhandsgranska**: Klicka "Preview" för att se print composition overlay
+7. **Exportera**: Klicka "Export Map" och vänta (20-60 sekunder för PNG)
+
+### Tips
+
+- **Viewport bevaras**: Panorera och zooma fritt - positionen behålls även vid theme-byte
+- **Skala visas**: Automatiskt beräknad skala baserat på bbox och pappersformat
+- **Progress**: Export-modal visar status under rendering
+- **Debug**: Öppna DevTools Console för att se `[Editor]` loggmeddelanden
+
+### Felsökning
+
+```bash
+# Kontrollera exporter-hälsa
+curl http://localhost:8082/health
+
+# Lista befintliga exports
+curl http://localhost:8082/exports
+
+# Kontrollera Demo B (för PDF/SVG)
+curl http://localhost:5000/health
+```
+
+---
+
 ## Använda Demo A (MapLibre)
 
 ### Webbgränssnitt
@@ -279,11 +327,78 @@ curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render
 | Parameter | Värden | Standard | Beskrivning |
 |-----------|--------|----------|-------------|
 | bbox_preset | stockholm_core, stockholm_wide, svealand | stockholm_core | Geografiskt område |
+| custom_bbox | minLon,minLat,maxLon,maxLat | - | Custom bounding box (WGS84, komma-separerad) |
 | theme | paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel | paper | Färgtema |
 | render_mode | screen, print | screen | Renderingsläge |
 | dpi | 72-600 | 150 | Upplösning |
 | width_mm | valfritt | 420 | Bredd i mm |
 | height_mm | valfritt | 594 | Höjd i mm |
+| title | sträng | '' | Titel-text (visas i export) |
+| subtitle | sträng | '' | Undertitel-text (visas i export) |
+| attribution | sträng | '' | Attribution-text (visas i export) |
+| layers | JSON-sträng | '{}' | Layer visibility: `'{"hillshade":true,"water":true,"roads":true,"buildings":true,"contours":true,"parks":true}'` |
+
+### Custom Bounding Box
+
+Använd `custom_bbox` för att exportera ett specifikt område utanför fördefinierade presets.
+
+**Format:** `minLon,minLat,maxLon,maxLat` (WGS84 koordinater, komma-separerad)
+
+**Exempel:**
+```bash
+# Exportera område runt Gamla Stan
+curl "http://localhost:8082/render?custom_bbox=18.07,59.32,18.08,59.33&theme=gallery&dpi=300&width_mm=420&height_mm=594" \
+  --output gamla_stan.png
+```
+
+**Notera:** Custom bbox kräver att tiles finns för det området. För stora områden kan vissa zoomnivåer saknas.
+
+### Layer Visibility Control
+
+Kontrollera vilka lager som ska visas i exporten med `layers`-parametern.
+
+**Format:** JSON-sträng med boolean-värden för varje lager
+
+**Tillgängliga lager:**
+- `hillshade` - Terrängskyggning
+- `water` - Vatten (sjöar, hav, vattendrag)
+- `roads` - Vägar och gator
+- `buildings` - Byggnader
+- `contours` - Höjdkurvor
+- `parks` - Parker och grönområden
+
+**Exempel:**
+```bash
+# Exportera endast vägar och byggnader (ingen terrain)
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=ink&layers=%7B%22roads%22%3Atrue%2C%22buildings%22%3Atrue%7D" \
+  --output roads_buildings_only.png
+```
+
+**URL-encoded exempel:**
+```
+layers=%7B%22hillshade%22%3Afalse%2C%22contours%22%3Atrue%2C%22water%22%3Atrue%7D
+```
+
+Detta motsvarar JSON:
+```json
+{
+  "hillshade": false,
+  "contours": true,
+  "water": true
+}
+```
+
+### Title, Subtitle och Attribution
+
+Lägg till text-element i exporten med `title`, `subtitle` och `attribution`-parametrarna.
+
+**Exempel:**
+```bash
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&title=Stockholm%20City&subtitle=Central%20Area&attribution=Map%20data%3A%20OpenStreetMap" \
+  --output export_with_text.png
+```
+
+**Notera:** Text-rendering stöds i Print Editor UI. För API-anrop kan text behöva renderas separat i post-processing.
 
 ## Använda Demo B (Mapnik)
 
