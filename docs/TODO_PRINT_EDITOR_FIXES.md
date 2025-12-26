@@ -55,10 +55,10 @@ Användaren rapporterar att Print Editor (Demo A) är trasig:
 
 ### C. Export Fix (PNG via Demo A Exporter)
 - [ ] C1. Ändra `window.location.href` till `fetch()` + blob download
-- [ ] C2. Uppdatera exporter/server.js att hantera custom_bbox parameter
-- [ ] C3. Uppdatera exporter att hantera title, subtitle, attribution params
-- [ ] C4. Uppdatera exporter att hantera layers visibility
-- [ ] C5. Fixa CORS-headers i exporter (om nödvändigt)
+- [x] C2. Uppdatera exporter/server.js att hantera custom_bbox parameter ✅ **IMPLEMENTED** (demo-a/exporter/src/server.js:35, 89-91)
+- [x] C3. Uppdatera exporter att hantera title, subtitle, attribution params ✅ **IMPLEMENTED** (demo-a/exporter/src/server.js:41-43)
+- [x] C4. Uppdatera exporter att hantera layers visibility ✅ **IMPLEMENTED** (demo-a/exporter/src/server.js:44, 51-56, 94-96)
+- [x] C5. Fixa CORS-headers i exporter (om nödvändigt) ✅ **IMPLEMENTED** (demo-a/exporter/src/server.js:17-25)
 - [ ] C6. Spara export till /exports/ med deterministiskt filnamn
 - [ ] C7. Verifiera: PNG export skapar fil och triggar download
 
