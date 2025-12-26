@@ -174,9 +174,11 @@ Promise.all([
 
     // Layer toggles
     const layerToggles = {
+      hillshade: document.getElementById('toggle-hillshade'),
+      water: document.getElementById('toggle-water'),
+      roads: document.getElementById('toggle-roads'),
       buildings: document.getElementById('toggle-buildings'),
-      contours: document.getElementById('toggle-contours'),
-      hillshade: document.getElementById('toggle-hillshade')
+      contours: document.getElementById('toggle-contours')
     };
 
     // Make updateLayerVisibility globally available for updateMapStyle
@@ -184,6 +186,25 @@ Promise.all([
       if (!map || !map.isStyleLoaded()) return;
 
       const visibility = layer => layerToggles[layer]?.checked ? 'visible' : 'none';
+
+      // Toggle hillshade
+      if (map.getLayer('hillshade')) {
+        map.setLayoutProperty('hillshade', 'visibility', visibility('hillshade'));
+      }
+
+      // Toggle water layers
+      ['water', 'water-outline'].forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setLayoutProperty(layerId, 'visibility', visibility('water'));
+        }
+      });
+
+      // Toggle road layers
+      ['roads-minor', 'roads-major'].forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setLayoutProperty(layerId, 'visibility', visibility('roads'));
+        }
+      });
 
       // Toggle buildings layers
       ['buildings', 'buildings-outline'].forEach(layerId => {
@@ -198,11 +219,6 @@ Promise.all([
           map.setLayoutProperty(layerId, 'visibility', visibility('contours'));
         }
       });
-
-      // Toggle hillshade
-      if (map.getLayer('hillshade')) {
-        map.setLayoutProperty('hillshade', 'visibility', visibility('hillshade'));
-      }
     };
 
     Object.keys(layerToggles).forEach(layer => {

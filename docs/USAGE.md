@@ -55,8 +55,14 @@ docker-compose run --rm prep /app/scripts/generate_contour_tiles.sh stockholm_co
 2. Välj tema i dropdown-menyn
 3. Välj område (bbox preset)
 4. Välj render-läge (screen/print)
-5. Panorera och zooma för att justera vyn
-6. Klicka "Export" för att ladda ner
+5. Använd layer toggles för att visa/dölja lager:
+   - Hillshade (terrängskyggning)
+   - Water (vatten)
+   - Roads (vägar)
+   - Buildings (byggnader)
+   - Contours (höjdkurvor)
+6. Panorera och zooma för att justera vyn
+7. Klicka "Export" för att ladda ner
 
 ### Export via URL
 

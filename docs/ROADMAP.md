@@ -18,11 +18,11 @@
 
 | Uppgift | Status |
 |---------|--------|
-| Layer toggle: Roads | ⬜ Planerad |
-| Layer toggle: Water | ⬜ Planerad |
+| Layer toggle: Hillshade | ✅ Klar |
+| Layer toggle: Water | ✅ Klar |
+| Layer toggle: Roads | ✅ Klar |
 | Layer toggle: Buildings | ✅ Klar |
 | Layer toggle: Contours | ✅ Klar |
-| Layer toggle: Hillshade | ✅ Klar |
 | Layer toggle: Parks | ⬜ Planerad |
 
 ### Demo B
@@ -126,5 +126,5 @@
 - ✅ Systemet baseline klar (Demo A + Demo B fungerar)
 - ✅ Alla kritiska buggar lösta
 - ✅ Dynamiska teman implementerade
-- ✅ Basic layer toggles i Demo A (buildings, contours, hillshade)
+- ✅ Layer toggles i Demo A (hillshade, water, roads, buildings, contours)
 - ✅ Dokumentation skapad (docs/)

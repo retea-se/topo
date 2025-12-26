@@ -23,7 +23,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 | Dynamiska teman (9 st) | Fungerar |
 | Export A2 @ 150 DPI | Fungerar |
 | Export A2 @ 300 DPI | Fungerar |
-| Layer toggles (buildings, contours, hillshade) | Fungerar |
+| Layer toggles (hillshade, water, roads, buildings, contours) | Fungerar |
 
 ### Demo B (Mapnik)
 
