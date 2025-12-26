@@ -13,7 +13,7 @@ class MapnikRenderer(RendererInterface):
         # Register default fonts path
         mapnik.register_fonts('/usr/share/fonts/truetype/dejavu')
 
-    def render(self, theme: dict, bbox_3857: tuple, output_size: tuple, dpi: int, format: str = 'png', preset: str = 'stockholm_core') -> bytes:
+    def render(self, theme: dict, bbox_3857: tuple, output_size: tuple, dpi: int, format: str = 'png', preset: str = 'stockholm_core', layers: dict = None) -> bytes:
         """Render map using Mapnik.
 
         Args:
@@ -23,10 +23,21 @@ class MapnikRenderer(RendererInterface):
             dpi: Output DPI
             format: 'png' or 'pdf'
             preset: Bbox preset name (used for hillshade file path)
+            layers: Layer visibility dict (e.g. {'hillshade': True, 'water': False, ...})
 
         Returns:
             Rendered image bytes
         """
+        # Default: all layers visible
+        if layers is None:
+            layers = {
+                'hillshade': True,
+                'water': True,
+                'parks': True,
+                'roads': True,
+                'buildings': True,
+                'contours': True
+            }
         width, height = output_size
         min_x, min_y, max_x, max_y = bbox_3857
 
@@ -36,7 +47,7 @@ class MapnikRenderer(RendererInterface):
         map_obj.background = mapnik.Color(theme.get('background', '#faf8f5'))
 
         # Generate Mapnik XML from theme
-        xml_str = theme_to_mapnik_xml(theme, bbox_3857, output_size, dpi, preset)
+        xml_str = theme_to_mapnik_xml(theme, bbox_3857, output_size, dpi, preset, layers)
 
         # Write XML to temporary file for Mapnik to load
         with tempfile.NamedTemporaryFile(mode='w', suffix='.xml', delete=False) as f:

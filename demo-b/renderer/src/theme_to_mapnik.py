@@ -3,7 +3,7 @@ import json
 from typing import Dict, Any
 
 
-def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tuple, dpi: int, preset: str = 'stockholm_core') -> str:
+def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tuple, dpi: int, preset: str = 'stockholm_core', layers: Dict[str, bool] = None) -> str:
     """Generate Mapnik XML from theme JSON.
 
     Args:
@@ -12,10 +12,22 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         output_size: (width_px, height_px)
         dpi: Output DPI
         preset: Bbox preset name (used for hillshade file path)
+        layers: Layer visibility dict (e.g. {'hillshade': True, 'water': False, ...})
 
     Returns:
         Mapnik XML string
     """
+    # Default: all layers visible
+    if layers is None:
+        layers = {
+            'hillshade': True,
+            'water': True,
+            'parks': True,
+            'roads': True,
+            'buildings': True,
+            'contours': True
+        }
+
     width, height = output_size
     min_x, min_y, max_x, max_y = bbox_3857
 
@@ -28,7 +40,8 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Note: opacity is applied via RasterSymbolizer, NOT as a Layer attribute (invalid in Mapnik)
     hillshade_opacity = theme.get('hillshade', {}).get('opacity', 0.15)
     hillshade_file = f"/data/terrain/hillshade/{preset}_hillshade.tif"
-    layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857">
+    if layers.get('hillshade', True):
+        layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857">
       <StyleName>hillshade</StyleName>
       <Datasource>
         <Parameter name="type">gdal</Parameter>
@@ -39,7 +52,8 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Water layer
     water_fill = theme.get('water', {}).get('fill', '#d4e4f0')
     water_stroke = theme.get('water', {}).get('stroke', '#a8c5d8')
-    layers_xml.append(f"""    <Layer name="water" srs="EPSG:3857">
+    if layers.get('water', True):
+        layers_xml.append(f"""    <Layer name="water" srs="EPSG:3857">
       <StyleName>water</StyleName>
       <Datasource>
         <Parameter name="type">postgis</Parameter>
@@ -53,7 +67,8 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
 
     # Parks layer
     parks_fill = theme.get('parks', {}).get('fill', '#e8f0e0')
-    layers_xml.append(f"""    <Layer name="parks" srs="EPSG:3857">
+    if layers.get('parks', True):
+        layers_xml.append(f"""    <Layer name="parks" srs="EPSG:3857">
       <StyleName>parks</StyleName>
       <Datasource>
         <Parameter name="type">postgis</Parameter>
@@ -75,7 +90,8 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         minor_width = roads_stroke_width * 0.6
         major_width = roads_stroke_width
 
-    layers_xml.append(f"""    <Layer name="roads-minor" srs="EPSG:3857">
+    if layers.get('roads', True):
+        layers_xml.append(f"""    <Layer name="roads-minor" srs="EPSG:3857">
       <StyleName>roads-minor</StyleName>
       <Datasource>
         <Parameter name="type">postgis</Parameter>
@@ -87,7 +103,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
       </Datasource>
     </Layer>""")
 
-    layers_xml.append(f"""    <Layer name="roads-major" srs="EPSG:3857">
+        layers_xml.append(f"""    <Layer name="roads-major" srs="EPSG:3857">
       <StyleName>roads-major</StyleName>
       <Datasource>
         <Parameter name="type">postgis</Parameter>
@@ -102,7 +118,8 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Buildings layer
     buildings_fill = theme.get('buildings', {}).get('fill', '#d0d0d0')
     buildings_stroke = theme.get('buildings', {}).get('stroke', '#909090')
-    layers_xml.append(f"""    <Layer name="buildings" srs="EPSG:3857">
+    if layers.get('buildings', True):
+        layers_xml.append(f"""    <Layer name="buildings" srs="EPSG:3857">
       <StyleName>buildings</StyleName>
       <Datasource>
         <Parameter name="type">postgis</Parameter>
@@ -126,7 +143,8 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
 
     # Contours are stored in PostGIS or as GeoJSON files
     # For now, assume they're in PostGIS
-    layers_xml.append(f"""    <Layer name="contours" srs="EPSG:3857">
+    if layers.get('contours', True):
+        layers_xml.append(f"""    <Layer name="contours" srs="EPSG:3857">
       <StyleName>contours</StyleName>
       <Datasource>
         <Parameter name="type">postgis</Parameter>

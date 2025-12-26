@@ -19,13 +19,14 @@
 | OSM tiles för stockholm_core | ✅ DONE |
 | OSM tiles för stockholm_wide | ✅ DONE |
 | DEM för stockholm_core | ✅ DONE |
-| DEM för stockholm_wide | ⬜ TODO (manuell nedladdning krävs) |
+| DEM för stockholm_wide | ✅ DONE (Copernicus GLO-30) |
 | Hillshade tiles för stockholm_core | ✅ DONE |
-| Hillshade tiles för stockholm_wide | ⬜ TODO (kräver DEM) |
+| Hillshade tiles för stockholm_wide | ✅ DONE (TMS z10-16) |
 | Contour tiles för stockholm_core | ✅ DONE |
-| Contour tiles för stockholm_wide | ⬜ TODO (kräver DEM) |
+| Contour tiles för stockholm_wide | ✅ DONE (2m/10m/50m) |
 | Entry-script `build_full_coverage.ps1/.sh` | ✅ DONE |
 | Coverage audit dokumenterad | ✅ DONE |
+| **QA-verifiering (60/60 tiles)** | ✅ DONE (qa_20251226_182055) |
 
 ---
 
@@ -668,7 +669,7 @@ Parametrar som kan justeras per stil eller export.
 - ✅ Entry-script `build_full_coverage.ps1/.sh` skapad
 - ✅ ROADMAP uppdaterad med TODO/DOING/DONE-format
 - ✅ Phase 6 (Full Coverage Pipeline) dokumenterad
-- ⬜ Stockholm Wide terrain saknar DEM (manuell åtgärd krävs)
+- ✅ Stockholm Wide terrain komplett (DEM, hillshade, contours)
 
 ### 2025-12-26 (eftermiddag)
 

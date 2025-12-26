@@ -15,11 +15,27 @@ THEMES_DIR = Path('/app/themes') if Path('/app/themes').exists() else Path(__fil
 
 def load_bbox_preset(preset_name: str) -> tuple:
     """Load bbox preset and convert to EPSG:3857."""
-    # For now, use hardcoded presets - in production, load from config
-    presets = {
-        'stockholm_core': (17.90, 59.32, 18.08, 59.35),  # WGS84
-        'stockholm_wide': (17.75, 59.28, 18.25, 59.40)   # WGS84
-    }
+    # Try to load from config file, fallback to hardcoded presets
+    config_path = Path('/app/config/bbox_presets.json')
+    presets = {}
+
+    if config_path.exists():
+        try:
+            with open(config_path) as f:
+                config = json.load(f)
+                for preset in config.get('presets', []):
+                    bbox = preset['bbox_wgs84']
+                    presets[preset['name']] = tuple(bbox)
+        except Exception as e:
+            print(f"Warning: Failed to load presets from config: {e}", file=sys.stderr)
+
+    # Fallback to hardcoded presets if config not found or empty
+    if not presets:
+        presets = {
+            'stockholm_core': (17.90, 59.32, 18.08, 59.35),  # WGS84
+            'stockholm_wide': (17.75, 59.28, 18.25, 59.40),  # WGS84
+            'svealand': (14.5, 58.5, 19.0, 61.0)  # WGS84
+        }
 
     if preset_name not in presets:
         raise ValueError(f"Unknown preset: {preset_name}")
@@ -55,6 +71,16 @@ def render():
         height_mm = float(data.get('height_mm', 594))
         format_type = data.get('format', 'png')
 
+        # Layer visibility (default: all layers visible)
+        layers = data.get('layers', {
+            'hillshade': True,
+            'water': True,
+            'parks': True,
+            'roads': True,
+            'buildings': True,
+            'contours': True
+        })
+
         # Calculate output size in pixels (use round for correct dimensions)
         width_px = round(width_mm * dpi / 25.4)
         height_px = round(height_mm * dpi / 25.4)
@@ -71,7 +97,7 @@ def render():
         bbox_3857 = load_bbox_preset(preset)
 
         # Render
-        result = renderer.render(theme, bbox_3857, output_size, dpi, format_type, preset)
+        result = renderer.render(theme, bbox_3857, output_size, dpi, format_type, preset, layers)
 
         return send_file(
             io.BytesIO(result),

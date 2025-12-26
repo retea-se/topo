@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-26
+**Senast uppdaterad**: 2025-12-26 19:25
 
 ## Sammanfattning
 
@@ -8,21 +8,23 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
+**Svealand status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är tillgängliga. Zoomnivåer är begränsade för att hantera stort område (hillshade: z9-14, contours: z8-13).
+
 ---
 
 ## Coverage Audit (2025-12-26)
 
 Verifierad datatäckning per preset:
 
-| Datatyp | stockholm_core | stockholm_wide |
-|---------|----------------|----------------|
-| OSM PBF | ✅ 3.5 MB | ✅ 17 MB |
-| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB |
-| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB |
-| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB |
-| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 |
-| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m |
-| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB |
+| Datatyp | stockholm_core | stockholm_wide | svealand |
+|---------|----------------|----------------|----------|
+| OSM PBF | ✅ 3.5 MB | ✅ 17 MB | ✅ ~150 MB (est.) |
+| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB | ✅ ~180 MB (est.) |
+| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB | ✅ ~500 MB (est.) |
+| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB | ✅ ~50 MB (est.) |
+| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 | ✅ z9-14 (begränsat) |
+| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m | ✅ 2m/10m/50m |
+| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB | ✅ ~200 MB (est., z8-13) |
 
 ### DEM-datakälla
 
@@ -49,7 +51,7 @@ Stockholm Wide DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Ope
 | Dynamiska teman (9 st) | Fungerar |
 | Export A2 @ 150 DPI | Fungerar |
 | Export A2 @ 300 DPI | Fungerar |
-| Layer toggles (hillshade, water, roads, buildings, contours) | Fungerar |
+| Layer toggles (hillshade, water, parks, roads, buildings, contours) | Fungerar |
 | **Stockholm Wide preset** | **Fungerar** |
 | **Preset-aware contours** | **Fungerar** |
 
@@ -69,6 +71,7 @@ Stockholm Wide DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Ope
 | Export PNG | Fungerar |
 | Export PDF | Fungerar |
 | Deterministisk output | Fungerar |
+| Layer toggles (hillshade, water, parks, roads, buildings, contours) | Fungerar |
 | **Stockholm Wide preset** | **Fungerar** |
 | **Preset-aware hillshade** | **Fungerar** |
 
@@ -93,6 +96,7 @@ Stockholm Wide DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Ope
 |--------|--------------|----------|
 | stockholm_core | 17.90, 59.32, 18.08, 59.35 | Centrala Stockholm |
 | stockholm_wide | 17.75, 59.28, 18.25, 59.40 | Stor-Stockholm inkl. förorter |
+| svealand | 14.5, 58.5, 19.0, 61.0 | Svealand region (Västerås, Uppsala, Örebro, etc.) |
 
 ### Tjänster
 

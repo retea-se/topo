@@ -109,7 +109,8 @@ Promise.all([
     // Determine initial center/zoom based on preset
     const presetBounds = {
       stockholm_core: { center: [18.04, 59.335], zoom: 13 },
-      stockholm_wide: { center: [18.0, 59.34], zoom: 11 }
+      stockholm_wide: { center: [18.0, 59.34], zoom: 11 },
+      svealand: { center: [16.75, 59.75], zoom: 8 }
     };
     const bounds = presetBounds[bboxPreset] || presetBounds.stockholm_core;
 
@@ -153,7 +154,8 @@ Promise.all([
       // Update map bounds based on preset
       const bboxes = {
         stockholm_core: { center: [18.04, 59.335], zoom: 13 },
-        stockholm_wide: { center: [18.0, 59.34], zoom: 11 }
+        stockholm_wide: { center: [18.0, 59.34], zoom: 11 },
+        svealand: { center: [16.75, 59.75], zoom: 8 }
       };
       if (bboxes[currentPreset]) {
         map.setCenter(bboxes[currentPreset].center);
@@ -176,6 +178,7 @@ Promise.all([
     const layerToggles = {
       hillshade: document.getElementById('toggle-hillshade'),
       water: document.getElementById('toggle-water'),
+      parks: document.getElementById('toggle-parks'),
       roads: document.getElementById('toggle-roads'),
       buildings: document.getElementById('toggle-buildings'),
       contours: document.getElementById('toggle-contours')
@@ -196,6 +199,13 @@ Promise.all([
       ['water', 'water-outline'].forEach(layerId => {
         if (map.getLayer(layerId)) {
           map.setLayoutProperty(layerId, 'visibility', visibility('water'));
+        }
+      });
+
+      // Toggle parks layers (including landcover)
+      ['parks', 'parks-outline', 'landcover'].forEach(layerId => {
+        if (map.getLayer(layerId)) {
+          map.setLayoutProperty(layerId, 'visibility', visibility('parks'));
         }
       });
 
