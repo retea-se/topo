@@ -47,6 +47,66 @@ docker-compose run --rm prep /app/scripts/generate_contour_tiles.sh stockholm_co
 
 **OBS**: DEM-data kräver manuell nedladdning. Se `DEM_MANUAL_DOWNLOAD.md` i projektets rot.
 
+## Bygga Stockholm Wide (full förorts-coverage)
+
+För att generera data för stockholm_wide preseten (inkluderar förorter):
+
+### Windows (PowerShell)
+
+```powershell
+# Kör från projektroten
+.\scripts\build_stockholm_wide.ps1
+
+# Med force-regenerering av alla filer
+.\scripts\build_stockholm_wide.ps1 -Force
+
+# Hoppa över OSM (om bara terrain behöver uppdateras)
+.\scripts\build_stockholm_wide.ps1 -SkipOsm
+
+# Dry-run (visa vad som skulle göras)
+.\scripts\build_stockholm_wide.ps1 -DryRun
+```
+
+### Linux/Mac (Bash)
+
+```bash
+# Kör från projektroten
+./scripts/build_stockholm_wide.sh
+
+# Med force-regenerering av alla filer
+./scripts/build_stockholm_wide.sh --force
+
+# Hoppa över OSM (om bara terrain behöver uppdateras)
+./scripts/build_stockholm_wide.sh --skip-osm
+
+# Dry-run (visa vad som skulle göras)
+./scripts/build_stockholm_wide.sh --dry-run
+```
+
+### Vad scriptet gör
+
+1. Kontrollerar att Docker är igång
+2. Bygger prep-service
+3. Laddar ner/klipper OSM-data för stockholm_wide
+4. Genererar OSM vector tiles
+5. Kontrollerar DEM-data
+6. Genererar hillshade
+7. Genererar hillshade tiles
+8. Extraherar höjdkurvor (2m, 10m, 50m)
+9. Genererar contour vector tiles
+10. Verifierar att alla filer skapades
+
+### Efter build
+
+```bash
+# Starta om Demo A för att läsa in nya tiles
+docker-compose --profile demoA down
+docker-compose --profile demoA up -d
+
+# Öppna Demo A med Stockholm Wide preset
+# http://localhost:3000?bbox_preset=stockholm_wide
+```
+
 ## Använda Demo A (MapLibre)
 
 ### Webbgränssnitt
@@ -249,3 +309,59 @@ docker compose --profile demoA --profile demoB down -v
 ```
 
 **Varning**: Detta raderar alla tiles och exporterade bilder!
+
+## Diagnostik-screenshots
+
+För att ta automatiserade screenshots för verifiering:
+
+### Windows (PowerShell)
+
+```powershell
+# Alla demos och presets
+.\scripts\capture_screenshots.ps1
+
+# Endast Demo A, Stockholm Wide, Gallery-tema
+.\scripts\capture_screenshots.ps1 -Demo A -Preset wide -Theme gallery
+
+# Endast Demo B, båda presets
+.\scripts\capture_screenshots.ps1 -Demo B -Preset both
+```
+
+### Linux/Mac (Bash)
+
+```bash
+# Alla demos och presets
+./scripts/capture_screenshots.sh
+
+# Endast Demo A, Stockholm Wide, Gallery-tema
+./scripts/capture_screenshots.sh --demo A --preset wide --theme gallery
+
+# Endast Demo B, båda presets
+./scripts/capture_screenshots.sh --demo B --preset both
+```
+
+Screenshots sparas i `exports/screenshots/` med namngivning:
+- `demoA_{preset}_{mode}_{theme}_{timestamp}.png`
+- `demoB_{preset}_{mode}_{theme}_{timestamp}.png`
+
+Se `exports/screenshots/README.md` för detaljer.
+
+## Filplatser
+
+### Data (Docker volume)
+
+| Typ | Sökväg (i container) |
+|-----|---------------------|
+| OSM PBF | `/data/osm/{preset}.osm.pbf` |
+| OSM tiles | `/data/tiles/osm/{preset}.mbtiles` |
+| Hillshade GeoTIFF | `/data/terrain/hillshade/{preset}_hillshade.tif` |
+| Hillshade tiles | `/data/tiles/hillshade/{preset}/` |
+| Contour GeoJSON | `/data/terrain/contours/{preset}_{interval}m.geojson` |
+| Contour tiles | `/data/tiles/contours/{preset}_{interval}m.mbtiles` |
+
+### Exports
+
+| Typ | Sökväg |
+|-----|--------|
+| Exports | `exports/` |
+| Screenshots | `exports/screenshots/` |

@@ -5,6 +5,7 @@
 ## Sammanfattning
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
+**Stockholm Wide** preset stöds nu fullt ut i båda demos med full coverage för förorter.
 
 ## Fungerande funktioner
 
@@ -24,6 +25,8 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 | Export A2 @ 150 DPI | Fungerar |
 | Export A2 @ 300 DPI | Fungerar |
 | Layer toggles (hillshade, water, roads, buildings, contours) | Fungerar |
+| **Stockholm Wide preset** | **Fungerar** |
+| **Preset-aware contours** | **Fungerar** |
 
 ### Demo B (Mapnik)
 
@@ -41,17 +44,30 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 | Export PNG | Fungerar |
 | Export PDF | Fungerar |
 | Deterministisk output | Fungerar |
+| **Stockholm Wide preset** | **Fungerar** |
+| **Preset-aware hillshade** | **Fungerar** |
 
 ### Data & Tiles
 
 | Komponent | Status |
 |-----------|--------|
-| OSM-data (Stockholm) | Genererad |
+| OSM-data (Stockholm Core) | Genererad |
+| OSM-data (Stockholm Wide) | Genereras via script |
 | DEM-data | Manuellt placerad |
-| Hillshade tiles | Genererade |
-| OSM tiles | Genererade |
-| Contour tiles | Genererade |
+| Hillshade tiles (Core) | Genererade |
+| Hillshade tiles (Wide) | Genereras via script |
+| OSM tiles (Core) | Genererade |
+| OSM tiles (Wide) | Genereras via script |
+| Contour tiles (Core) | Genererade |
+| Contour tiles (Wide) | Genereras via script |
 | PostGIS-import | Fungerar |
+
+### Presets
+
+| Preset | Bbox (WGS84) | Coverage |
+|--------|--------------|----------|
+| stockholm_core | 17.90, 59.32, 18.08, 59.35 | Centrala Stockholm |
+| stockholm_wide | 17.75, 59.28, 18.25, 59.40 | Stor-Stockholm inkl. förorter |
 
 ### Tjänster
 

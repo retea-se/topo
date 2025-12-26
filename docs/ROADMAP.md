@@ -121,7 +121,17 @@
 
 ## Changelog
 
-### 2025-12-26
+### 2025-12-26 (eftermiddag)
+
+- ✅ **Stockholm Wide preset** fullt implementerad
+- ✅ Martin config uppdaterad för preset-aware contours
+- ✅ themeToStyle.js uppdaterad för preset-aware tile sources
+- ✅ Demo B renderer uppdaterad för preset-aware hillshade
+- ✅ Build-script för Stockholm Wide (`scripts/build_stockholm_wide.ps1`, `.sh`)
+- ✅ Screenshot-automatisering (`scripts/capture_screenshots.ps1`, `.sh`)
+- ✅ Dokumentation uppdaterad (STATUS, USAGE, ROADMAP)
+
+### 2025-12-26 (förmiddag)
 
 - ✅ Systemet baseline klar (Demo A + Demo B fungerar)
 - ✅ Alla kritiska buggar lösta
