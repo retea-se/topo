@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 
-from dem_provider import EUDEMProvider, LocalFileProvider
+from dem_provider import EUDEMProvider, LocalFileProvider, GLO30Provider
 
 DATA_DIR = os.getenv('DATA_DIR', '/data')
 CONFIG_DIR = Path('/app/config')
@@ -28,7 +28,7 @@ def get_bbox_wgs84(preset_name: str) -> tuple:
 def main():
     parser = argparse.ArgumentParser(description='Download DEM data')
     parser.add_argument('--preset', required=True, help='Bbox preset name')
-    parser.add_argument('--provider', default='local', help='DEM provider: local (default, manual file) or eudem (automated)')
+    parser.add_argument('--provider', default='local', help='DEM provider: local (manual file), eudem (EU-DEM), or glo30 (GLO-30 automated)')
     args = parser.parse_args()
 
     # Get bbox from preset (for future use with automated download)
@@ -40,13 +40,20 @@ def main():
 
     cache_key = f"{args.preset}_eudem"
 
-    # Use local file provider by default (manual download workflow)
+    # Select provider
     if args.provider == 'local':
         provider = LocalFileProvider()
     elif args.provider == 'eudem':
         provider = EUDEMProvider()
+    elif args.provider == 'glo30':
+        try:
+            provider = GLO30Provider()
+        except ValueError as e:
+            print(f"ERROR: {e}", file=sys.stderr)
+            print("Set COPERNICUS_USERNAME and COPERNICUS_PASSWORD environment variables", file=sys.stderr)
+            sys.exit(1)
     else:
-        print(f"ERROR: Unknown provider: {args.provider} (use 'local' or 'eudem')", file=sys.stderr)
+        print(f"ERROR: Unknown provider: {args.provider} (use 'local', 'eudem', or 'glo30')", file=sys.stderr)
         sys.exit(1)
 
     try:
