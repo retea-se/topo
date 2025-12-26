@@ -6,7 +6,7 @@
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
 
-**Stockholm Wide status**: OSM-lager har full täckning. Terrain-lager (hillshade, contours) saknar DEM-data för wide-området och måste genereras manuellt (se instruktioner nedan).
+**Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
 ---
 
@@ -18,29 +18,17 @@ Verifierad datatäckning per preset:
 |---------|----------------|----------------|
 | OSM PBF | ✅ 3.5 MB | ✅ 17 MB |
 | OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB |
-| DEM (GeoTIFF) | ✅ 2.1 MB | ❌ **SAKNAS** |
-| Hillshade raster | ✅ 682 KB | ❌ Kräver DEM |
-| Hillshade tiles (XYZ) | ✅ z10-16 | ❌ Kräver DEM |
-| Contours GeoJSON | ✅ 2m/10m/50m | ❌ Kräver DEM |
-| Contours tiles (mbtiles) | ✅ 540 MB | ❌ Kräver DEM |
+| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB |
+| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB |
+| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 |
+| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m |
+| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB |
 
-### Åtgärd för Stockholm Wide terrain
+### DEM-datakälla
 
-**Automatiserad (rekommenderat):**
-```powershell
-# Kräver Copernicus Data Space-konto
-$env:COPERNICUS_USERNAME = "din-email@example.com"
-$env:COPERNICUS_PASSWORD = "ditt-lösenord"
-.\scripts\prepare_dem_stockholm_wide.ps1
-.\scripts\build_stockholm_wide.ps1 -SkipOsm
-```
+Stockholm Wide DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Open Data (2025-12-26).
 
-**Semi-automatiserad (manuell nedladdning):**
-1. Ladda ner EU-DEM från https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1
-2. Kör: `.\scripts\prepare_dem_stockholm_wide.ps1 -InputFile "sökväg\till\nedladdad.tif"`
-3. Kör: `.\scripts\build_stockholm_wide.ps1 -SkipOsm`
-
-Se `DEM_MANUAL_DOWNLOAD.md` för detaljerade instruktioner.
+**Attribution**: Copernicus DEM - GLO-30 Public © DLR e.V. 2014-2018 and Airbus Defence and Space GmbH 2017-2018, provided under COPERNICUS by the European Union and ESA.
 
 ---
 
@@ -90,14 +78,14 @@ Se `DEM_MANUAL_DOWNLOAD.md` för detaljerade instruktioner.
 |-----------|----------------|----------------|
 | OSM PBF | ✅ Genererad | ✅ Genererad |
 | OSM tiles | ✅ Genererade | ✅ Genererade |
-| DEM-data | ✅ Manuellt placerad | ❌ **Saknas** |
-| Hillshade raster | ✅ Genererad | ⏳ Kräver DEM |
-| Hillshade tiles | ✅ Genererade | ⏳ Kräver DEM |
-| Contour GeoJSON | ✅ Genererade | ⏳ Kräver DEM |
-| Contour tiles | ✅ Genererade | ⏳ Kräver DEM |
+| DEM-data | ✅ Manuellt placerad | ✅ Copernicus GLO-30 |
+| Hillshade raster | ✅ Genererad | ✅ Genererad |
+| Hillshade tiles | ✅ Genererade | ✅ Genererade |
+| Contour GeoJSON | ✅ Genererade | ✅ Genererade |
+| Contour tiles | ✅ Genererade | ✅ Genererade |
 | PostGIS-import | ✅ Fungerar | ✅ Fungerar |
 
-**Not**: stockholm_wide terrain-lager genereras automatiskt när DEM-filen placeras och `build_stockholm_wide.ps1` körs.
+**Not**: Alla terrain-lager för stockholm_wide genererades 2025-12-26 med Copernicus DEM GLO-30 data.
 
 ### Presets
 
@@ -162,19 +150,63 @@ Alla 9 teman är tillgängliga i båda demos:
 - Alternativt: manuell nedladdning med semi-automatiserad processering
 - stockholm_wide-preset genererar större tiles
 
-## Visuell verifiering (2025-12-26)
+## Visuell verifiering
 
-Screenshots tagna för verifiering:
+**Senast verifierad**: 2025-12-26 18:28 CET (QA-run: `qa_20251226_182055`)
+
+### Senaste QA-körning: qa_20251226_182055
+
+Artefakter: `exports/screenshots/qa_20251226_182055/`
+
+| Fil | Beskrivning |
+|-----|-------------|
+| demoA_wide_paper_allLayers.png | Demo A med alla lager |
+| demoA_wide_paper_buildingsOff.png | Buildings toggle test |
+| demoA_wide_paper_contoursOff.png | Contours toggle test |
+| demoA_wide_paper_hillshadeOff.png | Hillshade toggle test |
+| demoA_wide_pan_alvsjo.png | Pan till Älvsjö (söder) |
+| demoA_wide_pan_bromma.png | Pan till Bromma (väster) |
+| demoA_wide_pan_nacka.png | Pan till Nacka (öster) |
+| demoB_ui_wide_paper.png | Demo B UI med Paper theme |
+| demoB_ui_wide_gallery.png | Demo B UI med Gallery theme |
+| demoB_export_wide_paper.png | Demo B export (2480x3508px) |
+| tile_health.json | Tile coverage rapport (60/60 OK) |
+
+### QA-resultat
+
+| Komponent | stockholm_core | stockholm_wide |
+|-----------|----------------|----------------|
+| Demo A UI | ✅ PASS | ✅ PASS |
+| Demo B UI | ✅ PASS | ✅ PASS |
+| Demo A Export | ✅ PASS | ✅ PASS |
+| Demo B Export | ✅ PASS | ✅ PASS |
+| Data Coverage | ✅ PASS | ✅ PASS |
+
+### Verifierade exports (A2 @ 150 DPI)
+
+| Export | Dimensioner | Storlek | Status |
+|--------|-------------|---------|--------|
+| demoA_wide_paper_A2_150.png | 2480x3508 | 10.5 MB | ✅ |
+| demoA_wide_gallery_A2_150.png | 2480x3508 | 10.8 MB | ✅ |
+| demoB_wide_paper_A2_150.png | 2480x3508 | 530 KB | ✅ |
+| demoB_wide_gallery_A2_150.png | 2480x3508 | 675 KB | ✅ |
+
+### Screenshots (2025-12-26)
 
 | Screenshot | Storlek | Status |
 |------------|---------|--------|
-| demoA_core_paper.png | 693 KB | ✅ Alla lager synliga |
-| demoA_wide_paper.png | 701 KB | ✅ OSM synligt, terrain saknas |
-| demoB_core_paper.png | 173 KB | ✅ Alla lager synliga |
-| demoB_wide_paper.png | 45 KB | ⚠️ Endast OSM (DEM saknas) |
+| demoA_core_paper_allLayers | 2.5 MB | ✅ Alla lager synliga |
+| demoA_wide_paper_allLayers | 2.5 MB | ✅ Alla lager synliga |
+| demoA_wide_gallery_allLayers | 2.6 MB | ✅ Alla lager synliga |
+| demoA_wide_paper_*Off | 578 KB - 2.5 MB | ✅ Toggle-tester utförda |
+| demoB_*_ui | 21 KB | ✅ Form-UI (förväntat) |
 
-**Not**: stockholm_wide visar endast OSM-lager (vägar, byggnader, vatten) eftersom DEM saknas.
-Efter DEM-installation och `build_stockholm_wide.ps1 -SkipOsm` kommer hillshade och contours att visas.
+**Terrain-coverage bekräftad**:
+- ✅ DEM: Copernicus GLO-30 (9.5 MB)
+- ✅ Hillshade: 4.5 MB raster + z10-16 tiles
+- ✅ Contours: 2m (28 MB), 10m (7 MB), 50m (2 MB) mbtiles
+
+Se fullständig rapport: [QA_REPORT.md](QA_REPORT.md)
 
 Screenshots sparade i: `exports/screenshots/`
 
@@ -189,6 +221,7 @@ Screenshots sparade i: `exports/screenshots/`
 5. **SQL-fix** - Borttagna `ST_Hash()`-anrop som inte finns i PostGIS
 6. **Coverage Audit** - Dokumenterad datatäckning per preset
 7. **Entry-script** - `build_full_coverage.ps1/.sh` för enkel databyggning
+8. **Stockholm Wide Terrain** - Full DEM/hillshade/contour coverage via Copernicus GLO-30
 
 ## Nästa steg
 
