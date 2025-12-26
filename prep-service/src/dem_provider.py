@@ -160,17 +160,17 @@ class EUDEMProvider(DEMProvider):
 
 class GLO30Provider(DEMProvider):
     """Copernicus DEM GLO-30 provider (30m resolution, global coverage).
-    
+
     Downloads GLO-30 from Copernicus Data Space Ecosystem (CDSE) API.
     Requires COPERNICUS_USERNAME and COPERNICUS_PASSWORD environment variables.
     """
-    
+
     # CDSE API endpoints
     CDSE_TOKEN_URL = "https://identity.dataspace.copernicus.eu/auth/realms/CDSE/protocol/openid-connect/token"
     CDSE_ODATA_URL = "https://catalogue.dataspace.copernicus.eu/odata/v1"
     CDSE_DOWNLOAD_URL = "https://zipper.dataspace.copernicus.eu/odata/v1"
     COP_DEM_COLLECTION = "COP-DEM_GLO-30-DGED__2022_1"
-    
+
     def __init__(self):
         self.username = os.getenv('COPERNICUS_USERNAME')
         self.password = os.getenv('COPERNICUS_PASSWORD')
@@ -178,21 +178,21 @@ class GLO30Provider(DEMProvider):
             raise ValueError(
                 "COPERNICUS_USERNAME and COPERNICUS_PASSWORD environment variables required for GLO-30 download"
             )
-    
+
     def get_cdse_token(self) -> str:
         """Get OAuth2 access token from CDSE."""
         print("Authenticating with Copernicus Data Space...")
-        
+
         data = urllib.parse.urlencode({
             'username': self.username,
             'password': self.password,
             'grant_type': 'password',
             'client_id': 'cdse-public'
         }).encode('utf-8')
-        
+
         req = urllib.request.Request(self.CDSE_TOKEN_URL, data=data, method='POST')
         req.add_header('Content-Type', 'application/x-www-form-urlencoded')
-        
+
         try:
             with urllib.request.urlopen(req, timeout=30) as response:
                 result = json.loads(response.read().decode('utf-8'))
@@ -200,25 +200,25 @@ class GLO30Provider(DEMProvider):
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8') if e.fp else ''
             raise RuntimeError(f"Authentication failed: {e.code} {e.reason}\n{error_body}")
-    
+
     def find_dem_tiles(self, bbox: Tuple[float, float, float, float], token: str) -> list:
         """Find Copernicus DEM tiles covering the bbox."""
         min_lon, min_lat, max_lon, max_lat = bbox
         wkt = f"POLYGON(({min_lon} {min_lat},{max_lon} {min_lat},{max_lon} {max_lat},{min_lon} {max_lat},{min_lon} {min_lat}))"
-        
+
         filter_query = f"Collection/Name eq '{self.COP_DEM_COLLECTION}' and OData.CSC.Intersects(area=geography'SRID=4326;{wkt}')"
         query_params = urllib.parse.urlencode({
             '$filter': filter_query,
             '$top': 100,
             '$orderby': 'ContentDate/Start desc'
         })
-        
+
         url = f"{self.CDSE_ODATA_URL}/Products?{query_params}"
         req = urllib.request.Request(url)
         req.add_header('Authorization', f'Bearer {token}')
-        
+
         print(f"Searching for DEM tiles covering bbox {bbox}...")
-        
+
         try:
             with urllib.request.urlopen(req, timeout=60) as response:
                 result = json.loads(response.read().decode('utf-8'))
@@ -228,26 +228,26 @@ class GLO30Provider(DEMProvider):
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8') if e.fp else ''
             raise RuntimeError(f"Search failed: {e.code} {e.reason}\n{error_body}")
-    
+
     def download_product(self, product_id: str, product_name: str, token: str, output_dir: Path) -> Path:
         """Download a single DEM product."""
         url = f"{self.CDSE_DOWNLOAD_URL}/Products({product_id})/$value"
         output_file = output_dir / f"{product_name}.zip"
-        
+
         if output_file.exists():
             print(f"  Already downloaded: {output_file.name}")
             return output_file
-        
+
         print(f"  Downloading: {product_name}...")
-        
+
         req = urllib.request.Request(url)
         req.add_header('Authorization', f'Bearer {token}')
-        
+
         try:
             with urllib.request.urlopen(req, timeout=300) as response:
                 total_size = int(response.headers.get('Content-Length', 0))
                 downloaded = 0
-                
+
                 with open(output_file, 'wb') as f:
                     while True:
                         chunk = response.read(8192)
@@ -259,12 +259,12 @@ class GLO30Provider(DEMProvider):
                             pct = (downloaded / total_size) * 100
                             print(f"\r  Progress: {pct:.1f}%", end='', flush=True)
                 print()  # newline after progress
-            
+
             return output_file
         except urllib.error.HTTPError as e:
             error_body = e.read().decode('utf-8') if e.fp else ''
             raise RuntimeError(f"Download failed: {e.code} {e.reason}\n{error_body}")
-    
+
     def extract_dem_tif(self, zip_file: Path, output_dir: Path) -> Path:
         """Extract DEM GeoTIFF from downloaded archive."""
         with zipfile.ZipFile(zip_file, 'r') as zf:
@@ -273,24 +273,24 @@ class GLO30Provider(DEMProvider):
                 dem_files = [n for n in zf.namelist() if n.endswith('.tif')]
             if not dem_files:
                 raise RuntimeError(f"No DEM file found in {zip_file}")
-            
+
             dem_file = dem_files[0]
             print(f"  Extracting: {dem_file}")
-            
+
             extracted_path = output_dir / Path(dem_file).name
-            
+
             with zf.open(dem_file) as src, open(extracted_path, 'wb') as dst:
                 dst.write(src.read())
-            
+
             return extracted_path
-    
+
     def merge_and_process_dems(self, dem_files: list, bbox: Tuple[float, float, float, float], output_file: Path) -> None:
         """Merge DEM tiles, clip to bbox, and reproject to EPSG:3857."""
         min_lon, min_lat, max_lon, max_lat = bbox
-        
+
         with tempfile.TemporaryDirectory() as tmpdir:
             tmpdir = Path(tmpdir)
-            
+
             if len(dem_files) == 1:
                 merged_file = dem_files[0]
             else:
@@ -298,28 +298,28 @@ class GLO30Provider(DEMProvider):
                 merged_file = tmpdir / 'merged.tif'
                 cmd = ['gdal_merge.py', '-o', str(merged_file)] + [str(f) for f in dem_files]
                 subprocess.run(cmd, check=True)
-            
+
             print("Reprojecting to EPSG:3857 and clipping to bbox...")
-            
+
             # Convert bbox to EPSG:3857
             result = subprocess.run([
                 'gdaltransform', '-s_srs', 'EPSG:4326', '-t_srs', 'EPSG:3857', '-output_xy'
             ], input=f"{min_lon} {min_lat}\n{max_lon} {max_lat}\n",
                capture_output=True, text=True, check=True)
-            
+
             coords = result.stdout.strip().split('\n')
             min_x, min_y = map(float, coords[0].split())
             max_x, max_y = map(float, coords[1].split())
-            
+
             # Add buffer to ensure full coverage
             buffer = 500  # 500m buffer
             min_x -= buffer
             min_y -= buffer
             max_x += buffer
             max_y += buffer
-            
+
             output_file.parent.mkdir(parents=True, exist_ok=True)
-            
+
             cmd = [
                 'gdalwarp',
                 '-t_srs', 'EPSG:3857',
@@ -332,14 +332,14 @@ class GLO30Provider(DEMProvider):
                 str(merged_file),
                 str(output_file)
             ]
-            
+
             subprocess.run(cmd, check=True)
             print(f"Output saved: {output_file}")
-    
+
     def download(self, bbox_wgs84: tuple, cache_key: str) -> str:
         """Download and process GLO-30 DEM to EPSG:3857."""
         output_file = DEM_DIR / 'manual' / f"{cache_key}.tif"
-        
+
         # Check cache
         checksum_file = DEM_DIR / 'manual' / f"{cache_key}.sha256"
         if output_file.exists() and checksum_file.exists():
@@ -349,46 +349,46 @@ class GLO30Provider(DEMProvider):
             if stored_checksum == current_checksum:
                 print(f"Using cached DEM: {output_file}")
                 return str(output_file)
-        
+
         print(f"Downloading GLO-30 DEM for bbox {bbox_wgs84}...")
-        
+
         try:
             # Authenticate
             token = self.get_cdse_token()
             print("Authentication successful!")
-            
+
             # Find tiles
             products = self.find_dem_tiles(bbox_wgs84, token)
-            
+
             if not products:
                 raise RuntimeError("No DEM tiles found for this bbox")
-            
+
             # Create download directory
             download_dir = DEM_DIR / 'downloads'
             download_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Download and extract each tile
             dem_files = []
             for product in products:
                 product_id = product['Id']
                 product_name = product['Name']
                 print(f"Processing tile: {product_name}")
-                
+
                 zip_file = self.download_product(product_id, product_name, token, download_dir)
                 tif_file = self.extract_dem_tif(zip_file, download_dir)
                 dem_files.append(tif_file)
-            
+
             # Merge and process
             self.merge_and_process_dems(dem_files, bbox_wgs84, output_file)
-            
+
             return str(output_file)
-            
+
         except Exception as e:
             print(f"ERROR: {e}", file=sys.stderr)
             import traceback
             traceback.print_exc()
             raise
-    
+
     def get_checksum(self, filepath: str) -> str:
         """Calculate SHA256 checksum."""
         sha256_hash = hashlib.sha256()

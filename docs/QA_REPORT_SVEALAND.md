@@ -1,7 +1,7 @@
 # QA Report: Svealand Terrain Coverage
 
-**Date:** 2025-12-26  
-**Preset:** `svealand`  
+**Date:** 2025-12-26
+**Preset:** `svealand`
 **Bbox:** 14.5, 58.5, 19.0, 61.0 (WGS84)
 
 ## Status: IN PROGRESS
@@ -42,7 +42,7 @@
 
 #### Step 4: Contour Extraction
 - **Command:** `docker-compose run --rm prep python3 /app/src/extract_contours.py --preset svealand`
-- **Output:** 
+- **Output:**
   - `/data/terrain/contours/svealand_2m.geojson`
   - `/data/terrain/contours/svealand_10m.geojson`
   - `/data/terrain/contours/svealand_50m.geojson`

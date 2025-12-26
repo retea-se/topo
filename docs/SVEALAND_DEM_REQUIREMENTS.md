@@ -8,10 +8,10 @@
 
 ## DEM Source: Copernicus GLO-30
 
-**Product:** COP-DEM_GLO-30-DGED__2022_1  
-**Resolution:** 30m  
-**Coverage:** Global  
-**CRS (native):** EPSG:4326 (WGS84)  
+**Product:** COP-DEM_GLO-30-DGED__2022_1
+**Resolution:** 30m
+**Coverage:** Global
+**CRS (native):** EPSG:4326 (WGS84)
 **CRS (target):** EPSG:3857 (Web Mercator)
 
 ## Required Tiles
@@ -27,9 +27,9 @@ Svealand bbox (14.5°E, 58.5°N, 19.0°E, 61.0°N) covers multiple GLO-30 tiles.
 
 ## Output File
 
-**Location:** `/data/dem/manual/svealand_eudem.tif`  
-**Format:** GeoTIFF  
-**CRS:** EPSG:3857  
+**Location:** `/data/dem/manual/svealand_eudem.tif`
+**Format:** GeoTIFF
+**CRS:** EPSG:3857
 **Resolution:** 30m (target)
 
 ## Download Command

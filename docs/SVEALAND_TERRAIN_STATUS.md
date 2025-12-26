@@ -1,7 +1,7 @@
 # Svealand Terrain Pipeline - Status
 
-**Datum:** 2025-12-26  
-**Preset:** `svealand`  
+**Datum:** 2025-12-26
+**Preset:** `svealand`
 **Bbox:** 14.5, 58.5, 19.0, 61.0 (WGS84)
 
 ## ✅ Implementerat
