@@ -1,0 +1,31 @@
+{
+  "timestamp": "202512261652",
+  "results": {
+    "passed": [
+      "demoA_core_paper_allLayers",
+      "demoA_wide_paper_allLayers",
+      "demoA_wide_gallery_allLayers",
+      "demoB_core_paper_ui",
+      "demoB_wide_paper_ui"
+    ],
+    "failed": [],
+    "errors": [
+      {
+        "name": "demoA_wide_paper_roadsOff",
+        "error": "Too many arguments. If you need to pass more than 1 argument to the function wrap them in an object."
+      },
+      {
+        "name": "demoA_wide_paper_buildingsOff",
+        "error": "Too many arguments. If you need to pass more than 1 argument to the function wrap them in an object."
+      },
+      {
+        "name": "demoA_wide_paper_contoursOff",
+        "error": "Too many arguments. If you need to pass more than 1 argument to the function wrap them in an object."
+      },
+      {
+        "name": "demoA_wide_paper_hillshadeOff",
+        "error": "Too many arguments. If you need to pass more than 1 argument to the function wrap them in an object."
+      }
+    ]
+  }
+}

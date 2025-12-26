@@ -68,10 +68,40 @@ class MapnikRenderer(RendererInterface):
                 mapnik.render(map_obj, im)
                 return im.tostring('png')
             elif format == 'pdf':
-                # Mapnik PDF rendering
-                return mapnik.render_to_string(map_obj, format='pdf')
+                # Mapnik PDF rendering via Cairo
+                with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as pdf_file:
+                    pdf_path = pdf_file.name
+
+                try:
+                    # Use cairo surface for PDF
+                    import cairo
+                    surface = cairo.PDFSurface(pdf_path, width, height)
+                    mapnik.render(map_obj, surface)
+                    surface.finish()
+
+                    with open(pdf_path, 'rb') as f:
+                        return f.read()
+                finally:
+                    if os.path.exists(pdf_path):
+                        os.unlink(pdf_path)
+            elif format == 'svg':
+                # Mapnik SVG rendering via Cairo
+                with tempfile.NamedTemporaryFile(suffix='.svg', delete=False) as svg_file:
+                    svg_path = svg_file.name
+
+                try:
+                    import cairo
+                    surface = cairo.SVGSurface(svg_path, width, height)
+                    mapnik.render(map_obj, surface)
+                    surface.finish()
+
+                    with open(svg_path, 'rb') as f:
+                        return f.read()
+                finally:
+                    if os.path.exists(svg_path):
+                        os.unlink(svg_path)
             else:
-                raise ValueError(f"Unsupported format: {format}")
+                raise ValueError(f"Unsupported format: {format}. Supported: png, pdf, svg")
         finally:
             # Clean up temporary XML file
             if os.path.exists(xml_file):

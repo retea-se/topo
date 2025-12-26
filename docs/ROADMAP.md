@@ -1,6 +1,6 @@
 # Roadmap
 
-**Senast uppdaterad**: 2025-12-27 (kväll)
+**Senast uppdaterad**: 2025-12-26 (Interactive Print Editor)
 
 ## Statusförklaring
 
@@ -131,6 +131,77 @@
 - Versionsbara (t.ex. `_v1`, `_v2`)
 - Reproducerbara över tid
 - Export-filnamn inkluderar preset-namn
+
+---
+
+## Phase 10 - Interactive Print Editor & Advanced Export (NEW)
+
+**Mål**: Skapa ett interaktivt editörgränssnitt liknande Mapiful Editor.
+
+**Dokumentation**: [TODO_EXPORT_EDITOR.md](TODO_EXPORT_EDITOR.md)
+
+### 10.1 Bbox Drawing Tool
+
+| Uppgift | Status |
+|---------|--------|
+| MapLibre Draw integration | 🟡 DOING |
+| Rectangle draw mode för bbox | ⬜ TODO |
+| Manual coordinate input | ⬜ TODO |
+| Sync bbox med map view | ⬜ TODO |
+| Reset to Preset knapp | ⬜ TODO |
+
+### 10.2 Editor Panel UI
+
+| Uppgift | Status |
+|---------|--------|
+| Sidebar/panel layout | 🟡 DOING |
+| Title input field | ⬜ TODO |
+| Scale selector (auto-calculated) | ⬜ TODO |
+| Attribution text input | ⬜ TODO |
+| Paper size dropdown (A0-A4) | ⬜ TODO |
+| Orientation toggle (Portrait/Landscape) | ⬜ TODO |
+| DPI selector | ⬜ TODO |
+| Format selector (PNG/PDF/SVG) | ⬜ TODO |
+
+### 10.3 Backend Export API
+
+| Uppgift | Status |
+|---------|--------|
+| Custom bbox support (not just presets) | ⬜ TODO |
+| PDF export endpoint | ⬜ TODO |
+| SVG export endpoint | ⬜ TODO |
+| Title overlay rendering | ⬜ TODO |
+| Scale bar rendering | ⬜ TODO |
+| Attribution text rendering | ⬜ TODO |
+
+### 10.4 Preview System
+
+| Uppgift | Status |
+|---------|--------|
+| Low-res preview canvas | ⬜ TODO |
+| Paper bounds overlay on map | ⬜ TODO |
+| Title/attribution preview | ⬜ TODO |
+| Scale bar preview | ⬜ TODO |
+| Composition layout visualization | ⬜ TODO |
+
+### 10.5 Testing & QA
+
+| Uppgift | Status |
+|---------|--------|
+| Manual test cases | ⬜ TODO |
+| Playwright E2E tests | ⬜ TODO |
+| Export dimension verification | ⬜ TODO |
+| Chrome DevTools verification | ⬜ TODO |
+| QA screenshots | ⬜ TODO |
+
+### Framgångskriterier
+
+- [ ] Användare kan rita custom bbox på kartan
+- [ ] Användare kan exportera PDF med titel/skala/attribution
+- [ ] Användare kan exportera SVG med vektorbanor
+- [ ] Preview visar korrekt resultat före export
+- [ ] Alla pappersstorlekar (A0-A4) fungerar
+- [ ] Tester passerar i automatiserad QA
 
 ---
 
@@ -675,6 +746,14 @@ Parametrar som kan justeras per stil eller export.
 ---
 
 ## Changelog
+
+### 2025-12-26 (Interactive Print Editor)
+
+- 🟡 **Phase 10 - Interactive Print Editor & Advanced Export** påbörjad:
+  - TODO_EXPORT_EDITOR.md skapad med detaljerad implementeringsplan
+  - ROADMAP uppdaterad med Phase 10
+  - Bbox drawing tool implementation startad
+  - Editor panel UI design påbörjad
 
 ### 2025-12-27 (kväll)
 

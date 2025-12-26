@@ -20,11 +20,11 @@ function lonLatToTile(lon, lat, zoom) {
 function generateTestPoints(bounds, count = 20) {
   const [minLon, minLat, maxLon, maxLat] = bounds;
   const points = [];
-  
+
   // Generate grid of points
   const rows = Math.ceil(Math.sqrt(count));
   const cols = Math.ceil(count / rows);
-  
+
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols && points.length < count; j++) {
       const lon = minLon + (maxLon - minLon) * (j / (cols - 1 || 1));
@@ -32,7 +32,7 @@ function generateTestPoints(bounds, count = 20) {
       points.push({ name: `grid_${i}_${j}`, lon, lat });
     }
   }
-  
+
   return points;
 }
 
@@ -91,7 +91,7 @@ async function runHealthCheck() {
   const outputDir = process.argv[2] || 'exports/screenshots';
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
   const outputPath = path.join(outputDir, `tile_health_svealand_${timestamp}.json`);
-  
+
   const results = {
     timestamp: new Date().toISOString(),
     preset: 'svealand',
@@ -115,15 +115,15 @@ async function runHealthCheck() {
   try {
     console.log(`Fetching TileJSON from ${osmSource.tilejsonUrl}...`);
     const tilejson = await fetchTileJSON(osmSource.tilejsonUrl);
-    
+
     const bounds = tilejson.bounds || [14.5, 58.5, 19.0, 61.0];
     const minzoom = tilejson.minzoom || 0;
     const maxzoom = tilejson.maxzoom || 18;
-    
+
     console.log(`Bounds: [${bounds.join(', ')}]`);
     console.log(`Zoom range: ${minzoom}-${maxzoom}`);
     console.log(`Format: ${tilejson.format || 'unknown'}\n`);
-    
+
     results.metadata = {
       bounds,
       minzoom,
@@ -146,13 +146,13 @@ async function runHealthCheck() {
         if (maxzoom !== mid && maxzoom <= 15) testZooms.push(maxzoom);
       }
     }
-    
+
     // If no valid zooms, use defaults
     if (testZooms.length === 0) {
       testZooms.push(10, 12, 14);
       console.log('Warning: Using default zoom levels\n');
     }
-    
+
     console.log(`Testing zoom levels: ${testZooms.join(', ')}\n`);
 
     results.sources[osmSource.name] = {
@@ -164,13 +164,13 @@ async function runHealthCheck() {
     };
 
     console.log(`Testing ${osmSource.name}...`);
-    
+
     for (const zoom of testZooms) {
       if (zoom < minzoom || zoom > maxzoom) {
         console.log(`  Skipping zoom ${zoom} (outside range ${minzoom}-${maxzoom})`);
         continue;
       }
-      
+
       for (const point of testPoints) {
         const tile = lonLatToTile(point.lon, point.lat, zoom);
         const url = osmSource.tileUrl
@@ -213,15 +213,15 @@ async function runHealthCheck() {
         }
       }
     }
-    
+
     const sourceResults = results.sources[osmSource.name];
     console.log(`\n  Success: ${sourceResults.success}, Failed: ${sourceResults.failed}, Empty: ${sourceResults.empty}`);
-    
+
     // Determine verdict
     // For OSM tiles: 200/204 = success (even if empty), 404/error = fail
     const successRate = results.summary.total > 0 ? results.summary.success / results.summary.total : 0;
     const failRate = results.summary.total > 0 ? results.summary.failed / results.summary.total : 0;
-    
+
     if (failRate === 0 && successRate >= 0.8) {
       results.verdict = 'PASS'; // All requests succeed, most have data
     } else if (failRate === 0 && successRate >= 0.5) {

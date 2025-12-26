@@ -5,8 +5,8 @@
 
 ## Sammanfattning
 
-✅ **OSM tiles:** PASS (60/60 success, 0 failed)  
-✅ **Demo A UI:** PASS (inga 404-spam, graceful när terrain saknas)  
+✅ **OSM tiles:** PASS (60/60 success, 0 failed)
+✅ **Demo A UI:** PASS (inga 404-spam, graceful när terrain saknas)
 ✅ **Demo B Export:** PASS (fungerar nu med graceful handling av saknade terrain)
 
 ## Vad som testats

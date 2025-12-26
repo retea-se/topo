@@ -1,7 +1,7 @@
 # QA Report - Svealand Preset
 
-**Latest QA Run**: `qa_20251226_195259_svealand_osm_only` (2025-12-26 19:52)  
-**Previous QA Run**: `qa_20251227_120000_svealand` (2025-12-27 12:00)  
+**Latest QA Run**: `qa_20251226_195259_svealand_osm_only` (2025-12-26 19:52)
+**Previous QA Run**: `qa_20251227_120000_svealand` (2025-12-27 12:00)
 **Status**: ⚠️ **PARTIAL COVERAGE** (OSM ✅, Terrain ❌)
 
 ## Executive Summary
@@ -127,7 +127,7 @@ All screenshots saved in: `exports/screenshots/qa_20251227_120000_svealand/`
 ### 3. Graceful UI When Terrain Missing ✅
 
 **Problem**: Frontend made 404-requests for missing terrain sources
-**Fix**: 
+**Fix**:
 - Added `/api/coverage/:preset` endpoint to check layer availability
 - Updated `themeToMapLibreStyle()` to only add sources that exist
 - UI toggles disabled when sources missing

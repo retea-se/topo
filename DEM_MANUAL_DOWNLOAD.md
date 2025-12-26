@@ -242,3 +242,4 @@ When using this data in outputs, include attribution:
 - `docs/STATUS.md` - Current system status
 - `scripts/prepare_dem_stockholm_wide.ps1` - Automated acquisition script
 - `prep-service/scripts/download_copernicus_dem.py` - Download script (Python)
+

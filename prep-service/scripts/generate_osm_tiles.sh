@@ -17,28 +17,16 @@ echo "Generating OSM vector tiles from ${OSM_PBF}"
 
 mkdir -p "$(dirname "${OUTPUT}")"
 
-# Extract bbox from preset config file
-BBOX=$(python3 <<EOF
-import json
-import sys
-with open('${CONFIG_DIR}/bbox_presets.json') as f:
-    presets = json.load(f)
-    for preset in presets['presets']:
-        if preset['name'] == '${PRESET}':
-            bbox = preset['bbox_wgs84']
-            print(f"{bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]}")
-            sys.exit(0)
-print("ERROR: Preset not found", file=sys.stderr)
-sys.exit(1)
-EOF
-)
+# Note: We don't use --bounds here because:
+# 1. OSM data is already clipped with --strategy=complete_ways (includes complete ways even if they cross bbox)
+# 2. We want Planetiler to generate tiles for all features in the OSM file, including parts that extend beyond the original bbox
+# 3. This ensures roads, buildings, and water features render completely across the entire map
 
 java -Xmx2g -jar /app/bin/planetiler.jar \
   --osm-path="${OSM_PBF}" \
   --output="${OUTPUT}" \
   --minzoom=10 \
   --maxzoom=15 \
-  --bounds="${BBOX}" \
   --download \
   --nodemap-type=sparsearray \
   --nodemap-storage=mmap \

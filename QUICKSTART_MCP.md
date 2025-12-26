@@ -46,3 +46,4 @@ Nu kan du använda Chrome DevTools MCP i Cursor för att:
 Se `MCP_SETUP.md` för mer detaljerad information och felsökning.
 
 
+

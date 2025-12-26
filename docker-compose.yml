@@ -104,6 +104,7 @@ services:
       - data:/data:ro
       - exports:/exports
       - ./themes:/app/themes:ro
+      - ./prep-service/config:/app/config:ro
     profiles: ["demoB"]
     environment:
       - POSTGRES_HOST=demo-b-db

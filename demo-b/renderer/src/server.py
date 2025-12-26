@@ -16,7 +16,7 @@ LIMITS_CONFIG = None
 
 def check_coverage(preset: str) -> dict:
     """Check which layers are available for a preset.
-    
+
     Returns:
         dict with keys: osm, contours, hillshade (all bool)
     """
@@ -25,17 +25,17 @@ def check_coverage(preset: str) -> dict:
         'contours': False,
         'hillshade': False
     }
-    
+
     # Check hillshade file
     hillshade_file = f"/data/terrain/hillshade/{preset}_hillshade.tif"
     coverage['hillshade'] = os.path.exists(hillshade_file)
-    
+
     # For contours, we assume they're in PostGIS
     # If the table doesn't exist, the query will return empty (graceful)
     # For now, we'll assume contours are available if hillshade exists
     # (since they're generated together)
     coverage['contours'] = coverage['hillshade']
-    
+
     return coverage
 
 def load_preset_limits():
@@ -195,6 +195,14 @@ def load_bbox_preset(preset_name: str) -> tuple:
 
     return (min_x, min_y, max_x, max_y)
 
+def wgs84_to_mercator(lon: float, lat: float) -> tuple:
+    """Convert WGS84 coordinates to EPSG:3857 (Web Mercator)."""
+    import math
+    earth_radius = 6378137.0
+    x = math.radians(lon) * earth_radius
+    y = math.log(math.tan(math.pi / 4 + math.radians(lat) / 2)) * earth_radius
+    return (x, y)
+
 @app.route('/render', methods=['POST'])
 def render():
     """Render map endpoint."""
@@ -205,6 +213,7 @@ def render():
 
         # Parse parameters
         preset = data.get('bbox_preset', 'stockholm_core')
+        custom_bbox = data.get('custom_bbox')  # [west, south, east, north] in WGS84
         theme_name = data.get('theme', 'paper')
         render_mode = data.get('render_mode', 'print')
         dpi = int(data.get('dpi', 150))
@@ -212,18 +221,24 @@ def render():
         height_mm = float(data.get('height_mm', 594))
         format_type = data.get('format', 'png')
 
-        # Validate render request against preset limits
-        validation = validate_render_request(preset, dpi, width_mm, height_mm)
-        if not validation['valid']:
-            return jsonify({
-                'error': validation['error'],
-                'validation': validation
-            }), 400
+        # Composition elements
+        title = data.get('title', '')
+        subtitle = data.get('subtitle', '')
+        attribution = data.get('attribution', 'Map data: OpenStreetMap contributors')
 
-        # Log warnings if any
-        if validation['warnings']:
-            for warning in validation['warnings']:
-                print(f"Warning: {warning}", file=sys.stderr)
+        # Validate render request against preset limits (skip for custom bbox)
+        if preset and not custom_bbox:
+            validation = validate_render_request(preset, dpi, width_mm, height_mm)
+            if not validation['valid']:
+                return jsonify({
+                    'error': validation['error'],
+                    'validation': validation
+                }), 400
+
+            # Log warnings if any
+            if validation['warnings']:
+                for warning in validation['warnings']:
+                    print(f"Warning: {warning}", file=sys.stderr)
 
         # Layer visibility (default: all layers visible)
         layers = data.get('layers', {
@@ -247,19 +262,44 @@ def render():
 
         theme = load_theme(str(theme_path))
 
-        # Get bbox
-        bbox_3857 = load_bbox_preset(preset)
+        # Get bbox (custom or preset)
+        if custom_bbox:
+            # Convert custom bbox from WGS84 to EPSG:3857
+            west, south, east, north = custom_bbox
+            min_x, min_y = wgs84_to_mercator(west, south)
+            max_x, max_y = wgs84_to_mercator(east, north)
+            bbox_3857 = (min_x, min_y, max_x, max_y)
+            preset = 'custom'  # For coverage check fallback
+        else:
+            bbox_3857 = load_bbox_preset(preset)
 
         # Check coverage (graceful handling when terrain missing)
         coverage = check_coverage(preset)
 
+        # Add composition elements to theme for renderer
+        theme['_composition'] = {
+            'title': title,
+            'subtitle': subtitle,
+            'attribution': attribution,
+            'render_mode': render_mode
+        }
+
         # Render
         result = renderer.render(theme, bbox_3857, output_size, dpi, format_type, preset, layers, coverage)
 
+        # Determine mimetype
+        mimetypes = {
+            'png': 'image/png',
+            'pdf': 'application/pdf',
+            'svg': 'image/svg+xml'
+        }
+        mimetype = mimetypes.get(format_type, 'application/octet-stream')
+
         return send_file(
             io.BytesIO(result),
-            mimetype='image/png' if format_type == 'png' else 'application/pdf',
-            as_attachment=False
+            mimetype=mimetype,
+            as_attachment=True,
+            download_name=f"map_export_{preset}.{format_type}"
         )
     except Exception as e:
         import traceback

@@ -92,7 +92,7 @@ app.get('/api/coverage/:preset', async (req, res) => {
   const preset = req.params.preset;
   const tileserverUrl = TILESERVER_URL_INTERNAL;
   const hillshadeUrl = HILLSHADE_URL_INTERNAL;
-  
+
   const coverage = {
     preset,
     osm: false,
@@ -135,6 +135,29 @@ app.get('/api/coverage/:preset', async (req, res) => {
 // Explicit fallback to index.html for SPA-style routing
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
+
+// Interactive Print Editor
+app.get('/editor', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'editor.html'));
+});
+
+// API endpoint to get bbox presets
+app.get('/api/presets', (req, res) => {
+  const presetsFile = '/app/config/bbox_presets.json';
+  try {
+    const data = fs.readFileSync(presetsFile, 'utf8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    // Fallback presets
+    res.json({
+      presets: [
+        { name: 'stockholm_core', bbox_wgs84: [17.90, 59.32, 18.08, 59.35], description: 'Central Stockholm' },
+        { name: 'stockholm_wide', bbox_wgs84: [17.75, 59.28, 18.25, 59.40], description: 'Greater Stockholm' },
+        { name: 'svealand', bbox_wgs84: [14.5, 58.5, 19.0, 61.0], description: 'Svealand region' }
+      ]
+    });
+  }
 });
 
 app.listen(PORT, () => {

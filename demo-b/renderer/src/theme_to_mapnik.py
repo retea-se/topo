@@ -42,7 +42,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Note: opacity is applied via RasterSymbolizer, NOT as a Layer attribute (invalid in Mapnik)
     hillshade_opacity = theme.get('hillshade', {}).get('opacity', 0.15)
     hillshade_file = f"/data/terrain/hillshade/{preset}_hillshade.tif"
-    
+
     # Check if hillshade file exists (graceful handling when terrain missing)
     has_hillshade = False
     if coverage is not None:
@@ -50,7 +50,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     else:
         # Fallback: check file existence
         has_hillshade = os.path.exists(hillshade_file)
-    
+
     if layers.get('hillshade', True) and has_hillshade:
         layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857">
       <StyleName>hillshade</StyleName>
@@ -158,7 +158,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     has_contours = True  # Default: assume available (PostGIS query will return empty if not)
     if coverage is not None:
         has_contours = coverage.get('contours', True)
-    
+
     if layers.get('contours', True) and has_contours:
         layers_xml.append(f"""    <Layer name="contours" srs="EPSG:3857">
       <StyleName>contours</StyleName>

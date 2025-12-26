@@ -32,3 +32,4 @@ Write-Host "Chrome har startats med remote debugging aktiverat." -ForegroundColo
 Write-Host "Du kan nu använda Chrome DevTools MCP i Cursor." -ForegroundColor Green
 
 
+

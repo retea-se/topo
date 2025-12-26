@@ -1,0 +1,60 @@
+# .cursorrules
+# Topo Map Export System — Cursor Rules
+# Syfte: få Cursor att agera stabilt, snabbt och praktiskt i detta repo.
+
+## Grundprinciper
+- Jobba i små, verifierbara steg. Efter varje steg: kör ett snabbt test och skriv vad som ändrades.
+- Om du stöter på en blockering: föreslå 1–2 tydliga åtgärder och välj den mest rimliga själv. Inga “ska jag…?”-loopar.
+- Ändra inte stora delar av arkitektur utan att det uttryckligen behövs för att lösa ett konkret problem.
+
+## Definition of Done (för varje uppgift)
+1) Kodändring implementerad
+2) Minimal verifikation körd (curl/endpoint/UI-load/screenshot/export)
+3) Dokument uppdaterade:
+   - docs/STATUS.md (vad fungerar nu, vad är känt trasigt, nästa 1–3 steg)
+   - docs/ROADMAP.md (bocka av eller flytta fram, länka till relevanta commits/artifacts)
+   - docs/CHANGELOG.md (kort logg: datum, commit, vad och varför)
+4) Om UI berörs: spara minst 1 screenshot i exports/screenshots/
+
+## Arbetssätt i detta repo
+- Kör kommandon lokalt via terminalen när det är rimligt.
+- För Docker: använd `docker compose` (inte legacy `docker-compose` om inte repo kräver).
+- När du genererar exports/screenshots:
+  - skapa mappen om den saknas
+  - filnamn ska vara konsekventa och “diff-vänliga”
+  - använd format: YYYYMMDD_HHMM_<demo>_<preset>_<theme>_<mode>_<artifact>.png
+    Ex: 20251226_1430_demoA_stockholm_wide_gallery_print_ui.png
+
+## UI-automation / DevTools MCP
+- Om MCP finns: använd det för att:
+  - öppna Demo A och Demo B
+  - verifiera att kartan renderar (inte blank)
+  - toggla lager (när feature finns)
+  - trigga export och spara resultat
+- Ta screenshots av:
+  - Demo A: core + wide, minst “paper” och “gallery”
+  - Demo B: UI + en render-export
+- Lägg screenshots i `exports/screenshots/` och nämn dem i docs/STATUS.md.
+
+## Dokumentation
+- Håll dokumentation på svenska, kort och konkret.
+- Skapa en lokal “start-sida” som kan köras med Live Server:
+  - `docs/index.html` (eller `docs/portal/index.html`)
+  - Ska länka till Demo A/B, tileserver catalog, export endpoints, och förklara systemet.
+- Dokument ska vara sanningskälla: om du ändrar URL:er/portar/presets, uppdatera start-sidan och STATUS/ROADMAP.
+
+## Kodpolicy
+- Undvik hårdkodade listor (t.ex. themes). Läs från themes/ och exponera via API om möjligt.
+- Om du måste hårdkoda tillfälligt: lämna TODO + länk till issue/roadmap.
+- Föredra enkla, deterministiska lösningar. För export: inga animeringar, stabil viewport, vänta på map idle + fonts.
+
+## “Fastnar inte”-regler
+- Max 2 försök per felsökningsspår. Om det inte går: byt strategi.
+- Vid oklarhet: logga relevant output (docker logs, network errors, 404) och gör en minimal fix.
+- Inga stora refactors “för säkerhets skull”.
+
+## Output artifacts
+- Exports ska hamna i `exports/`.
+- Skärmdumpar i `exports/screenshots/`.
+- Lägg gärna en kort RESULT.md per körning i `exports/RESULT_YYYYMMDD_HHMM.md`.
+

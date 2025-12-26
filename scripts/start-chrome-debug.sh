@@ -44,3 +44,4 @@ echo "Chrome har startats med remote debugging aktiverat."
 echo "Du kan nu använda Chrome DevTools MCP i Cursor."
 
 
+

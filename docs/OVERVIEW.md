@@ -130,6 +130,7 @@ Fördefinierade geografiska områden:
 |--------|-------------|--------|
 | stockholm_core | [17.90, 59.32, 18.08, 59.35] | Centrala Stockholm |
 | stockholm_wide | [17.75, 59.28, 18.25, 59.40] | Större Stockholmsområdet |
+| svealand | [14.5, 58.5, 19.0, 61.0] | Svealand region (Västerås, Uppsala, Örebro, etc.) |
 
 ## Exportdimensioner
 

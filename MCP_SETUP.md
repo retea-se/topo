@@ -73,3 +73,4 @@ När Chrome DevTools MCP är konfigurerat kan du använda följande funktioner:
 - Se till att du har rätt behörigheter i Cursor-inställningarna
 
 
+

@@ -202,7 +202,7 @@ Promise.all([
     // Update toggle states based on coverage
     function updateToggleStates(coverage) {
       if (!coverage) return;
-      
+
       // Disable/enable toggles based on coverage
       if (layerToggles.hillshade) {
         layerToggles.hillshade.disabled = !coverage.hillshade;
@@ -210,14 +210,14 @@ Promise.all([
           layerToggles.hillshade.checked = false;
         }
       }
-      
+
       if (layerToggles.contours) {
         layerToggles.contours.disabled = !coverage.contours;
         if (!coverage.contours && layerToggles.contours.checked) {
           layerToggles.contours.checked = false;
         }
       }
-      
+
       // OSM layers (water, roads, buildings, parks) are always available if OSM exists
       // No need to disable them
     }
