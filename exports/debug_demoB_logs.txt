@@ -1,0 +1,157 @@
+time="2025-12-26T12:54:41+01:00" level=warning msg="C:\\Users\\marcu\\OneDrive\\Dokument\\topo\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+demo-b-db-1  | ********************************************************************************
+demo-b-db-1  | WARNING: POSTGRES_HOST_AUTH_METHOD has been set to "trust". This will allow
+demo-b-db-1  |          anyone with access to the Postgres port to access your database without
+demo-b-db-1  |          a password, even if POSTGRES_PASSWORD is set. See PostgreSQL
+demo-b-db-1  |          documentation about "trust":
+demo-b-db-1  |          https://www.postgresql.org/docs/current/auth-trust.html
+demo-b-db-1  |          In Docker's default configuration, this is effectively any other
+demo-b-db-1  |          container on the same system.
+demo-b-db-1  | 
+demo-b-db-1  |          It is not recommended to use POSTGRES_HOST_AUTH_METHOD=trust. Replace
+demo-b-db-1  |          it with "-e POSTGRES_PASSWORD=password" instead to set a password in
+demo-b-db-1  |          "docker run".
+demo-b-db-1  | ********************************************************************************
+demo-b-db-1  | The files belonging to this database system will be owned by user "postgres".
+demo-b-db-1  | This user must also own the server process.
+demo-b-db-1  | 
+demo-b-db-1  | The database cluster will be initialized with locale "en_US.utf8".
+demo-b-db-1  | The default database encoding has accordingly been set to "UTF8".
+demo-b-db-1  | The default text search configuration will be set to "english".
+demo-b-db-1  | 
+demo-b-db-1  | Data page checksums are disabled.
+demo-b-db-1  | 
+demo-b-db-1   | fixing permissions on existing directory /var/lib/postgresql/data ... ok
+demo-b-db-1   | creating subdirectories ... ok
+demo-b-db-1   | selecting dynamic shared memory implementation ... posix
+demo-b-db-1   | selecting default max_connections ... 100
+demo-b-db-1   | selecting default shared_buffers ... 128MB
+demo-b-db-1   | selecting default time zone ... Etc/UTC
+demo-b-db-1   | creating configuration files ... ok
+demo-b-db-1   | running bootstrap script ... ok
+demo-b-db-1   | performing post-bootstrap initialization ... ok
+demo-b-db-1   | initdb: warning: enabling "trust" authentication for local connections
+demo-b-db-1   | initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
+demo-b-db-1   | syncing data to disk ... ok
+demo-b-db-1   | 
+demo-b-db-1   | 
+demo-b-web-1  | 
+demo-b-web-1  | > demo-b-web@1.0.0 start
+demo-b-web-1  | > node src/server.js
+demo-b-api-1  | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+demo-b-api-1  |  * Running on all addresses (0.0.0.0)
+demo-b-db-1   | Success. You can now start the database server using:
+demo-b-db-1   | 
+demo-b-db-1   |     pg_ctl -D /var/lib/postgresql/data -l logfile start
+demo-b-db-1   | 
+demo-b-web-1  | 
+demo-b-api-1  |  * Running on http://127.0.0.1:5000
+demo-b-api-1  |  * Running on http://192.168.80.8:5000
+demo-b-api-1  | [33mPress CTRL+C to quit[0m
+demo-b-db-1   | waiting for server to start....2025-12-26 11:43:51.739 UTC [49] LOG:  starting PostgreSQL 16.4 (Debian 16.4-1.pgdg110+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+demo-b-db-1   | 2025-12-26 11:43:51.741 UTC [49] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+demo-b-db-1   | 2025-12-26 11:43:51.749 UTC [52] LOG:  database system was shut down at 2025-12-26 11:43:51 UTC
+demo-b-db-1   | 2025-12-26 11:43:51.757 UTC [49] LOG:  database system is ready to accept connections
+demo-b-db-1   |  done
+demo-b-db-1   | server started
+demo-b-db-1   | CREATE DATABASE
+demo-b-db-1   | 
+demo-b-db-1   | 
+demo-b-db-1   | /usr/local/bin/docker-entrypoint.sh: sourcing /docker-entrypoint-initdb.d/10_postgis.sh
+demo-b-db-1   | CREATE DATABASE
+demo-b-db-1   | Loading PostGIS extensions into template_postgis
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | You are now connected to database "template_postgis" as user "postgres".
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | Loading PostGIS extensions into gis
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | You are now connected to database "gis" as user "postgres".
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | CREATE EXTENSION
+demo-b-db-1   | 
+demo-b-db-1   | 2025-12-26 11:43:54.516 UTC [49] LOG:  received fast shutdown request
+demo-b-db-1   | waiting for server to shut down....2025-12-26 11:43:54.521 UTC [49] LOG:  aborting any active transactions
+demo-b-db-1   | 2025-12-26 11:43:54.523 UTC [49] LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
+demo-b-db-1   | 2025-12-26 11:43:54.523 UTC [50] LOG:  shutting down
+demo-b-db-1   | 2025-12-26 11:43:54.525 UTC [50] LOG:  checkpoint starting: shutdown immediate
+demo-b-db-1   | 2025-12-26 11:43:54.834 UTC [50] LOG:  checkpoint complete: wrote 4481 buffers (27.3%); 0 WAL file(s) added, 0 removed, 2 recycled; write=0.091 s, sync=0.211 s, total=0.312 s; sync files=963, longest=0.005 s, average=0.001 s; distance=35002 kB, estimate=35002 kB; lsn=0/3715590, redo lsn=0/3715590
+demo-b-db-1   | 2025-12-26 11:43:54.862 UTC [49] LOG:  database system is shut down
+demo-b-db-1   |  done
+demo-b-db-1   | server stopped
+demo-b-db-1   | 
+demo-b-db-1   | PostgreSQL init process complete; ready for start up.
+demo-b-db-1   | 
+demo-b-db-1   | 2025-12-26 11:43:54.947 UTC [1] LOG:  starting PostgreSQL 16.4 (Debian 16.4-1.pgdg110+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 10.2.1-6) 10.2.1 20210110, 64-bit
+demo-b-db-1   | 2025-12-26 11:43:54.981 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+demo-b-api-1  |  * Serving Flask app 'app'
+demo-b-api-1  |  * Debug mode: off
+demo-b-api-1  | 192.168.80.1 - - [26/Dec/2025 11:45:03] "[31m[1mPOST /render HTTP/1.1[0m" 400 -
+demo-b-api-1  | 192.168.80.1 - - [26/Dec/2025 11:45:33] "POST /render HTTP/1.1" 200 -
+demo-b-api-1  | 192.168.80.1 - - [26/Dec/2025 11:45:59] "GET /health HTTP/1.1" 200 -
+demo-b-web-1  | Demo B web server listening on port 3000
+demo-b-db-1   | 2025-12-26 11:43:54.981 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+demo-b-db-1   | 2025-12-26 11:43:54.984 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+demo-b-db-1   | 2025-12-26 11:43:54.992 UTC [73] LOG:  database system was shut down at 2025-12-26 11:43:54 UTC
+demo-b-db-1   | 2025-12-26 11:43:54.999 UTC [1] LOG:  database system is ready to accept connections
+demo-b-db-1   | 2025-12-26 11:44:10.234 UTC [91] ERROR:  type "hstore" does not exist at character 1105
+demo-b-db-1   | 2025-12-26 11:44:10.234 UTC [91] STATEMENT:  CREATE UNLOGGED TABLE "planet_osm_point" (osm_id int8,"access" text,"addr:housename" text,"addr:housenumber" text,"addr:interpolation" text,"admin_level" text,"aerialway" text,"aeroway" text,"amenity" text,"area" text,"barrier" text,"bicycle" text,"brand" text,"bridge" text,"boundary" text,"building" text,"capital" text,"construction" text,"covered" text,"culvert" text,"cutting" text,"denomination" text,"disused" text,"ele" text,"embankment" text,"foot" text,"generator:source" text,"harbour" text,"highway" text,"historic" text,"horse" text,"intermittent" text,"junction" text,"landuse" text,"layer" text,"leisure" text,"lock" text,"man_made" text,"military" text,"motorcar" text,"name" text,"natural" text,"office" text,"oneway" text,"operator" text,"place" text,"population" text,"power" text,"power_source" text,"public_transport" text,"railway" text,"ref" text,"religion" text,"route" text,"service" text,"shop" text,"sport" text,"surface" text,"toll" text,"tourism" text,"tower:type" text,"tunnel" text,"water" text,"waterway" text,"wetland" text,"width" text,"wood" text,"z_order" int4,"tags" hstore,way geometry(POINT,3857) ) WITH (autovacuum_enabled = off)
+demo-b-db-1   | 2025-12-26 11:48:55.207 UTC [71] LOG:  checkpoint starting: time
+demo-b-db-1   | 2025-12-26 11:53:25.114 UTC [71] LOG:  checkpoint complete: wrote 8332 buffers (50.9%); 0 WAL file(s) added, 0 removed, 9 recycled; write=269.832 s, sync=0.048 s, total=269.908 s; sync files=259, longest=0.003 s, average=0.001 s; distance=143008 kB, estimate=143008 kB; lsn=0/C2BD730, redo lsn=0/C2BD6F8
+demo-b-renderer-1  |  * Serving Flask app 'server'
+demo-b-renderer-1  |  * Debug mode: off
+demo-b-renderer-1  | [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+demo-b-renderer-1  |  * Running on all addresses (0.0.0.0)
+demo-b-renderer-1  |  * Running on http://127.0.0.1:5001
+demo-b-renderer-1  |  * Running on http://192.168.80.9:5001
+demo-b-renderer-1  | [33mPress CTRL+C to quit[0m
+demo-b-renderer-1  | Mapnik LOG> 2025-12-26 11:45:33: Unable to process some data while parsing '/tmp/tmpo6t3_hnm.xml':
+demo-b-renderer-1  | * node 'Styles' at line 7
+demo-b-renderer-1  | * node 'Layers' at line 42
+demo-b-renderer-1  | 192.168.80.8 - - [26/Dec/2025 11:45:33] "POST /render HTTP/1.1" 200 -
+demo-b-importer-1  | Importing OSM data from /data/osm/stockholm_core.osm.pbf
+demo-b-importer-1  | 2025-12-26 12:44:41  osm2pgsql version 1.6.0
+demo-b-importer-1  | 2025-12-26 12:44:41  Database version: 16.4 (Debian 16.4-1.pgdg110+2)
+demo-b-importer-1  | 2025-12-26 12:44:41  PostGIS version: 3.4
+demo-b-importer-1  | 2025-12-26 12:44:41  Setting up table 'planet_osm_point'
+demo-b-importer-1  | 2025-12-26 12:44:42  Setting up table 'planet_osm_line'
+demo-b-importer-1  | 2025-12-26 12:44:42  Setting up table 'planet_osm_polygon'
+demo-b-importer-1  | 2025-12-26 12:44:42  Setting up table 'planet_osm_roads'
+demo-b-importer-1  | 
+Processing: Node(217k 217.0k/s) Way(1k 1.00k/s) Relation(0 0.0/s)
+Processing: Node(217k 217.0k/s) Way(39k 39.00k/s) Relation(10 10.0/s)
+Processing: Node(217k 217.0k/s) Way(39k 39.00k/s) Relation(860 860.0/s)
+                                                                                          
+2025-12-26 12:44:45  Reading input files done in 3s.
+demo-b-importer-1  | 2025-12-26 12:44:45    Processed 217028 nodes in 1s - 217k/s
+demo-b-importer-1  | 2025-12-26 12:44:45    Processed 39503 ways in 1s - 40k/s
+demo-b-importer-1  | 2025-12-26 12:44:45    Processed 2442 relations in 1s - 2k/s
+demo-b-importer-1  | 2025-12-26 12:44:45  Clustering table 'planet_osm_line' by geometry...
+demo-b-importer-1  | 2025-12-26 12:44:45  Clustering table 'planet_osm_polygon' by geometry...
+demo-b-importer-1  | 2025-12-26 12:44:45  Clustering table 'planet_osm_point' by geometry...
+demo-b-importer-1  | 2025-12-26 12:44:45  Clustering table 'planet_osm_roads' by geometry...
+demo-b-importer-1  | 2025-12-26 12:44:45  Creating geometry index on table 'planet_osm_roads'...
+demo-b-importer-1  | 2025-12-26 12:44:45  Creating osm_id index on table 'planet_osm_roads'...
+demo-b-importer-1  | 2025-12-26 12:44:45  Analyzing table 'planet_osm_roads'...
+demo-b-importer-1  | 2025-12-26 12:44:45  Done postprocessing on table 'planet_osm_nodes' in 0s
+demo-b-importer-1  | 2025-12-26 12:44:45  Building index on table 'planet_osm_ways'
+demo-b-importer-1  | 2025-12-26 12:44:46  Creating geometry index on table 'planet_osm_polygon'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Creating geometry index on table 'planet_osm_point'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Creating geometry index on table 'planet_osm_line'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Creating osm_id index on table 'planet_osm_polygon'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Creating osm_id index on table 'planet_osm_line'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Analyzing table 'planet_osm_polygon'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Creating osm_id index on table 'planet_osm_point'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Analyzing table 'planet_osm_line'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Analyzing table 'planet_osm_point'...
+demo-b-importer-1  | 2025-12-26 12:44:46  Building index on table 'planet_osm_rels'
+demo-b-importer-1  | 2025-12-26 12:44:46  Done postprocessing on table 'planet_osm_ways' in 0s
+demo-b-importer-1  | 2025-12-26 12:44:46  Done postprocessing on table 'planet_osm_rels' in 0s
+demo-b-importer-1  | 2025-12-26 12:44:46  All postprocessing on table 'planet_osm_point' done in 0s.
+demo-b-importer-1  | 2025-12-26 12:44:46  All postprocessing on table 'planet_osm_line' done in 0s.
+demo-b-importer-1  | 2025-12-26 12:44:46  All postprocessing on table 'planet_osm_polygon' done in 0s.
+demo-b-importer-1  | 2025-12-26 12:44:46  All postprocessing on table 'planet_osm_roads' done in 0s.
+demo-b-importer-1  | 2025-12-26 12:44:46  osm2pgsql took 5s overall.
+demo-b-importer-1  | OSM import complete

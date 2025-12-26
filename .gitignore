@@ -10,8 +10,8 @@ venv/
 .DS_Store
 *.log
 data/
-exports/
 *.png
+!exports/*.png
 *.pdf
 *.tif
 *.geojson
