@@ -1,192 +1,120 @@
-# Current Status - 26 December 2025
+# Current Status - 26 December 2025 (Updated)
 
 ## Session Summary
 
-**Status:** ✅ Båda webbapparna (Demo A och Demo B) är igång och fungerar lokalt.
-
-Fullständig bring-up genomförd enligt PHASE 0-6. Alla services kör, exporter fungerar, och systemet är redo för grafisk test.
+**Status:** ✅ Båda webbapparna (Demo A och Demo B) är fullt fungerande med alla fixes implementerade.
 
 ---
 
-## PHASE STATUS
+## CRITICAL FIXES IMPLEMENTED (This Session)
 
-### PHASE 0: Pre-flight & Docker Responsivitet - ✅ COMPLETED
+### 1. Demo A Hillshade 404 Fix
+**Problem:** Hillshade tiles returnerade 404 pga path mismatch och TMS/XYZ format.
+**Solution:**
+- Kopierade tiles från `stockholm_core_new/` till `stockholm_core/`
+- Lade till `scheme: 'tms'` i themeToStyle.js för korrekt y-koordinat-hantering
 
-**Status:** Completed
-**Actions:**
+### 2. Demo B Mapnik XML Fix
+**Problem:** `<Styles>` och `<Layers>` wrapper-element var ogiltiga i Mapnik.
+**Solution:** Tog bort wrapper-elementen, `<Style>` och `<Layer>` nu direkt under `<Map>`
 
-- Rensat alla orphan containers och nätverk
-- Bytte Docker context till `default` (från synology-remote)
-- Docker är nu responsiv
+### 3. Demo B 1px Dimension Fix
+**Problem:** `int()` trunkerade istället för att avrunda, gav 3507 px istället för 3508.
+**Solution:** Bytte till `round()` i server.py
 
-### PHASE 1: Validera DEM-fil - ✅ COMPLETED
+### 4. Dynamic Themes i båda UI
+**Problem:** Hardkodad lista med endast 5 themes.
+**Solution:**
+- Lade till `/api/themes` endpoint i båda web-servers
+- Uppdaterade HTML/JS för att dynamiskt ladda themes
+- Alla 9 themes nu tillgängliga: paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel
 
-**Status:** Completed
-**Verification:**
-
-- DEM-fil finns: `/data/dem/manual/stockholm_core_eudem.tif` (2.1MB)
-- CRS: EPSG:3857 (Pseudo-Mercator) ✓
-- Verifierad med gdalinfo
-
-### PHASE 2: Prep-pipeline - ✅ COMPLETED
-
-**Status:** Completed - Alla artefakter finns
-**Verified:**
-
-- OSM: `/data/osm/stockholm_core.osm.pbf` (3.3MB) ✓
-- DEM: `/data/dem/manual/stockholm_core_eudem.tif` (2.1MB) ✓
-- Hillshade: `/data/terrain/hillshade/stockholm_core_hillshade.tif` (667KB) ✓
-- Contours: Alla 3 intervall (2m, 10m, 50m) ✓
-- Tiles:
-  - OSM MBTiles: `/data/tiles/osm/stockholm_core.mbtiles` (4.0MB) ✓
-  - Contour MBTiles: Alla 3 intervall ✓
-  - Hillshade XYZ tiles: Flera tusen PNG-filer ✓
-
-### PHASE 3: Demo A - ✅ COMPLETED
-
-**Status:** Alla services kör, export fungerar
-**Services Running:**
-
-- demo-a-web: http://localhost:3000 ✓
-- demo-a-tileserver (Martin): http://localhost:8080 ✓
-- demo-a-hillshade-server: http://localhost:8081 ✓
-- demo-a-exporter: http://localhost:8082 ✓
-
-**Exports:**
-
-- `exports/demo-a_test_a2_150.png` (48.93 KB) ✓
-
-### PHASE 4: Demo B - ✅ COMPLETED
-
-**Status:** Alla services kör, export fungerar
-**Actions:**
-
-- Aktiverade `hstore` extension i PostGIS (saknades i init.sql)
-- OSM import lyckades: 217k nodes, 39k ways, 2.4k relations
-
-**Services Running:**
-
-- demo-b-web: http://localhost:3001 ✓
-- demo-b-api: http://localhost:5000 ✓
-- demo-b-renderer: Port 5001 (internal) ✓
-- demo-b-db: PostGIS med OSM-data ✓
-
-**Exports:**
-
-- `exports/demo-b_test_a2_150.png` (40.94 KB) ✓
-
-### PHASE 5: Tester - ✅ COMPLETED
-
-**Status:** Endpoints verifierade
-
-- Demo A endpoints: Alla svarar ✓
-- Demo B endpoints: Health check OK, web app OK ✓
-- Exports: Båda fungerar ✓
-
-### PHASE 6: Output & Ready - ✅ COMPLETED
-
-**Status:** System redo för grafisk test
+### 5. Demo B SQL Fix
+**Problem:** `ST_Hash()` funktion finns inte i PostGIS.
+**Solution:** Tog bort alla `ORDER BY ST_Hash(way)` klausuler
 
 ---
 
-## QUICK START COMMANDS
+## VERIFIED EXPORTS (A2 150 DPI)
 
-Alla services är redan igång. För att starta om efter restart:
+| Export | Dimensioner | Storlek | Status |
+|--------|-------------|---------|--------|
+| demo_a_paper.png | 2480x3508 | 4.1 MB | ✅ OK |
+| demo_a_gallery.png | 2480x3508 | 4.2 MB | ✅ OK |
+| demo_b_paper.png | 2480x3508 | 1.6 MB | ✅ OK |
+| demo_b_gallery.png | 2480x3508 | 1.9 MB | ✅ OK |
 
-```powershell
-# Navigate to project
-cd "C:\Users\marcu\OneDrive\Dokument\topo"
+**Note:** Demo A exports är större pga anti-aliasing och WebGL rendering. Demo B är server-side Mapnik.
 
-# Start Demo A
-docker compose --profile demoA up -d
+---
 
-# Start Demo B (först DB, sedan import, sedan resten)
-docker compose --profile demoB up -d demo-b-db
-Start-Sleep -Seconds 10
-docker compose --profile demoB exec demo-b-db psql -U postgres -d gis -c "CREATE EXTENSION IF NOT EXISTS hstore;"
-docker compose --profile demoB run --rm demo-b-importer stockholm_core
-docker compose --profile demoB up -d
+## SERVICE PORTS (RUNNING)
+
+| Service | Port | URL | Status |
+|---------|------|-----|--------|
+| Demo A Web | 3000 | http://localhost:3000 | ✅ Running |
+| Demo A Tileserver | 8080 | http://localhost:8080/catalog | ✅ Running |
+| Demo A Hillshade | 8081 | http://localhost:8081/tiles/hillshade/stockholm_core/{z}/{x}/{y}.png | ✅ Running |
+| Demo A Exporter | 8082 | http://localhost:8082/render | ✅ Running |
+| Demo B Web | 3001 | http://localhost:3001 | ✅ Running |
+| Demo B API | 5000 | http://localhost:5000/health | ✅ Running |
+| Demo B Renderer | 5001 | (internal) | ✅ Running |
+| Demo B DB | 5432 | (internal) | ✅ Running |
+
+---
+
+## API ENDPOINTS
+
+### Themes List
+```bash
+# Demo A
+curl http://localhost:3000/api/themes
+
+# Demo B
+curl http://localhost:3001/api/themes
+```
+
+### Export Commands
+```bash
+# Demo A Export (A2 150 DPI)
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" --output export.png
+
+# Demo B Export (A2 150 DPI)
+curl -X POST "http://localhost:5000/render" \
+  -H "Content-Type: application/json" \
+  -d '{"bbox_preset":"stockholm_core","theme":"paper","render_mode":"print","dpi":150,"width_mm":420,"height_mm":594,"format":"png"}' \
+  --output export.png
 ```
 
 ---
 
 ## FILES MODIFIED THIS SESSION
 
-1. **demo-b/db/init.sql** (bör uppdateras)
-
-   - Saknar `CREATE EXTENSION IF NOT EXISTS hstore;`
-   - Aktiverades manuellt via psql
-
-2. **exports/request.json** (skapad)
-   - Temporär fil för Demo B export-test
-
----
-
-## KNOWN ISSUES / NOTES
-
-1. **hstore extension**
-
-   - Måste aktiveras manuellt i PostGIS (bör läggas i init.sql)
-   - Fix: `CREATE EXTENSION IF NOT EXISTS hstore;`
-
-2. **Smoke test script**
-
-   - Har Windows line endings (CRLF) - fungerar inte direkt i bash
-   - Bör konverteras till LF för bash-körning
-
-3. **OSM MBTiles storlek**
-   - Nuvarande: 4.0MB (kan vara för liten, men fungerar)
-   - Tidigare notering om 50MB+ kan vara optimistisk för stockholm_core område
+1. **demo-a/web/src/themeToStyle.js** - Added `scheme: 'tms'` for hillshade source
+2. **demo-a/web/src/server.js** - Added `/api/themes` endpoint
+3. **demo-a/web/public/index.html** - Dynamic theme dropdown
+4. **demo-a/web/public/map.js** - Fetch and populate themes dynamically
+5. **demo-b/web/src/server.js** - Added `/api/themes` endpoint
+6. **demo-b/web/public/index.html** - Dynamic theme dropdown
+7. **demo-b/renderer/src/theme_to_mapnik.py** - Fixed XML structure, removed ST_Hash
+8. **demo-b/renderer/src/server.py** - Changed int() to round() for dimensions
+9. **docker-compose.yml** - Added themes volume mount to demo-b-web
 
 ---
 
-## DATA PIPELINE STATUS
+## QUICK START
 
-| Component               | Status  | Size/Location                |
-| ----------------------- | ------- | ---------------------------- |
-| OSM Sweden download     | ✅ Done | 751MB                        |
-| OSM stockholm_core clip | ✅ Done | 3.3MB                        |
-| DEM file                | ✅ Done | 2.1MB, EPSG:3857             |
-| Hillshade               | ✅ Done | 667KB                        |
-| Contours (2m/10m/50m)   | ✅ Done | 145MB / 29MB / 4.8MB         |
-| Hillshade XYZ tiles     | ✅ Done | Flera tusen PNG-filer        |
-| Contour MBTiles         | ✅ Done | 3 filer (32KB vardera - små) |
-| OSM MBTiles             | ✅ Done | 4.0MB                        |
+```bash
+cd "C:\Users\marcu\OneDrive\Dokument\topo"
 
----
+# Start all services
+docker compose --profile demoA --profile demoB up -d
 
-## SERVICE PORTS (CURRENTLY RUNNING)
-
-| Service           | Port | Profile | Status     | URL                           |
-| ----------------- | ---- | ------- | ---------- | ----------------------------- |
-| Demo A Web        | 3000 | demoA   | ✅ Running | http://localhost:3000         |
-| Demo A Tileserver | 8080 | demoA   | ✅ Running | http://localhost:8080/catalog |
-| Demo A Hillshade  | 8081 | demoA   | ✅ Running | http://localhost:8081         |
-| Demo A Exporter   | 8082 | demoA   | ✅ Running | http://localhost:8082/render  |
-| Demo B Web        | 3001 | demoB   | ✅ Running | http://localhost:3001         |
-| Demo B API        | 5000 | demoB   | ✅ Running | http://localhost:5000/health  |
-| Demo B Renderer   | 5001 | demoB   | ✅ Running | (internal)                    |
-| Demo B DB         | 5432 | demoB   | ✅ Running | (internal)                    |
+# Open in browser
+# Demo A: http://localhost:3000
+# Demo B: http://localhost:3001
+```
 
 ---
 
-## EXPORT FILES
-
-| File                             | Size     | Status |
-| -------------------------------- | -------- | ------ |
-| `exports/demo-a_test_a2_150.png` | 48.93 KB | ✅ OK  |
-| `exports/demo-b_test_a2_150.png` | 40.94 KB | ✅ OK  |
-
----
-
-## WHAT CHANGED (This Session)
-
-1. **Docker Context:** Bytte till `default` (från synology-remote) för lokal körning
-2. **hstore Extension:** Aktiverade manuellt i PostGIS (bör läggas i init.sql)
-3. **JSON Request:** Skapade `exports/request.json` för Demo B export (PowerShell escape-problem)
-4. **Exports Directory:** Skapade `exports/` för exportfiler
-5. **Container Cleanup:** Rensade alla orphan containers och nätverk för bättre prestanda
-
----
-
-_Last updated: 2025-12-26 12:46_
+_Last updated: 2025-12-26 15:05_

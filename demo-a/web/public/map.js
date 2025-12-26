@@ -70,11 +70,48 @@ async function updateMapStyle(theme, preset, renderMode) {
   currentTheme = theme;
 }
 
-fetch('/api/config')
-  .then(res => res.json())
-  .then(async config => {
-    // Load default theme
-    const defaultTheme = await loadTheme('paper');
+// Fetch themes and config in parallel
+Promise.all([
+  fetch('/api/config').then(r => r.json()),
+  fetch('/api/themes').then(r => r.json())
+])
+  .then(async ([config, themes]) => {
+    // Read URL parameters for theme, preset, and render mode
+    const urlParams = new URLSearchParams(window.location.search);
+    const themeName = urlParams.get('theme') || 'paper';
+    const bboxPreset = urlParams.get('bbox_preset') || 'stockholm_core';
+    const renderMode = urlParams.get('render_mode') || 'screen';
+
+    // Update global state from URL params
+    currentPreset = bboxPreset;
+    currentRenderMode = renderMode;
+
+    // Populate theme dropdown dynamically
+    const themeSelect = document.getElementById('theme-select');
+    themeSelect.innerHTML = '';
+    themes.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.id;
+      opt.textContent = t.name;
+      themeSelect.appendChild(opt);
+    });
+
+    // Update UI selectors to match URL params
+    const bboxSelect = document.getElementById('bbox-select');
+    const renderModeSelect = document.getElementById('render-mode-select');
+    if (themeSelect) themeSelect.value = themeName;
+    if (bboxSelect) bboxSelect.value = bboxPreset;
+    if (renderModeSelect) renderModeSelect.value = renderMode;
+
+    // Load theme from URL param or default
+    const initialTheme = await loadTheme(themeName);
+
+    // Determine initial center/zoom based on preset
+    const presetBounds = {
+      stockholm_core: { center: [18.04, 59.335], zoom: 13 },
+      stockholm_wide: { center: [18.0, 59.34], zoom: 11 }
+    };
+    const bounds = presetBounds[bboxPreset] || presetBounds.stockholm_core;
 
     map = new maplibregl.Map({
       container: 'map',
@@ -85,20 +122,20 @@ fetch('/api/config')
           {
             id: 'background',
             type: 'background',
-            paint: { 'background-color': defaultTheme?.background || '#faf8f5' }
+            paint: { 'background-color': initialTheme?.background || '#faf8f5' }
           }
         ]
       },
-      center: [18.04, 59.33],  // Stockholm
-      zoom: 12
+      center: bounds.center,
+      zoom: bounds.zoom
     });
 
     map.on('load', async () => {
       console.log('Map loaded');
       window.map = map;  // Expose for exporter
 
-      if (defaultTheme) {
-        await updateMapStyle(defaultTheme, currentPreset, currentRenderMode);
+      if (initialTheme) {
+        await updateMapStyle(initialTheme, currentPreset, currentRenderMode);
       }
     });
 

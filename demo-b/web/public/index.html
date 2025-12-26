@@ -19,11 +19,7 @@
         <div class="form-group">
             <label>Theme:</label>
             <select id="theme" name="theme">
-                <option value="paper">Paper</option>
-                <option value="ink">Ink</option>
-                <option value="mono">Mono</option>
-                <option value="muted-pastel">Muted Pastel</option>
-                <option value="dark">Dark</option>
+                <option value="paper">Loading...</option>
             </select>
         </div>
         <div class="form-group">
@@ -63,6 +59,21 @@
     </form>
 
     <script>
+        // Load themes dynamically
+        fetch('/api/themes')
+            .then(r => r.json())
+            .then(themes => {
+                const select = document.getElementById('theme');
+                select.innerHTML = '';
+                themes.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = t.name;
+                    select.appendChild(opt);
+                });
+            })
+            .catch(err => console.error('Failed to load themes:', err));
+
         document.getElementById('export-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);

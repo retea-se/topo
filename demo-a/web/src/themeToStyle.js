@@ -30,6 +30,7 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
         type: 'raster',
         tiles: [`${hillshadeTilesUrl}/tiles/hillshade/${preset}/{z}/{x}/{y}.png`],
         tileSize: 256,
+        scheme: 'tms',
         minzoom: 10,
         maxzoom: 16
       }

@@ -80,7 +80,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         <Parameter name="port">5432</Parameter>
         <Parameter name="dbname">gis</Parameter>
         <Parameter name="user">postgres</Parameter>
-        <Parameter name="table">(SELECT way FROM planet_osm_line WHERE highway IN ('residential', 'service', 'unclassified') ORDER BY ST_Hash(way)) AS roads</Parameter>
+        <Parameter name="table">(SELECT way FROM planet_osm_line WHERE highway IN ('residential', 'service', 'unclassified')) AS roads</Parameter>
       </Datasource>
     </Layer>""")
 
@@ -92,7 +92,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         <Parameter name="port">5432</Parameter>
         <Parameter name="dbname">gis</Parameter>
         <Parameter name="user">postgres</Parameter>
-        <Parameter name="table">(SELECT way FROM planet_osm_line WHERE highway IN ('primary', 'secondary', 'tertiary', 'trunk', 'motorway') ORDER BY ST_Hash(way)) AS roads</Parameter>
+        <Parameter name="table">(SELECT way FROM planet_osm_line WHERE highway IN ('primary', 'secondary', 'tertiary', 'trunk', 'motorway')) AS roads</Parameter>
       </Datasource>
     </Layer>""")
 
@@ -107,7 +107,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         <Parameter name="port">5432</Parameter>
         <Parameter name="dbname">gis</Parameter>
         <Parameter name="user">postgres</Parameter>
-        <Parameter name="table">(SELECT way FROM planet_osm_polygon WHERE building IS NOT NULL ORDER BY ST_Hash(way)) AS buildings</Parameter>
+        <Parameter name="table">(SELECT way FROM planet_osm_polygon WHERE building IS NOT NULL) AS buildings</Parameter>
       </Datasource>
     </Layer>""")
 
@@ -131,7 +131,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         <Parameter name="port">5432</Parameter>
         <Parameter name="dbname">gis</Parameter>
         <Parameter name="user">postgres</Parameter>
-        <Parameter name="table">(SELECT way FROM planet_osm_line WHERE "natural"='contour' ORDER BY ST_Hash(way)) AS contours</Parameter>
+        <Parameter name="table">(SELECT way FROM planet_osm_line WHERE "natural"='contour') AS contours</Parameter>
       </Datasource>
     </Layer>""")
 
@@ -206,20 +206,16 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
       </Rule>
     </Style>""")
 
-    # Build full XML
+    # Build full XML - Note: Style and Layer elements are direct children of Map (no wrapper elements)
     xml = f"""<?xml version="1.0" encoding="utf-8"?>
 <Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over" background-color="{bg_color}" minimum-version="3.0.0">
   <Parameters>
     <Parameter name="bbox">!bbox!</Parameter>
   </Parameters>
 
-  <Styles>
 {chr(10).join(styles_xml)}
-  </Styles>
 
-  <Layers>
 {chr(10).join(layers_xml)}
-  </Layers>
 </Map>"""
 
     return xml

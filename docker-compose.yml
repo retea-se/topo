@@ -133,6 +133,8 @@ services:
     profiles: ["demoB"]
     environment:
       - API_URL=http://demo-b-api:5000
+    volumes:
+      - ./themes:/app/themes:ro
     depends_on:
       - demo-b-api
 

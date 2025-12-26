@@ -55,9 +55,9 @@ def render():
         height_mm = float(data.get('height_mm', 594))
         format_type = data.get('format', 'png')
 
-        # Calculate output size in pixels
-        width_px = int(width_mm * dpi / 25.4)
-        height_px = int(height_mm * dpi / 25.4)
+        # Calculate output size in pixels (use round for correct dimensions)
+        width_px = round(width_mm * dpi / 25.4)
+        height_px = round(height_mm * dpi / 25.4)
         output_size = (width_px, height_px)
 
         # Load theme

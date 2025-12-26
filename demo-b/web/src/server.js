@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,27 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 app.get('/api/config', (req, res) => {
   // Return local proxy URL for browser access
   res.json({ apiUrl: '' });
+});
+
+// API endpoint to list available themes
+app.get('/api/themes', (req, res) => {
+  const themesDir = '/app/themes';
+  try {
+    const files = fs.readdirSync(themesDir);
+    const themes = files
+      .filter(f => f.endsWith('.json'))
+      .map(f => {
+        const id = f.replace('.json', '');
+        // Format name: capitalize, replace dashes/underscores with spaces
+        const name = id.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        return { id, name, file: f };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
+    res.json(themes);
+  } catch (err) {
+    console.error('Error reading themes directory:', err);
+    res.status(500).json({ error: 'Failed to load themes' });
+  }
 });
 
 // Proxy render requests to the API service
@@ -44,6 +66,7 @@ app.post('/api/render', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Demo B web server listening on port ${PORT}`);
 });
+
 
 
 
