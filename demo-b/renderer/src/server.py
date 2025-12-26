@@ -14,6 +14,30 @@ renderer = MapnikRenderer()
 THEMES_DIR = Path('/app/themes') if Path('/app/themes').exists() else Path(__file__).parent.parent.parent.parent / 'themes'
 LIMITS_CONFIG = None
 
+def check_coverage(preset: str) -> dict:
+    """Check which layers are available for a preset.
+    
+    Returns:
+        dict with keys: osm, contours, hillshade (all bool)
+    """
+    coverage = {
+        'osm': True,  # OSM always assumed available
+        'contours': False,
+        'hillshade': False
+    }
+    
+    # Check hillshade file
+    hillshade_file = f"/data/terrain/hillshade/{preset}_hillshade.tif"
+    coverage['hillshade'] = os.path.exists(hillshade_file)
+    
+    # For contours, we assume they're in PostGIS
+    # If the table doesn't exist, the query will return empty (graceful)
+    # For now, we'll assume contours are available if hillshade exists
+    # (since they're generated together)
+    coverage['contours'] = coverage['hillshade']
+    
+    return coverage
+
 def load_preset_limits():
     """Load preset limits configuration."""
     global LIMITS_CONFIG
@@ -226,8 +250,11 @@ def render():
         # Get bbox
         bbox_3857 = load_bbox_preset(preset)
 
+        # Check coverage (graceful handling when terrain missing)
+        coverage = check_coverage(preset)
+
         # Render
-        result = renderer.render(theme, bbox_3857, output_size, dpi, format_type, preset, layers)
+        result = renderer.render(theme, bbox_3857, output_size, dpi, format_type, preset, layers, coverage)
 
         return send_file(
             io.BytesIO(result),

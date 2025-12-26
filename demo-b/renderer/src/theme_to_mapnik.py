@@ -1,9 +1,11 @@
 """Convert theme JSON to Mapnik XML style."""
 import json
+import os
+from pathlib import Path
 from typing import Dict, Any
 
 
-def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tuple, dpi: int, preset: str = 'stockholm_core', layers: Dict[str, bool] = None) -> str:
+def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tuple, dpi: int, preset: str = 'stockholm_core', layers: Dict[str, bool] = None, coverage: Dict[str, bool] = None) -> str:
     """Generate Mapnik XML from theme JSON.
 
     Args:
@@ -40,7 +42,16 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Note: opacity is applied via RasterSymbolizer, NOT as a Layer attribute (invalid in Mapnik)
     hillshade_opacity = theme.get('hillshade', {}).get('opacity', 0.15)
     hillshade_file = f"/data/terrain/hillshade/{preset}_hillshade.tif"
-    if layers.get('hillshade', True):
+    
+    # Check if hillshade file exists (graceful handling when terrain missing)
+    has_hillshade = False
+    if coverage is not None:
+        has_hillshade = coverage.get('hillshade', False)
+    else:
+        # Fallback: check file existence
+        has_hillshade = os.path.exists(hillshade_file)
+    
+    if layers.get('hillshade', True) and has_hillshade:
         layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857">
       <StyleName>hillshade</StyleName>
       <Datasource>
@@ -143,7 +154,12 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
 
     # Contours are stored in PostGIS or as GeoJSON files
     # For now, assume they're in PostGIS
-    if layers.get('contours', True):
+    # Check if contours are available (graceful handling when terrain missing)
+    has_contours = True  # Default: assume available (PostGIS query will return empty if not)
+    if coverage is not None:
+        has_contours = coverage.get('contours', True)
+    
+    if layers.get('contours', True) and has_contours:
         layers_xml.append(f"""    <Layer name="contours" srs="EPSG:3857">
       <StyleName>contours</StyleName>
       <Datasource>
@@ -162,8 +178,9 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Background color is set in map background-color attribute, no style needed
     bg_color = theme.get('background', '#faf8f5')
 
-    # Hillshade style (raster layer)
-    styles_xml.append(f"""    <Style name="hillshade">
+    # Hillshade style (raster layer) - only if hillshade layer exists
+    if has_hillshade:
+        styles_xml.append(f"""    <Style name="hillshade">
       <Rule>
         <RasterSymbolizer opacity="{hillshade_opacity}" />
       </Rule>
@@ -212,16 +229,18 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
 
     # Contours style - NO TextSymbolizer (critical: no labels)
     # Support opacity from theme
-    contours_opacity = theme.get('contours', {}).get('opacity', {})
-    if isinstance(contours_opacity, dict):
-        major_opacity = contours_opacity.get('major', 0.8)
-        minor_opacity = contours_opacity.get('minor', 0.5)
-    else:
-        major_opacity = 0.8
-        minor_opacity = 0.5
+    # Only add style if contours layer exists
+    if has_contours:
+        contours_opacity = theme.get('contours', {}).get('opacity', {})
+        if isinstance(contours_opacity, dict):
+            major_opacity = contours_opacity.get('major', 0.8)
+            minor_opacity = contours_opacity.get('minor', 0.5)
+        else:
+            major_opacity = 0.8
+            minor_opacity = 0.5
 
-    # Blend opacity with stroke color for visual hierarchy
-    styles_xml.append(f"""    <Style name="contours">
+        # Blend opacity with stroke color for visual hierarchy
+        styles_xml.append(f"""    <Style name="contours">
       <Rule>
         <LineSymbolizer stroke="{contours_stroke}" stroke-width="{major_width_contour}" stroke-linejoin="round" stroke-linecap="round" stroke-opacity="{major_opacity}" />
       </Rule>

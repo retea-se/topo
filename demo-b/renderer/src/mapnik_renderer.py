@@ -13,7 +13,7 @@ class MapnikRenderer(RendererInterface):
         # Register default fonts path
         mapnik.register_fonts('/usr/share/fonts/truetype/dejavu')
 
-    def render(self, theme: dict, bbox_3857: tuple, output_size: tuple, dpi: int, format: str = 'png', preset: str = 'stockholm_core', layers: dict = None) -> bytes:
+    def render(self, theme: dict, bbox_3857: tuple, output_size: tuple, dpi: int, format: str = 'png', preset: str = 'stockholm_core', layers: dict = None, coverage: dict = None) -> bytes:
         """Render map using Mapnik.
 
         Args:
@@ -47,7 +47,7 @@ class MapnikRenderer(RendererInterface):
         map_obj.background = mapnik.Color(theme.get('background', '#faf8f5'))
 
         # Generate Mapnik XML from theme
-        xml_str = theme_to_mapnik_xml(theme, bbox_3857, output_size, dpi, preset, layers)
+        xml_str = theme_to_mapnik_xml(theme, bbox_3857, output_size, dpi, preset, layers, coverage)
 
         # Write XML to temporary file for Mapnik to load
         with tempfile.NamedTemporaryFile(mode='w', suffix='.xml', delete=False) as f:

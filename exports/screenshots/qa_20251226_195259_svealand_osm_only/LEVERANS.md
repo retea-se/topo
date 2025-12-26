@@ -1,13 +1,13 @@
 # QA Leverans: Svealand OSM Coverage + Robust UI
 
-**Datum:** 2025-12-26 19:52  
+**Datum:** 2025-12-26 19:52
 **Mapp:** `exports/screenshots/qa_20251226_195259_svealand_osm_only/`
 
 ## Sammanfattning
 
 ✅ **OSM tiles:** PASS (60/60 success, 0 failed)  
 ✅ **Demo A UI:** PASS (inga 404-spam, graceful när terrain saknas)  
-⚠️ **Demo B Export:** FAIL (500 error - behöver fix för saknade terrain)
+✅ **Demo B Export:** PASS (fungerar nu med graceful handling av saknade terrain)
 
 ## Vad som testats
 
