@@ -18,3 +18,8 @@ data/
 *.mbtiles
 *.osm.pbf
 nul
+
+# Test artifacts
+test-results/
+exports/screenshots/
+exports/*_REPORT.md
