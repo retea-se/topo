@@ -71,7 +71,7 @@ def render():
         bbox_3857 = load_bbox_preset(preset)
 
         # Render
-        result = renderer.render(theme, bbox_3857, output_size, dpi, format_type)
+        result = renderer.render(theme, bbox_3857, output_size, dpi, format_type, preset)
 
         return send_file(
             io.BytesIO(result),

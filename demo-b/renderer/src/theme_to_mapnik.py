@@ -3,7 +3,7 @@ import json
 from typing import Dict, Any
 
 
-def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tuple, dpi: int) -> str:
+def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tuple, dpi: int, preset: str = 'stockholm_core') -> str:
     """Generate Mapnik XML from theme JSON.
 
     Args:
@@ -11,6 +11,7 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
         bbox_3857: (min_x, min_y, max_x, max_y) in EPSG:3857
         output_size: (width_px, height_px)
         dpi: Output DPI
+        preset: Bbox preset name (used for hillshade file path)
 
     Returns:
         Mapnik XML string
@@ -26,11 +27,12 @@ def theme_to_mapnik_xml(theme: Dict[str, Any], bbox_3857: tuple, output_size: tu
     # Hillshade layer (raster)
     # Note: opacity is applied via RasterSymbolizer, NOT as a Layer attribute (invalid in Mapnik)
     hillshade_opacity = theme.get('hillshade', {}).get('opacity', 0.15)
+    hillshade_file = f"/data/terrain/hillshade/{preset}_hillshade.tif"
     layers_xml.append(f"""    <Layer name="hillshade" srs="EPSG:3857">
       <StyleName>hillshade</StyleName>
       <Datasource>
         <Parameter name="type">gdal</Parameter>
-        <Parameter name="file">/data/terrain/hillshade/stockholm_core_hillshade.tif</Parameter>
+        <Parameter name="file">{hillshade_file}</Parameter>
       </Datasource>
     </Layer>""")
 
