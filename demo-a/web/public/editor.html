@@ -10,60 +10,117 @@
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.js"></script>
     <script src="/themeToStyle.js"></script>
     <style>
+        /* Nordic/Scandinavian Design System */
+        :root {
+            --bg-primary: #fafafa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f5f5f5;
+            --text-primary: #2d3436;
+            --text-secondary: #636e72;
+            --text-muted: #b2bec3;
+            --border-color: #e0e0e0;
+            --accent: #4a6fa5;
+            --accent-hover: #3d5a80;
+            --accent-light: #e8eef5;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --error: #d63031;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
         * {
             box-sizing: border-box;
         }
+
         body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: var(--font-sans);
             display: flex;
             height: 100vh;
             overflow: hidden;
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
 
-        /* Sidebar */
+        /* Sidebar - 50% width */
         #sidebar {
-            width: 360px;
-            min-width: 360px;
-            background: #1a1a2e;
-            color: #fff;
+            width: 50%;
+            min-width: 400px;
+            max-width: 600px;
+            background: var(--bg-secondary);
             display: flex;
             flex-direction: column;
+            border-right: 1px solid var(--border-color);
             overflow-y: auto;
         }
 
-        #sidebar h1 {
-            margin: 0;
-            padding: 20px;
-            font-size: 18px;
-            font-weight: 600;
-            background: #16213e;
-            border-bottom: 1px solid #0f3460;
+        #sidebar-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
+        #sidebar-header h1 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        #sidebar-header p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .sidebar-content {
+            padding: 0 28px 28px;
+            flex: 1;
+        }
+
+        /* Panel sections */
         .panel-section {
-            padding: 20px;
-            border-bottom: 1px solid #0f3460;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-section:last-child {
+            border-bottom: none;
         }
 
         .panel-section h3 {
-            margin: 0 0 15px 0;
-            font-size: 13px;
+            margin: 0 0 16px 0;
+            font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #94a3b8;
+            letter-spacing: 1.2px;
+            color: var(--text-muted);
+            font-weight: 600;
         }
 
+        /* Form elements */
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 16px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
         }
 
         .form-group label {
             display: block;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 5px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 500;
         }
 
         .form-group input,
@@ -71,28 +128,32 @@
         .form-group textarea {
             width: 100%;
             padding: 10px 12px;
-            border: 1px solid #0f3460;
-            border-radius: 6px;
-            background: #16213e;
-            color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
             font-size: 14px;
+            font-family: var(--font-sans);
+            transition: border-color 0.15s, box-shadow 0.15s;
         }
 
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
             outline: none;
-            border-color: #e94560;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
         }
 
         .form-group textarea {
             resize: vertical;
-            min-height: 60px;
+            min-height: 52px;
+            font-size: 12px;
         }
 
         .form-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .form-row .form-group {
@@ -102,29 +163,33 @@
         /* Toggle buttons */
         .toggle-group {
             display: flex;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             overflow: hidden;
-            border: 1px solid #0f3460;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
         }
 
         .toggle-btn {
             flex: 1;
-            padding: 10px;
+            padding: 9px 12px;
             border: none;
-            background: #16213e;
-            color: #94a3b8;
+            background: transparent;
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.2s;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            transition: all 0.15s;
         }
 
         .toggle-btn:hover {
-            background: #1f4068;
+            background: var(--bg-secondary);
         }
 
         .toggle-btn.active {
-            background: #e94560;
-            color: #fff;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
         }
 
         /* Checkbox group */
@@ -139,38 +204,58 @@
             align-items: center;
             gap: 8px;
             padding: 8px 10px;
-            background: #16213e;
-            border-radius: 6px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.15s;
+            border: 1px solid transparent;
         }
 
         .checkbox-item:hover {
-            background: #1f4068;
+            background: var(--accent-light);
+            border-color: var(--accent);
         }
 
         .checkbox-item input {
             width: auto;
             margin: 0;
+            accent-color: var(--accent);
         }
 
         .checkbox-item span {
             font-size: 13px;
+            color: var(--text-primary);
         }
 
         .checkbox-item.disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
+        }
+
+        /* Single checkbox inline */
+        .checkbox-inline {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .checkbox-inline input {
+            width: auto;
+            margin: 0;
+            accent-color: var(--accent);
         }
 
         /* Bbox display */
         .bbox-display {
-            background: #16213e;
-            border-radius: 6px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
             padding: 12px;
-            font-family: 'Monaco', 'Menlo', monospace;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
             font-size: 11px;
-            color: #94a3b8;
+            color: var(--text-secondary);
         }
 
         .bbox-display .coord-row {
@@ -179,44 +264,51 @@
             margin-bottom: 4px;
         }
 
+        .bbox-display .coord-row:last-child {
+            margin-bottom: 0;
+        }
+
         .bbox-display .coord-value {
-            color: #e94560;
+            color: var(--accent);
+            font-weight: 500;
         }
 
         /* Buttons */
         .btn {
-            padding: 12px 20px;
+            padding: 11px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 500;
+            font-family: var(--font-sans);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
             width: 100%;
         }
 
         .btn-primary {
-            background: #e94560;
+            background: var(--accent);
             color: #fff;
         }
 
         .btn-primary:hover {
-            background: #ff6b6b;
+            background: var(--accent-hover);
         }
 
         .btn-secondary {
-            background: #16213e;
-            color: #fff;
-            border: 1px solid #0f3460;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #1f4068;
+            background: var(--accent-light);
+            border-color: var(--accent);
         }
 
         .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .btn-group .btn {
@@ -225,10 +317,10 @@
 
         /* Preview info */
         .preview-info {
-            background: #16213e;
-            border-radius: 6px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
             padding: 12px;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .preview-info-row {
@@ -243,18 +335,28 @@
         }
 
         .preview-info-label {
-            color: #94a3b8;
+            color: var(--text-muted);
         }
 
         .preview-info-value {
-            color: #fff;
+            color: var(--text-primary);
             font-weight: 500;
         }
 
-        /* Map container */
+        /* Actions panel (sticky at bottom) */
+        .actions-panel {
+            padding: 20px 28px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            position: sticky;
+            bottom: 0;
+        }
+
+        /* Map container - 50% width */
         #map-container {
             flex: 1;
             position: relative;
+            background: var(--bg-tertiary);
         }
 
         #map {
@@ -265,32 +367,20 @@
             bottom: 0;
         }
 
-        /* Paper overlay */
-        .paper-overlay {
-            position: absolute;
-            border: 3px dashed #e94560;
-            pointer-events: none;
-            z-index: 10;
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+        /* Preview mode - fullscreen map */
+        body.preview-mode #sidebar {
+            display: none;
         }
 
-        .paper-overlay-label {
-            position: absolute;
-            top: -25px;
-            left: 0;
-            background: #e94560;
-            color: #fff;
-            padding: 4px 8px;
-            font-size: 11px;
-            border-radius: 4px;
-            white-space: nowrap;
+        body.preview-mode #map-container {
+            width: 100%;
         }
 
-        /* Toolbar */
+        /* Map Toolbar */
         .map-toolbar {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 16px;
+            right: 16px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -298,65 +388,107 @@
         }
 
         .toolbar-btn {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border: none;
-            border-radius: 8px;
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            border-radius: var(--radius-sm);
+            background: var(--bg-secondary);
+            box-shadow: var(--shadow-md);
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: all 0.15s;
+            color: var(--text-primary);
         }
 
         .toolbar-btn:hover {
-            background: #f0f0f0;
+            background: var(--accent-light);
+            color: var(--accent);
         }
 
         .toolbar-btn.active {
-            background: #e94560;
+            background: var(--accent);
             color: #fff;
+        }
+
+        /* Close preview button */
+        .close-preview-btn {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            z-index: 25;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border: none;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-md);
+            cursor: pointer;
+            font-size: 13px;
+            font-family: var(--font-sans);
+            font-weight: 500;
+            color: var(--text-primary);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s;
+        }
+
+        .close-preview-btn:hover {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        body.preview-mode .close-preview-btn {
+            display: flex;
+        }
+
+        .close-preview-btn .key-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: 3px;
         }
 
         /* Status bar */
         .status-bar {
             position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
-            background: rgba(26, 26, 46, 0.9);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            background: var(--bg-secondary);
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
             font-size: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 20;
+            box-shadow: var(--shadow-md);
         }
 
         .status-item {
             display: flex;
             align-items: center;
             gap: 8px;
+            color: var(--text-secondary);
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: #4ade80;
+            background: var(--success);
         }
 
         .status-dot.warning {
-            background: #fbbf24;
+            background: var(--warning);
         }
 
         .status-dot.error {
-            background: #f87171;
+            background: var(--error);
         }
 
         /* Export modal */
@@ -367,7 +499,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -378,208 +511,375 @@
         }
 
         .modal {
-            background: #1a1a2e;
-            border-radius: 12px;
-            padding: 30px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 32px;
             max-width: 400px;
             width: 90%;
-            color: #fff;
+            box-shadow: var(--shadow-md);
         }
 
         .modal h2 {
             margin: 0 0 20px 0;
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         .progress-bar {
-            height: 8px;
-            background: #16213e;
-            border-radius: 4px;
+            height: 6px;
+            background: var(--bg-tertiary);
+            border-radius: 3px;
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
         }
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #e94560, #ff6b6b);
+            background: var(--accent);
             transition: width 0.3s ease;
         }
 
         .modal-status {
             text-align: center;
-            color: #94a3b8;
-            font-size: 14px;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        /* Export Preset UI (Phase 9.2) */
+        .preset-select-wrapper {
+            position: relative;
+        }
+
+        #export-preset-select {
+            font-weight: 500;
+        }
+
+        .preset-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+            line-height: 1.4;
+            display: none;
+        }
+
+        .preset-description.visible {
+            display: block;
+        }
+
+        .preset-status {
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            display: none;
+        }
+
+        .preset-status.visible {
+            display: inline-block;
+        }
+
+        .preset-status.active {
+            background: var(--accent-light);
+            color: var(--accent);
+        }
+
+        .preset-status.modified {
+            background: #fef3e2;
+            color: #d68c09;
+        }
+
+        .validation-errors {
+            margin-top: 8px;
+        }
+
+        .validation-error {
+            background: #fff5f5;
+            border-left: 3px solid var(--error);
+            padding: 8px 12px;
+            margin-top: 6px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 12px;
+            color: #c0392b;
+        }
+
+        .validation-warning {
+            background: #fffbeb;
+            border-left: 3px solid var(--warning);
+            padding: 8px 12px;
+            margin-top: 6px;
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            font-size: 12px;
+            color: #92400e;
+        }
+
+        /* Lock indicator for preset-controlled fields */
+        .field-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .lock-indicator {
+            display: none;
+            font-size: 12px;
+            color: var(--text-muted);
+            cursor: help;
+        }
+
+        .lock-indicator.visible {
+            display: inline;
+        }
+
+        /* Locked field styling */
+        .form-group.locked select,
+        .form-group.locked input {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: var(--bg-tertiary);
+        }
+
+        .form-group.locked .toggle-btn {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .checkbox-item.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .checkbox-item.locked input {
+            pointer-events: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            #sidebar {
+                width: 100%;
+                max-width: none;
+                height: 50vh;
+            }
+            body {
+                flex-direction: column;
+            }
+            #map-container {
+                height: 50vh;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Sidebar -->
     <div id="sidebar">
-        <h1>Print Editor</h1>
-
-        <!-- Area Selection -->
-        <div class="panel-section">
-            <h3>Area Selection</h3>
-            <div class="form-group">
-                <label>Preset</label>
-                <select id="preset-select">
-                    <option value="stockholm_core">Stockholm Core</option>
-                    <option value="stockholm_wide">Stockholm Wide</option>
-                    <option value="svealand">Svealand</option>
-                    <option value="custom">Custom (Draw on Map)</option>
-                </select>
-            </div>
-            <div class="bbox-display" id="bbox-display">
-                <div class="coord-row">
-                    <span>West:</span>
-                    <span class="coord-value" id="bbox-west">-</span>
-                </div>
-                <div class="coord-row">
-                    <span>South:</span>
-                    <span class="coord-value" id="bbox-south">-</span>
-                </div>
-                <div class="coord-row">
-                    <span>East:</span>
-                    <span class="coord-value" id="bbox-east">-</span>
-                </div>
-                <div class="coord-row">
-                    <span>North:</span>
-                    <span class="coord-value" id="bbox-north">-</span>
-                </div>
-            </div>
-            <div class="btn-group" style="margin-top: 10px;">
-                <button class="btn btn-secondary" id="draw-bbox-btn">Draw Bbox</button>
-                <button class="btn btn-secondary" id="reset-bbox-btn">Reset</button>
-            </div>
+        <div id="sidebar-header">
+            <h1>Print Editor</h1>
+            <p>Configure and export your map</p>
         </div>
 
-        <!-- Composition -->
-        <div class="panel-section">
-            <h3>Composition</h3>
-            <div class="form-group">
-                <label>Title (optional)</label>
-                <input type="text" id="title-input" placeholder="e.g. Stockholm">
-            </div>
-            <div class="form-group">
-                <label>Subtitle (optional)</label>
-                <input type="text" id="subtitle-input" placeholder="e.g. Sweden">
-            </div>
-            <div class="form-group">
-                <label>Attribution</label>
-                <textarea id="attribution-input">Map data: OpenStreetMap contributors
-Elevation: Copernicus DEM</textarea>
-            </div>
-        </div>
-
-        <!-- Style -->
-        <div class="panel-section">
-            <h3>Style</h3>
-            <div class="form-group">
-                <label>Theme</label>
-                <select id="theme-select">
-                    <option value="paper">Loading...</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Layers</label>
-                <div class="checkbox-group">
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="layer-hillshade" checked>
-                        <span>Hillshade</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="layer-water" checked>
-                        <span>Water</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="layer-parks" checked>
-                        <span>Parks</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="layer-roads" checked>
-                        <span>Roads</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="layer-buildings" checked>
-                        <span>Buildings</span>
-                    </label>
-                    <label class="checkbox-item">
-                        <input type="checkbox" id="layer-contours" checked>
-                        <span>Contours</span>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- Export Settings -->
-        <div class="panel-section">
-            <h3>Export Settings</h3>
-            <div class="form-group">
-                <label>Paper Size</label>
-                <select id="paper-size-select">
-                    <option value="A4">A4 (210 x 297 mm)</option>
-                    <option value="A3">A3 (297 x 420 mm)</option>
-                    <option value="A2" selected>A2 (420 x 594 mm)</option>
-                    <option value="A1">A1 (594 x 841 mm)</option>
-                    <option value="A0">A0 (841 x 1189 mm)</option>
-                    <option value="custom">Custom</option>
-                </select>
-            </div>
-            <div class="form-row" id="custom-size-row" style="display: none;">
+        <div class="sidebar-content">
+            <!-- Export Preset Selection (Phase 9.2) -->
+            <div class="panel-section" id="export-preset-section">
+                <h3>Export Preset</h3>
                 <div class="form-group">
-                    <label>Width (mm)</label>
-                    <input type="number" id="width-input" value="420" min="100" max="2000">
+                    <div class="preset-select-wrapper">
+                        <select id="export-preset-select">
+                            <option value="">None (Custom)</option>
+                        </select>
+                    </div>
+                    <div class="preset-description" id="export-preset-description"></div>
+                    <div class="preset-status" id="export-preset-status"></div>
+                </div>
+                <div class="validation-errors" id="validation-errors"></div>
+            </div>
+
+            <!-- Area Selection -->
+            <div class="panel-section">
+                <h3>Area</h3>
+                <div class="form-group" id="bbox-preset-group">
+                    <label class="field-label" id="preset-label">Preset <span class="lock-indicator"></span></label>
+                    <select id="preset-select">
+                        <option value="stockholm_core">Stockholm Core</option>
+                        <option value="stockholm_wide">Stockholm Wide</option>
+                        <option value="svealand">Svealand</option>
+                        <option value="custom">Custom (Draw on Map)</option>
+                    </select>
+                </div>
+                <div class="bbox-display" id="bbox-display">
+                    <div class="coord-row">
+                        <span>West:</span>
+                        <span class="coord-value" id="bbox-west">-</span>
+                    </div>
+                    <div class="coord-row">
+                        <span>South:</span>
+                        <span class="coord-value" id="bbox-south">-</span>
+                    </div>
+                    <div class="coord-row">
+                        <span>East:</span>
+                        <span class="coord-value" id="bbox-east">-</span>
+                    </div>
+                    <div class="coord-row">
+                        <span>North:</span>
+                        <span class="coord-value" id="bbox-north">-</span>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-top: 12px;">
+                    <button class="btn btn-secondary" id="draw-bbox-btn">Draw Bbox</button>
+                    <button class="btn btn-secondary" id="reset-bbox-btn">Reset</button>
+                </div>
+            </div>
+
+            <!-- Composition -->
+            <div class="panel-section">
+                <h3>Composition</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="title-input" placeholder="e.g. Stockholm">
+                    </div>
+                    <div class="form-group">
+                        <label>Subtitle</label>
+                        <input type="text" id="subtitle-input" placeholder="e.g. Sweden">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label>Height (mm)</label>
-                    <input type="number" id="height-input" value="594" min="100" max="2000">
+                    <label>Layout</label>
+                    <select id="layout-select">
+                        <option value="classic">Classic</option>
+                        <option value="modern">Modern</option>
+                        <option value="minimal">Minimal</option>
+                        <option value="elegant">Elegant</option>
+                        <option value="bold">Bold</option>
+                    </select>
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Orientation</label>
-                <div class="toggle-group">
-                    <button class="toggle-btn active" data-value="portrait" id="orientation-portrait">Portrait</button>
-                    <button class="toggle-btn" data-value="landscape" id="orientation-landscape">Landscape</button>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>DPI (Resolution)</label>
-                <select id="dpi-select">
-                    <option value="72">72 DPI (Screen)</option>
-                    <option value="150" selected>150 DPI (Standard)</option>
-                    <option value="300">300 DPI (High Quality)</option>
-                    <option value="600">600 DPI (Print)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Format</label>
-                <div class="toggle-group">
-                    <button class="toggle-btn active" data-value="png" id="format-png">PNG</button>
-                    <button class="toggle-btn" data-value="pdf" id="format-pdf">PDF</button>
-                    <button class="toggle-btn" data-value="svg" id="format-svg">SVG</button>
+                <div class="form-row" style="margin-top: 12px;">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="show-scale" checked>
+                        <span>Show scale</span>
+                    </label>
+                    <label class="checkbox-inline">
+                        <input type="checkbox" id="show-attribution" checked>
+                        <span>Show attribution</span>
+                    </label>
                 </div>
             </div>
 
-            <div class="preview-info" id="preview-info">
-                <div class="preview-info-row">
-                    <span class="preview-info-label">Output Size:</span>
-                    <span class="preview-info-value" id="output-size">2480 x 3508 px</span>
+            <!-- Style -->
+            <div class="panel-section">
+                <h3>Style</h3>
+                <div class="form-group" id="theme-group">
+                    <label class="field-label" id="theme-label">Theme <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <select id="theme-select">
+                        <option value="paper">Loading...</option>
+                    </select>
                 </div>
-                <div class="preview-info-row">
-                    <span class="preview-info-label">Scale:</span>
-                    <span class="preview-info-value" id="scale-display">1:25,000</span>
+                <div class="form-group" id="layers-group">
+                    <label class="field-label" id="layers-label">Layers <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="layer-hillshade" checked>
+                            <span>Hillshade</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="layer-water" checked>
+                            <span>Water</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="layer-parks" checked>
+                            <span>Parks</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="layer-roads" checked>
+                            <span>Roads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="layer-buildings" checked>
+                            <span>Buildings</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="layer-contours" checked>
+                            <span>Contours</span>
+                        </label>
+                    </div>
                 </div>
-                <div class="preview-info-row">
-                    <span class="preview-info-label">Estimated Size:</span>
-                    <span class="preview-info-value" id="file-size">~4 MB</span>
+            </div>
+
+            <!-- Export Settings -->
+            <div class="panel-section">
+                <h3>Export</h3>
+                <div class="form-row">
+                    <div class="form-group" id="paper-size-group">
+                        <label class="field-label" id="paper-size-label">Paper Size <span class="lock-indicator" title="Locked by preset"></span></label>
+                        <select id="paper-size-select">
+                            <option value="A4">A4</option>
+                            <option value="A3">A3</option>
+                            <option value="A2" selected>A2</option>
+                            <option value="A1">A1</option>
+                            <option value="A0">A0</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="dpi-group">
+                        <label class="field-label" id="dpi-label">DPI <span class="lock-indicator" title="Locked by preset"></span></label>
+                        <select id="dpi-select">
+                            <option value="72">72</option>
+                            <option value="150" selected>150</option>
+                            <option value="300">300</option>
+                            <option value="600">600</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row" id="custom-size-row" style="display: none;">
+                    <div class="form-group">
+                        <label>Width (mm)</label>
+                        <input type="number" id="width-input" value="420" min="100" max="2000">
+                    </div>
+                    <div class="form-group">
+                        <label>Height (mm)</label>
+                        <input type="number" id="height-input" value="594" min="100" max="2000">
+                    </div>
+                </div>
+                <div class="form-group" id="orientation-group">
+                    <label class="field-label" id="orientation-label">Orientation <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-value="portrait" id="orientation-portrait">Portrait</button>
+                        <button class="toggle-btn" data-value="landscape" id="orientation-landscape">Landscape</button>
+                    </div>
+                </div>
+                <div class="form-group" id="format-group">
+                    <label class="field-label" id="format-label">Format <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <div class="toggle-group">
+                        <button class="toggle-btn active" data-value="png" id="format-png">PNG</button>
+                        <button class="toggle-btn" data-value="pdf" id="format-pdf">PDF</button>
+                        <button class="toggle-btn" data-value="svg" id="format-svg">SVG</button>
+                    </div>
+                </div>
+
+                <div class="preview-info" id="preview-info">
+                    <div class="preview-info-row">
+                        <span class="preview-info-label">Output</span>
+                        <span class="preview-info-value" id="output-size">2480 x 3508 px</span>
+                    </div>
+                    <div class="preview-info-row">
+                        <span class="preview-info-label">Scale</span>
+                        <span class="preview-info-value" id="scale-display">1:25,000</span>
+                    </div>
+                    <div class="preview-info-row">
+                        <span class="preview-info-label">Est. Size</span>
+                        <span class="preview-info-value" id="file-size">~4 MB</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Export Button -->
-        <div class="panel-section" style="border-bottom: none;">
-            <button class="btn btn-primary" id="export-btn">Export Map</button>
-            <button class="btn btn-secondary" id="preview-btn" style="margin-top: 10px;">Preview</button>
+        <!-- Actions (sticky) -->
+        <div class="actions-panel">
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="preview-btn">Preview</button>
+                <button class="btn btn-primary" id="export-btn">Export</button>
+            </div>
         </div>
     </div>
 
@@ -587,11 +887,17 @@ Elevation: Copernicus DEM</textarea>
     <div id="map-container">
         <div id="map"></div>
 
+        <!-- Close Preview Button (hidden by default) -->
+        <button class="close-preview-btn" id="close-preview-btn">
+            Close Preview
+            <span class="key-hint">ESC</span>
+        </button>
+
         <!-- Map Toolbar -->
         <div class="map-toolbar">
             <button class="toolbar-btn" id="zoom-in-btn" title="Zoom In">+</button>
             <button class="toolbar-btn" id="zoom-out-btn" title="Zoom Out">-</button>
-            <button class="toolbar-btn" id="fit-bbox-btn" title="Fit to Bbox">[]</button>
+            <button class="toolbar-btn" id="fit-bbox-btn" title="Fit to Bbox">[ ]</button>
         </div>
 
         <!-- Status Bar -->
@@ -609,7 +915,7 @@ Elevation: Copernicus DEM</textarea>
     <!-- Export Modal -->
     <div class="modal-overlay" id="export-modal">
         <div class="modal">
-            <h2>Exporting Map...</h2>
+            <h2>Exporting Map</h2>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
             </div>
