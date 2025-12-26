@@ -32,7 +32,7 @@ docker-compose run --rm prep /app/scripts/generate_contour_tiles.sh stockholm_co
 docker-compose --profile demoA up -d
 
 # Export via API
-curl "http://localhost:3000/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" \
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" \
   --output export_demo_a.png
 
 # Or use web UI at http://localhost:3000
