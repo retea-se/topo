@@ -1,0 +1,245 @@
+# Användningsguide
+
+## Snabbstart
+
+### Starta systemet
+
+```bash
+cd "C:\Users\marcu\OneDrive\Dokument\topo"
+
+# Starta båda demos
+docker compose --profile demoA --profile demoB up -d
+```
+
+### Öppna webbgränssnitt
+
+- **Demo A (MapLibre)**: http://localhost:3000
+- **Demo B (Mapnik)**: http://localhost:3001
+
+## Första gången - Dataförberedelse
+
+Om du kör systemet för första gången behöver du generera data:
+
+```bash
+# Bygg prep-service
+docker-compose build prep
+
+# Ladda ner OSM-data för Sverige
+docker-compose run --rm prep python3 /app/src/download_osm.py
+
+# Klipp ut Stockholm-området
+docker-compose run --rm prep python3 /app/src/clip_osm.py --preset stockholm_core
+
+# Ladda in DEM (höjddata)
+docker-compose run --rm prep python3 /app/src/download_dem.py --preset stockholm_core --provider local
+
+# Generera hillshade
+docker-compose run --rm prep python3 /app/src/generate_hillshade.py --preset stockholm_core
+
+# Extrahera höjdkurvor
+docker-compose run --rm prep python3 /app/src/extract_contours.py --preset stockholm_core
+
+# Generera tiles
+docker-compose run --rm prep /app/scripts/generate_hillshade_tiles.sh stockholm_core
+docker-compose run --rm prep /app/scripts/generate_osm_tiles.sh stockholm_core
+docker-compose run --rm prep /app/scripts/generate_contour_tiles.sh stockholm_core
+```
+
+**OBS**: DEM-data kräver manuell nedladdning. Se `DEM_MANUAL_DOWNLOAD.md` i projektets rot.
+
+## Använda Demo A (MapLibre)
+
+### Webbgränssnitt
+
+1. Öppna http://localhost:3000
+2. Välj tema i dropdown-menyn
+3. Välj område (bbox preset)
+4. Välj render-läge (screen/print)
+5. Panorera och zooma för att justera vyn
+6. Klicka "Export" för att ladda ner
+
+### Export via URL
+
+```bash
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" --output export.png
+```
+
+### URL-parametrar
+
+| Parameter | Värden | Standard | Beskrivning |
+|-----------|--------|----------|-------------|
+| bbox_preset | stockholm_core, stockholm_wide | stockholm_core | Geografiskt område |
+| theme | paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel | paper | Färgtema |
+| render_mode | screen, print | screen | Renderingsläge |
+| dpi | 72-600 | 150 | Upplösning |
+| width_mm | valfritt | 420 | Bredd i mm |
+| height_mm | valfritt | 594 | Höjd i mm |
+
+## Använda Demo B (Mapnik)
+
+### Webbgränssnitt
+
+1. Öppna http://localhost:3001
+2. Välj tema i dropdown-menyn
+3. Välj område
+4. Klicka "Render" för att generera och ladda ner
+
+### Export via API
+
+```bash
+curl -X POST "http://localhost:5000/render" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bbox_preset": "stockholm_core",
+    "theme": "paper",
+    "render_mode": "print",
+    "dpi": 150,
+    "width_mm": 420,
+    "height_mm": 594,
+    "format": "png"
+  }' --output export.png
+```
+
+### API-parametrar
+
+| Parameter | Typ | Standard | Beskrivning |
+|-----------|-----|----------|-------------|
+| bbox_preset | string | stockholm_core | Geografiskt område |
+| theme | string | paper | Färgtema |
+| render_mode | string | print | Renderingsläge |
+| dpi | number | 150 | Upplösning |
+| width_mm | number | 420 | Bredd i mm |
+| height_mm | number | 594 | Höjd i mm |
+| format | string | png | Exportformat (png, pdf) |
+
+## Vanliga exportpresets
+
+### A2 Print (150 DPI)
+
+```bash
+# Demo A
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" --output a2_150dpi.png
+
+# Demo B
+curl -X POST "http://localhost:5000/render" \
+  -H "Content-Type: application/json" \
+  -d '{"bbox_preset":"stockholm_core","theme":"paper","render_mode":"print","dpi":150,"width_mm":420,"height_mm":594,"format":"png"}' \
+  --output a2_150dpi.png
+```
+
+Resultat: 2480 × 3508 px
+
+### A2 Print (300 DPI)
+
+```bash
+# Demo A
+curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=gallery&render_mode=print&dpi=300&width_mm=420&height_mm=594" --output a2_300dpi.png
+
+# Demo B
+curl -X POST "http://localhost:5000/render" \
+  -H "Content-Type: application/json" \
+  -d '{"bbox_preset":"stockholm_core","theme":"gallery","render_mode":"print","dpi":300,"width_mm":420,"height_mm":594,"format":"png"}' \
+  --output a2_300dpi.png
+```
+
+Resultat: 4961 × 7016 px
+
+### A1 Print (150 DPI)
+
+```bash
+# Demo A
+curl "http://localhost:8082/render?bbox_preset=stockholm_wide&theme=ink&render_mode=print&dpi=150&width_mm=594&height_mm=841" --output a1_150dpi.png
+
+# Demo B
+curl -X POST "http://localhost:5000/render" \
+  -H "Content-Type: application/json" \
+  -d '{"bbox_preset":"stockholm_wide","theme":"ink","render_mode":"print","dpi":150,"width_mm":594,"height_mm":841,"format":"png"}' \
+  --output a1_150dpi.png
+```
+
+Resultat: 3508 × 4961 px
+
+## Välja rätt demo
+
+### Använd Demo A när du:
+
+- Vill utforska och experimentera snabbt
+- Behöver interaktiv preview
+- Vill testa olika perspektiv (pitch)
+- Itererar på design
+
+### Använd Demo B när du:
+
+- Behöver final print-kvalitet
+- Kräver exakt reproducerbarhet
+- Exporterar för professionell tryck
+- Behöver kartografisk korrekthet
+
+## Felsökning
+
+### Tjänster startar inte
+
+```bash
+# Kontrollera status
+docker compose ps
+
+# Visa loggar
+docker compose logs demo-a-web
+docker compose logs demo-b-api
+```
+
+### Inga tiles visas
+
+```bash
+# Kontrollera att tiles finns
+docker compose run --rm prep ls -la /data/tiles/
+
+# Regenerera tiles om nödvändigt
+docker-compose run --rm prep /app/scripts/generate_osm_tiles.sh stockholm_core
+```
+
+### Export misslyckas
+
+```bash
+# Kontrollera exporter-tjänsten
+curl http://localhost:8082/health
+
+# För Demo B
+curl http://localhost:5000/health
+```
+
+## Avancerat
+
+### Visa alla tillgängliga teman
+
+```bash
+# Demo A
+curl http://localhost:3000/api/themes
+
+# Demo B
+curl http://localhost:3001/api/themes
+```
+
+### Kontrollera tjänsternas status
+
+```bash
+# Alla portar
+curl http://localhost:3000      # Demo A Web
+curl http://localhost:8082/health  # Demo A Exporter
+curl http://localhost:3001      # Demo B Web
+curl http://localhost:5000/health  # Demo B API
+```
+
+### Stoppa systemet
+
+```bash
+docker compose --profile demoA --profile demoB down
+```
+
+### Rensa all data
+
+```bash
+docker compose --profile demoA --profile demoB down -v
+```
+
+**Varning**: Detta raderar alla tiles och exporterade bilder!

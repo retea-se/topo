@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stockholm Topo - Topografiska kartexporter</title>
+    <style>
+        :root {
+            --bg-primary: #faf8f5;
+            --bg-secondary: #f0ede8;
+            --text-primary: #2c2c2c;
+            --text-secondary: #5a5a5a;
+            --accent: #4a6741;
+            --accent-light: #6b8f5f;
+            --border: #d8d4ce;
+            --link: #3d5c94;
+            --link-hover: #2a4a7a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        h1 span {
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--link);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: var(--link-hover);
+            text-decoration: underline;
+        }
+
+        .demo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .demo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .demo-card h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .demo-card .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-webgl {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .badge-print {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .demo-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .demo-card .links {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .demo-card .links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .flow-diagram {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .doc-links {
+            list-style: none;
+            margin: 1rem 0;
+        }
+
+        .doc-links li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .doc-links li:last-child {
+            border-bottom: none;
+        }
+
+        .doc-links a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-links .desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .themes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .theme-tag {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.85rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Stockholm <span>Topo</span></h1>
+        <p class="subtitle">Topografiska kartexporter av Stockholm som väggkonst</p>
+        <p style="margin-top: 1rem;">
+            <span class="status-badge">Systemet fungerar</span>
+        </p>
+    </header>
+
+    <main>
+        <section>
+            <h2>Demos</h2>
+            <p>Systemet erbjuder två parallella implementationer med olika användningsomraden:</p>
+
+            <div class="demo-cards">
+                <div class="demo-card">
+                    <h3>Demo A <span class="badge badge-webgl">WebGL</span></h3>
+                    <p>Interaktiv kartvy med MapLibre. Snabb design-iteration, stod for perspektiv och kreativ utforskning.</p>
+                    <div class="links">
+                        <a href="http://localhost:3000" target="_blank">Oppna webbgranssnitt</a>
+                        <a href="http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" target="_blank">Exportera A2 (150 DPI)</a>
+                    </div>
+                </div>
+
+                <div class="demo-card">
+                    <h3>Demo B <span class="badge badge-print">Print</span></h3>
+                    <p>Server-side rendering med Mapnik. Produktionskvalitet, kartografisk korrekthet, byte-identiska exports.</p>
+                    <div class="links">
+                        <a href="http://localhost:3001" target="_blank">Oppna webbgranssnitt</a>
+                        <a href="#demo-b-export">Export via API (se nedan)</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Vad ar Demo A och Demo B?</h2>
+
+            <h3>Demo A - Interaktiv / MapLibre</h3>
+            <p>Demo A anvander MapLibre GL JS for att rendera kartan direkt i webblasaren. Det ger snabb feedback, stod for 3D-perspektiv (pitch), och ar idealiskt for att utforska olika vyer och teman innan final export. Exports sker via Playwright som tar en screenshot av kartan.</p>
+            <p><strong>Anvandning:</strong> Interaktiv preview, kreativ utforskning, snabb iteration.</p>
+
+            <h3>Demo B - Print / Mapnik</h3>
+            <p>Demo B anvander Mapnik for server-side rendering. Kartan renderas pa servern fran PostGIS-data, vilket ger exakt kontroll over output. Resultatet ar kartografiskt korrekt och deterministiskt - samma input ger alltid exakt samma output (byte-identiskt).</p>
+            <p><strong>Anvandning:</strong> Final print master, professionella exports, arkivkvalitet.</p>
+        </section>
+
+        <section>
+            <h2>Dataflode</h2>
+            <div class="flow-diagram">
+<pre>
+                    ┌─────────────────────────────────────────┐
+                    │           prep-service                  │
+                    │  OSM data + DEM → tiles, hillshade,     │
+                    │  contours                               │
+                    └──────────────────┬──────────────────────┘
+                                       │
+              ┌────────────────────────┴────────────────────────┐
+              │                                                 │
+              ▼                                                 ▼
+┌─────────────────────────────┐             ┌─────────────────────────────┐
+│         Demo A              │             │         Demo B              │
+│  MBTiles → Martin → Web     │             │  OSM → PostGIS → Mapnik     │
+│  MapLibre → Playwright      │             │  → Flask API                │
+│         ↓                   │             │         ↓                   │
+│    PNG export               │             │    PNG/PDF export           │
+└─────────────────────────────┘             └─────────────────────────────┘
+</pre>
+            </div>
+            <p><strong>Datakallor:</strong></p>
+            <ul>
+                <li><strong>OSM (OpenStreetMap)</strong> - Vagar, byggnader, vatten, parker</li>
+                <li><strong>DEM (EU-DEM)</strong> - Hojddata for hillshade och konturer</li>
+                <li><strong>Tiles</strong> - Forberaknade karttiles for snabb rendering</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Vem ar systemet for?</h2>
+
+            <h3>Slutanvandare</h3>
+            <p>Vill du skapa vacker kartkonst av Stockholm? Anvand webbgranssnittet for att valja tema, omrade och exportera. Demo A ar bast for att utforska, Demo B for final print.</p>
+
+            <h3>Print/Export</h3>
+            <p>For professionella exports, anvand Demo B's API. Det garanterar reproducerbarhet och kartografisk korrekthet. Format som stods: PNG, PDF.</p>
+        </section>
+
+        <section id="demo-b-export">
+            <h2>Export API</h2>
+
+            <h3>Demo A Export</h3>
+            <div class="code-block">
+<code>curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&render_mode=print&dpi=150&width_mm=420&height_mm=594" --output export.png</code>
+            </div>
+
+            <h3>Demo B Export</h3>
+            <div class="code-block">
+<code>curl -X POST "http://localhost:5000/render" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bbox_preset": "stockholm_core",
+    "theme": "paper",
+    "render_mode": "print",
+    "dpi": 150,
+    "width_mm": 420,
+    "height_mm": 594,
+    "format": "png"
+  }' --output export.png</code>
+            </div>
+        </section>
+
+        <section>
+            <h2>Tillgangliga teman</h2>
+            <div class="themes-grid">
+                <span class="theme-tag">paper</span>
+                <span class="theme-tag">ink</span>
+                <span class="theme-tag">mono</span>
+                <span class="theme-tag">dark</span>
+                <span class="theme-tag">gallery</span>
+                <span class="theme-tag">charcoal</span>
+                <span class="theme-tag">warm-paper</span>
+                <span class="theme-tag">blueprint-muted</span>
+                <span class="theme-tag">muted-pastel</span>
+            </div>
+        </section>
+
+        <section>
+            <h2>Dokumentation</h2>
+            <ul class="doc-links">
+                <li>
+                    <a href="OVERVIEW.md">
+                        <span>OVERVIEW.md</span>
+                        <span class="desc">Systemarkitektur och koncept</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="USAGE.md">
+                        <span>USAGE.md</span>
+                        <span class="desc">Hur man anvander systemet</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="STATUS.md">
+                        <span>STATUS.md</span>
+                        <span class="desc">Vad fungerar just nu</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="ROADMAP.md">
+                        <span>ROADMAP.md</span>
+                        <span class="desc">Planerade funktioner</span>
+                    </a>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Portar och tjanster</h2>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border);">
+                        <th style="text-align: left; padding: 0.5rem;">Tjanst</th>
+                        <th style="text-align: left; padding: 0.5rem;">Port</th>
+                        <th style="text-align: left; padding: 0.5rem;">Beskrivning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.5rem;">Demo A Web</td>
+                        <td style="padding: 0.5rem;">3000</td>
+                        <td style="padding: 0.5rem;">MapLibre webbgranssnitt</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.5rem;">Demo A Exporter</td>
+                        <td style="padding: 0.5rem;">8082</td>
+                        <td style="padding: 0.5rem;">Playwright export-tjanst</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.5rem;">Demo B Web</td>
+                        <td style="padding: 0.5rem;">3001</td>
+                        <td style="padding: 0.5rem;">Mapnik webbgranssnitt</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.5rem;">Demo B API</td>
+                        <td style="padding: 0.5rem;">5000</td>
+                        <td style="padding: 0.5rem;">Flask render API</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <td style="padding: 0.5rem;">Martin Tileserver</td>
+                        <td style="padding: 0.5rem;">8080</td>
+                        <td style="padding: 0.5rem;">Vector tiles</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.5rem;">Hillshade Server</td>
+                        <td style="padding: 0.5rem;">8081</td>
+                        <td style="padding: 0.5rem;">Raster hillshade tiles</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>Stockholm Topo - Topografiska kartexporter</p>
+        <p>Data: OpenStreetMap, EU-DEM (Copernicus)</p>
+    </footer>
+</body>
+</html>
