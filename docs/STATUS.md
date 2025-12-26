@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 (QA för svealand preset)
+**Senast uppdaterad**: 2025-12-27 (infra hardening komplett)
 
 ## Sammanfattning
 
@@ -9,6 +9,18 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 **Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
 **Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar, men terrain-data (DEM, hillshade, contours) saknas. Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) för detaljer.
+
+### NYA funktioner (2025-12-27)
+
+| Funktion | Status |
+|----------|--------|
+| Export-validering (preset_limits.json) | ✅ Implementerat |
+| UI-varningar i Demo B | ✅ Implementerat |
+| API: /validate, /preset-limits | ✅ Implementerat |
+| Build utilities (preflight, logging, timing) | ✅ Implementerat |
+| QA test suite (Playwright) | ✅ 10/10 Demo A, 5/7 Demo B |
+
+Se [PRESET_LIMITS.md](PRESET_LIMITS.md), [BUILD_GUIDE.md](BUILD_GUIDE.md), [DESIGN_CATALOG.md](DESIGN_CATALOG.md).
 
 ---
 
@@ -212,7 +224,7 @@ Artefakter: `exports/screenshots/qa_20251226_182055/`
 
 Se fullständig rapport: [QA_REPORT.md](QA_REPORT.md)
 
-**Svealand QA (2025-12-27)**: Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md)  
+**Svealand QA (2025-12-27)**: Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md)
 Screenshots: `exports/screenshots/qa_20251227_120000_svealand/`
 
 Screenshots sparade i: `exports/screenshots/`

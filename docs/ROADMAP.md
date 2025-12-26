@@ -1,12 +1,33 @@
 # Roadmap
 
-**Senast uppdaterad**: 2025-12-27 (morgon)
+**Senast uppdaterad**: 2025-12-27 (kväll)
 
 ## Statusförklaring
 
 - ⬜ TODO
 - 🟡 DOING
 - ✅ DONE
+
+---
+
+## Phase 5.5 - Infra & Quality Hardening (NEW)
+
+**Mål**: Säkerställa robust tile-pipeline och exportskydd.
+
+| Uppgift | Status |
+|---------|--------|
+| Preset limits konfiguration (preset_limits.json) | ✅ DONE |
+| Server-side export validering | ✅ DONE |
+| API endpoints: /validate, /preset-limits | ✅ DONE |
+| UI varningar och felmeddelanden | ✅ DONE |
+| Build utilities (preflight, logging, timing) | ✅ DONE |
+| QA test suite (Playwright) | ✅ DONE |
+| Design catalog dokumentation | ✅ DONE |
+
+**Dokumentation**:
+- [PRESET_LIMITS.md](PRESET_LIMITS.md) - Exportbegränsningar per preset
+- [BUILD_GUIDE.md](BUILD_GUIDE.md) - Byggtider och diskåtgång
+- [DESIGN_CATALOG.md](DESIGN_CATALOG.md) - Designstilar och render-pipelines
 
 ---
 
@@ -654,6 +675,17 @@ Parametrar som kan justeras per stil eller export.
 ---
 
 ## Changelog
+
+### 2025-12-27 (kväll)
+
+- ✅ **Phase 5.5 - Infra & Quality Hardening** komplett:
+  - Preset limits med DPI/format-begränsningar per preset
+  - Server-side validering i renderer med /validate och /preset-limits endpoints
+  - UI varningar i Demo B (real-time validering)
+  - Build utilities med preflight-checks, progress logging och timing
+  - QA test suite med Playwright (10/10 PASS Demo A, 5/7 PASS Demo B)
+  - Design catalog med 6 MVP-stilar och render-pipeline dokumentation
+- ✅ Nya dokumentationsfiler: PRESET_LIMITS.md, BUILD_GUIDE.md, DESIGN_CATALOG.md
 
 ### 2025-12-27 (tidig morgon)
 
