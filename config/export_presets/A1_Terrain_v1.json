@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A1_Terrain_v1",
+  "version": 1,
+  "display_name": "A1 Terrangkarta",
+  "description": "Stor karta med fokus pa terrang och hojddata",
+
+  "bbox_preset": "stockholm_wide",
+  "theme": "gallery",
+
+  "paper": {
+    "format": "A1",
+    "orientation": "portrait",
+    "width_mm": 594,
+    "height_mm": 841
+  },
+
+  "render": {
+    "dpi": 150,
+    "format": "png",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": true,
+    "water": true,
+    "parks": true,
+    "roads": false,
+    "buildings": false,
+    "contours": true
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": false
+  },
+
+  "constraints": {
+    "dpi_locked": false,
+    "dpi_min": 72,
+    "dpi_max": 200,
+    "format_locked": false,
+    "allowed_formats": ["png", "pdf"],
+    "layers_locked": false,
+    "bbox_locked": true,
+    "theme_locked": false
+  },
+
+  "meta": {
+    "created": "2025-12-26",
+    "author": "system",
+    "use_case": "terrain_analysis",
+    "tags": ["print", "terrain", "a1", "hillshade"]
+  }
+}

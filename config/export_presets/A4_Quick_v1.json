@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A4_Quick_v1",
+  "version": 1,
+  "display_name": "A4 Snabbutskrift",
+  "description": "Kompakt karta for skrivbordsutskrift",
+
+  "bbox_preset": "stockholm_core",
+  "theme": "paper",
+
+  "paper": {
+    "format": "A4",
+    "orientation": "portrait",
+    "width_mm": 210,
+    "height_mm": 297
+  },
+
+  "render": {
+    "dpi": 150,
+    "format": "png",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": true,
+    "water": true,
+    "parks": true,
+    "roads": true,
+    "buildings": true,
+    "contours": false
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": false
+  },
+
+  "constraints": {
+    "dpi_locked": false,
+    "dpi_min": 72,
+    "dpi_max": 300,
+    "format_locked": false,
+    "allowed_formats": ["png", "pdf"],
+    "layers_locked": false,
+    "bbox_locked": true,
+    "theme_locked": false
+  },
+
+  "meta": {
+    "created": "2025-12-26",
+    "author": "system",
+    "use_case": "quick_print",
+    "tags": ["print", "paper", "a4", "quick"]
+  }
+}

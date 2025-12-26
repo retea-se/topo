@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A2_Paper_v1",
+  "version": 1,
+  "display_name": "A2 Papperskarta",
+  "description": "Klassisk topografisk karta for vaggupphanging",
+
+  "bbox_preset": "stockholm_core",
+  "theme": "paper",
+
+  "paper": {
+    "format": "A2",
+    "orientation": "landscape",
+    "width_mm": 594,
+    "height_mm": 420
+  },
+
+  "render": {
+    "dpi": 150,
+    "format": "png",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": true,
+    "water": true,
+    "parks": true,
+    "roads": true,
+    "buildings": true,
+    "contours": true
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": false
+  },
+
+  "constraints": {
+    "dpi_locked": false,
+    "dpi_min": 72,
+    "dpi_max": 300,
+    "format_locked": false,
+    "allowed_formats": ["png", "pdf"],
+    "layers_locked": false,
+    "bbox_locked": true,
+    "theme_locked": true
+  },
+
+  "meta": {
+    "created": "2025-12-26",
+    "author": "system",
+    "use_case": "wall_print",
+    "tags": ["print", "paper", "a2", "standard"]
+  }
+}

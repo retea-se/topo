@@ -1,0 +1,144 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "export_preset_v1",
+  "title": "Export Preset",
+  "type": "object",
+  "required": [
+    "id", "version", "display_name", "bbox_preset",
+    "theme", "paper", "render", "layers", "constraints"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9_]+_v[0-9]+$",
+      "description": "Unique preset ID"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Preset version (integer)"
+    },
+    "display_name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Display name in UI"
+    },
+    "description": {
+      "type": "string",
+      "description": "Preset description"
+    },
+    "deprecated": {
+      "type": "boolean",
+      "default": false
+    },
+    "superseded_by": {
+      "type": "string",
+      "description": "ID of replacement preset"
+    },
+    "bbox_preset": {
+      "type": "string",
+      "enum": ["stockholm_core", "stockholm_wide", "svealand"],
+      "description": "Geographic area"
+    },
+    "theme": {
+      "type": "string",
+      "description": "Theme name"
+    },
+    "paper": {
+      "type": "object",
+      "required": ["format", "orientation", "width_mm", "height_mm"],
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["A0", "A1", "A2", "A3", "A4"]
+        },
+        "orientation": {
+          "type": "string",
+          "enum": ["portrait", "landscape"]
+        },
+        "width_mm": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 1200
+        },
+        "height_mm": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 1200
+        }
+      }
+    },
+    "render": {
+      "type": "object",
+      "required": ["dpi", "format", "render_mode"],
+      "properties": {
+        "dpi": {
+          "type": "integer",
+          "minimum": 72,
+          "maximum": 600
+        },
+        "format": {
+          "type": "string",
+          "enum": ["png", "pdf", "svg"]
+        },
+        "render_mode": {
+          "type": "string",
+          "enum": ["print", "screen"]
+        }
+      }
+    },
+    "layers": {
+      "type": "object",
+      "properties": {
+        "hillshade": { "type": "boolean" },
+        "water": { "type": "boolean" },
+        "parks": { "type": "boolean" },
+        "roads": { "type": "boolean" },
+        "buildings": { "type": "boolean" },
+        "contours": { "type": "boolean" }
+      }
+    },
+    "composition": {
+      "type": "object",
+      "properties": {
+        "title": { "type": ["string", "null"] },
+        "subtitle": { "type": ["string", "null"] },
+        "show_attribution": { "type": "boolean" },
+        "show_scale_bar": { "type": "boolean" }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "required": [
+        "dpi_locked", "dpi_min", "dpi_max",
+        "format_locked", "allowed_formats",
+        "layers_locked", "bbox_locked", "theme_locked"
+      ],
+      "properties": {
+        "dpi_locked": { "type": "boolean" },
+        "dpi_min": { "type": "integer" },
+        "dpi_max": { "type": "integer" },
+        "format_locked": { "type": "boolean" },
+        "allowed_formats": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["png", "pdf", "svg"] }
+        },
+        "layers_locked": { "type": "boolean" },
+        "bbox_locked": { "type": "boolean" },
+        "theme_locked": { "type": "boolean" }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "created": { "type": "string", "format": "date" },
+        "author": { "type": "string" },
+        "use_case": { "type": "string" },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

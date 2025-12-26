@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A3_Blueprint_v1",
+  "version": 1,
+  "display_name": "A3 Blueprint",
+  "description": "Teknisk stil for presentation och planering",
+
+  "bbox_preset": "stockholm_core",
+  "theme": "blueprint-muted",
+
+  "paper": {
+    "format": "A3",
+    "orientation": "landscape",
+    "width_mm": 420,
+    "height_mm": 297
+  },
+
+  "render": {
+    "dpi": 150,
+    "format": "pdf",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": false,
+    "water": true,
+    "parks": false,
+    "roads": true,
+    "buildings": true,
+    "contours": true
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": false
+  },
+
+  "constraints": {
+    "dpi_locked": true,
+    "dpi_min": 150,
+    "dpi_max": 150,
+    "format_locked": true,
+    "allowed_formats": ["pdf"],
+    "layers_locked": true,
+    "bbox_locked": true,
+    "theme_locked": true
+  },
+
+  "meta": {
+    "created": "2025-12-26",
+    "author": "system",
+    "use_case": "technical_presentation",
+    "tags": ["print", "blueprint", "a3", "technical"]
+  }
+}
