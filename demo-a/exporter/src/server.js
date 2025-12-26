@@ -38,10 +38,41 @@ app.get('/render', async (req, res) => {
     });
 
     const url = `${WEB_URL}/?bbox_preset=${bbox_preset}&theme=${theme}&render_mode=${render_mode}`;
-    await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
+    await page.goto(url, { waitUntil: 'networkidle', timeout: 180000 });
 
     // Wait for map to load
-    await page.waitForFunction(() => window.map && window.map.loaded(), { timeout: 30000 });
+    await page.waitForFunction(() => window.map && window.map.loaded(), { timeout: 60000 });
+
+    // Wait for map style to be loaded
+    await page.waitForFunction(() => {
+      return window.map && window.map.loaded() && window.map.isStyleLoaded();
+    }, { timeout: 60000 });
+
+    // Wait for at least one tile source to have loaded data
+    await page.waitForFunction(() => {
+      if (!window.map || !window.map.loaded()) return false;
+      const sources = window.map.getStyle().sources;
+      // Check if at least one source has been requested
+      return Object.keys(sources).length > 0;
+    }, { timeout: 60000 });
+
+    // Wait for map idle event (all tiles loaded)
+    await page.evaluate(() => {
+      return new Promise((resolve) => {
+        if (!window.map || !window.map.loaded()) {
+          resolve();
+          return;
+        }
+        if (window.map.isStyleLoaded()) {
+          // Wait for idle event
+          window.map.once('idle', resolve);
+          // Also set a timeout in case idle never fires
+          setTimeout(resolve, 10000);
+        } else {
+          resolve();
+        }
+      });
+    });
 
     // Disable animations
     await page.addStyleTag({
@@ -52,7 +83,7 @@ app.get('/render', async (req, res) => {
     await page.evaluate(() => document.fonts.ready);
 
     // Additional wait to ensure all rendering is complete
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
 
     const screenshot = await page.screenshot({
       type: 'png',

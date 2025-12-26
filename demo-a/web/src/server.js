@@ -19,10 +19,13 @@ app.get('/themeToStyle.js', (req, res) => {
 });
 
 // API endpoint to get configuration
+// Browser needs host-accessible URLs (localhost:8080, localhost:8081)
+// Container-to-container uses service names, but browser runs on host
 app.get('/api/config', (req, res) => {
+  // For browser access, always use localhost with mapped ports
   res.json({
-    tileserverUrl: TILESERVER_URL,
-    hillshadeTilesUrl: HILLSHADE_TILES_URL
+    tileserverUrl: 'http://localhost:8080',
+    hillshadeTilesUrl: 'http://localhost:8081'
   });
 });
 
