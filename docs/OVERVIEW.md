@@ -18,6 +18,20 @@ Systemet består av två demos som kompletterar varandra:
 
 Demo A är optimerad för snabb feedback. Du kan panorera, zooma och till och med ändra perspektiv (pitch) i realtid. Perfekt för att experimentera med olika vyer och teman innan du bestämmer dig för final export.
 
+#### Interactive Print Editor (NY!)
+
+Demo A innehåller nu en interaktiv print editor tillgänglig på `/editor`:
+
+- **Bbox Drawing**: Rita custom områden direkt på kartan
+- **Paper Sizes**: A0-A4 med portrait/landscape
+- **DPI Selection**: 72-600 DPI
+- **Export Formats**: PNG, PDF, SVG
+- **Composition**: Titel, undertitel, attribution
+- **Real-time Preview**: Se förhandsvisning innan export
+- **Scale Calculation**: Automatisk skalberäkning
+
+Åtkomst: `http://localhost:3000/editor`
+
 ### Demo B - Mapnik/PostGIS
 
 - **Teknologi**: PostGIS + Mapnik + Flask

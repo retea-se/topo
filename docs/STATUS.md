@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 (infra hardening komplett)
+**Senast uppdaterad**: 2025-12-26 (Interactive Print Editor)
 
 ## Sammanfattning
 
@@ -10,7 +10,28 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar stabilt (100% tile success rate), men terrain-data (DEM, hillshade, contours) saknas. UI hanterar saknade terrain gracefully (inga 404-spam). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) för detaljer.
 
-### NYA funktioner (2025-12-27)
+### NYA funktioner (2025-12-26) - Interactive Print Editor
+
+| Funktion | Status |
+|----------|--------|
+| **Interactive Print Editor** | ✅ Implementerat |
+| Bbox drawing tool (MapLibre Draw) | ✅ Implementerat |
+| Editor panel UI (titel, skala, attribution) | ✅ Implementerat |
+| Paper size presets (A0-A4) | ✅ Implementerat |
+| Orientation toggle (Portrait/Landscape) | ✅ Implementerat |
+| DPI selector (72-600) | ✅ Implementerat |
+| Format selector (PNG/PDF/SVG) | ✅ Implementerat |
+| Scale auto-calculation | ✅ Implementerat |
+| PDF export endpoint | ✅ Implementerat |
+| SVG export endpoint | ✅ Implementerat |
+| Custom bbox support | ✅ Implementerat |
+| Playwright test suite | ✅ Implementerat |
+
+**Åtkomst**: http://localhost:3000/editor
+
+Se [TODO_EXPORT_EDITOR.md](TODO_EXPORT_EDITOR.md), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
+
+### Tidigare funktioner (2025-12-27)
 
 | Funktion | Status |
 |----------|--------|
