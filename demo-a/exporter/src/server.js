@@ -13,13 +13,54 @@ if (!fs.existsSync(EXPORTS_DIR)) {
   fs.mkdirSync(EXPORTS_DIR, { recursive: true });
 }
 
+// CORS middleware for browser fetch requests
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'demo-a-exporter' });
+});
+
 app.get('/render', async (req, res) => {
-  const { bbox_preset, theme, render_mode, dpi = 150, width_mm = 420, height_mm = 594 } = req.query;
+  const {
+    bbox_preset,
+    custom_bbox,
+    theme,
+    render_mode,
+    dpi = 150,
+    width_mm = 420,
+    height_mm = 594,
+    title = '',
+    subtitle = '',
+    attribution = '',
+    layers = '{}'
+  } = req.query;
 
   const width_px = Math.round(width_mm * dpi / 25.4);
   const height_px = Math.round(height_mm * dpi / 25.4);
 
-  console.log(`Exporting: ${bbox_preset}, ${theme}, ${render_mode}, ${width_px}x${height_px}px`);
+  // Parse layer settings
+  let layerSettings = {};
+  try {
+    layerSettings = JSON.parse(layers);
+  } catch (e) {
+    console.warn('Could not parse layers:', layers);
+  }
+
+  console.log(`[Exporter] Starting export:`);
+  console.log(`  Preset: ${bbox_preset}, Custom bbox: ${custom_bbox || 'none'}`);
+  console.log(`  Theme: ${theme}, Mode: ${render_mode}`);
+  console.log(`  Size: ${width_mm}x${height_mm}mm @ ${dpi}dpi = ${width_px}x${height_px}px`);
+  console.log(`  Title: "${title}", Subtitle: "${subtitle}"`);
+  console.log(`  Layers:`, layerSettings);
 
   try {
     const browser = await chromium.launch({ headless: true });
@@ -37,7 +78,26 @@ app.get('/render', async (req, res) => {
       Date.now = () => fixedTime;
     });
 
-    const url = `${WEB_URL}/?bbox_preset=${bbox_preset}&theme=${theme}&render_mode=${render_mode}`;
+    // Build URL with all parameters
+    const urlParams = new URLSearchParams({
+      bbox_preset: bbox_preset || 'stockholm_core',
+      theme: theme || 'paper',
+      render_mode: render_mode || 'print'
+    });
+
+    // Add custom bbox if specified
+    if (custom_bbox) {
+      urlParams.set('custom_bbox', custom_bbox);
+    }
+
+    // Add layer visibility settings
+    if (Object.keys(layerSettings).length > 0) {
+      urlParams.set('layers', layers);
+    }
+
+    const url = `${WEB_URL}/?${urlParams.toString()}`;
+    console.log(`[Exporter] Loading: ${url}`);
+
     await page.goto(url, { waitUntil: 'networkidle', timeout: 180000 });
 
     // Wait for map to load
@@ -95,25 +155,51 @@ app.get('/render', async (req, res) => {
       : await page.screenshot({ type: 'png', fullPage: false, omitBackground: false });
 
     await browser.close();
+    console.log(`[Exporter] Browser closed, screenshot size: ${screenshot.length} bytes`);
 
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
-    const filename = `export_${bbox_preset}_${theme}_${render_mode}_${width_mm}mmx${height_mm}mm_${dpi}dpi_${timestamp}.png`;
+    // Generate filename with timestamp
+    const now = new Date();
+    const timestamp = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const presetName = custom_bbox ? 'custom' : bbox_preset;
+    const filename = `export_${presetName}_${theme}_${width_mm}x${height_mm}mm_${dpi}dpi_${timestamp}.png`;
     const filepath = path.join(EXPORTS_DIR, filename);
 
+    // Save to disk
     fs.writeFileSync(filepath, screenshot);
+    console.log(`[Exporter] Saved to disk: ${filepath} (${(screenshot.length / 1024 / 1024).toFixed(2)} MB)`);
 
+    // Send response
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', screenshot.length);
     res.send(screenshot);
 
-    console.log(`Export saved: ${filepath}`);
+    console.log(`[Exporter] Export complete: ${filename}`);
   } catch (error) {
-    console.error('Export error:', error);
-    res.status(500).json({ error: error.message });
+    console.error('[Exporter] Export error:', error);
+    res.status(500).json({ error: error.message, details: error.stack });
+  }
+});
+
+// List exports endpoint
+app.get('/exports', (req, res) => {
+  try {
+    const files = fs.readdirSync(EXPORTS_DIR)
+      .filter(f => f.endsWith('.png'))
+      .map(f => {
+        const stat = fs.statSync(path.join(EXPORTS_DIR, f));
+        return { name: f, size: stat.size, created: stat.mtime };
+      })
+      .sort((a, b) => b.created - a.created);
+    res.json({ exports: files, count: files.length });
+  } catch (error) {
+    res.json({ exports: [], count: 0 });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`Demo A exporter listening on port ${PORT}`);
+  console.log(`[Exporter] Demo A exporter listening on port ${PORT}`);
+  console.log(`[Exporter] Web URL: ${WEB_URL}`);
+  console.log(`[Exporter] Exports directory: ${EXPORTS_DIR}`);
 });
 

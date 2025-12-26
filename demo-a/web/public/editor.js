@@ -12,6 +12,13 @@ let currentBbox = null;
 let isDrawingMode = false;
 let currentFormat = 'png';
 let currentOrientation = 'portrait';
+let styleChangeInProgress = false;
+
+// Debug logging (set to true for troubleshooting)
+const DEBUG = true;
+function debug(...args) {
+    if (DEBUG) console.log('[Editor]', ...args);
+}
 
 // Paper sizes in mm
 const PAPER_SIZES = {
@@ -86,33 +93,70 @@ async function loadTheme(name) {
 
 /**
  * Update map style with current theme
+ * IMPORTANT: Preserves current viewport (center, zoom, bearing, pitch)
  */
 async function updateMapStyle() {
     if (!map || !currentTheme) return;
 
-    const [config, coverage] = await Promise.all([
-        fetch('/api/config').then(r => r.json()),
-        fetch(`/api/coverage/${currentPreset}`).then(r => r.json()).catch(() => null)
-    ]);
+    // Guard against concurrent style changes
+    if (styleChangeInProgress) {
+        debug('Style change already in progress, skipping');
+        return;
+    }
+    styleChangeInProgress = true;
 
-    window.currentCoverage = coverage || { osm: true, contours: false, hillshade: false };
+    // Save current view state BEFORE style change
+    const savedViewState = {
+        center: map.getCenter(),
+        zoom: map.getZoom(),
+        bearing: map.getBearing(),
+        pitch: map.getPitch()
+    };
+    debug('Saving view state:', savedViewState);
 
-    if (typeof window.themeToMapLibreStyle === 'function') {
-        const style = window.themeToMapLibreStyle(
-            currentTheme,
-            config.tileserverUrl,
-            config.hillshadeTilesUrl,
-            currentPreset,
-            'screen',
-            window.currentCoverage
-        );
+    try {
+        const [config, coverage] = await Promise.all([
+            fetch('/api/config').then(r => r.json()),
+            fetch(`/api/coverage/${currentPreset}`).then(r => r.json()).catch(() => null)
+        ]);
 
-        map.once('style.load', () => {
-            updateLayerVisibility();
-            updateLayerCheckboxStates();
-        });
+        window.currentCoverage = coverage || { osm: true, contours: false, hillshade: false };
 
-        map.setStyle(style);
+        if (typeof window.themeToMapLibreStyle === 'function') {
+            const style = window.themeToMapLibreStyle(
+                currentTheme,
+                config.tileserverUrl,
+                config.hillshadeTilesUrl,
+                currentPreset,
+                'screen',
+                window.currentCoverage
+            );
+
+            // Set up the style.load handler BEFORE calling setStyle
+            map.once('style.load', () => {
+                debug('Style loaded, restoring view state:', savedViewState);
+
+                // Restore view state after style loads
+                map.jumpTo({
+                    center: savedViewState.center,
+                    zoom: savedViewState.zoom,
+                    bearing: savedViewState.bearing,
+                    pitch: savedViewState.pitch
+                });
+
+                updateLayerVisibility();
+                updateLayerCheckboxStates();
+                styleChangeInProgress = false;
+                debug('Style change complete, view state restored');
+            });
+
+            map.setStyle(style);
+        } else {
+            styleChangeInProgress = false;
+        }
+    } catch (error) {
+        console.error('Error updating map style:', error);
+        styleChangeInProgress = false;
     }
 }
 
@@ -507,6 +551,11 @@ async function exportMap() {
         return;
     }
 
+    debug('Starting export:', { format: currentFormat, preset: currentPreset, bbox: currentBbox });
+
+    // Hide print composition overlay during export (exporter creates its own)
+    hidePrintComposition();
+
     // Show modal
     elements.exportModal.classList.add('active');
     elements.progressFill.style.width = '0%';
@@ -516,11 +565,14 @@ async function exportMap() {
     const theme = elements.themeSelect.value;
     const layers = getLayerSettings();
 
+    // Generate filename
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = `export_${currentPreset}_${theme}_${output.widthMm}x${output.heightMm}mm_${output.dpi}dpi_${timestamp}.${currentFormat}`;
+
     try {
-        // Build export URL based on format
         if (currentFormat === 'png') {
-            // Use existing Playwright exporter for PNG
-            setProgress(20, 'Rendering map...');
+            // Use existing Playwright exporter for PNG via fetch (not navigation)
+            setProgress(20, 'Connecting to exporter...');
 
             const params = new URLSearchParams({
                 bbox_preset: currentPreset === 'custom' ? 'stockholm_core' : currentPreset,
@@ -530,21 +582,51 @@ async function exportMap() {
                 dpi: output.dpi,
                 width_mm: output.widthMm,
                 height_mm: output.heightMm,
-                title: elements.titleInput.value,
-                subtitle: elements.subtitleInput.value,
-                attribution: elements.attributionInput.value,
+                title: elements.titleInput.value || '',
+                subtitle: elements.subtitleInput.value || '',
+                attribution: elements.attributionInput.value || '',
                 layers: JSON.stringify(layers)
             });
 
-            setProgress(50, 'Generating image...');
+            const exportUrl = `http://localhost:8082/render?${params}`;
+            debug('PNG export URL:', exportUrl);
 
-            // Navigate to exporter
-            window.location.href = `http://localhost:8082/render?${params}`;
+            setProgress(40, 'Rendering map (this may take 30-60 seconds)...');
 
-            setProgress(100, 'Download starting...');
+            // Use fetch instead of navigation for proper blob handling
+            const response = await fetch(exportUrl, {
+                method: 'GET',
+                mode: 'cors'
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Export failed: ${response.status} - ${errorText}`);
+            }
+
+            setProgress(80, 'Processing image...');
+
+            // Get the blob and trigger download
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+
+            debug('PNG export complete, blob size:', blob.size);
+
+            // Trigger download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            setProgress(100, `Download started: ${filename}`);
+            setStatus(`Export saved: ${filename} (${(blob.size / 1024 / 1024).toFixed(1)} MB)`, 'success');
+
             setTimeout(() => {
                 elements.exportModal.classList.remove('active');
-            }, 1500);
+            }, 2000);
 
         } else if (currentFormat === 'pdf' || currentFormat === 'svg') {
             // Use Demo B renderer for PDF/SVG
@@ -559,13 +641,15 @@ async function exportMap() {
                 width_mm: output.widthMm,
                 height_mm: output.heightMm,
                 format: currentFormat,
-                title: elements.titleInput.value,
-                subtitle: elements.subtitleInput.value,
-                attribution: elements.attributionInput.value,
+                title: elements.titleInput.value || '',
+                subtitle: elements.subtitleInput.value || '',
+                attribution: elements.attributionInput.value || '',
                 layers: layers
             };
 
-            setProgress(40, 'Sending to renderer...');
+            debug('PDF/SVG export request:', requestBody);
+
+            setProgress(40, 'Sending to Demo B renderer...');
 
             const response = await fetch('http://localhost:5000/api/render', {
                 method: 'POST',
@@ -574,8 +658,14 @@ async function exportMap() {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                throw new Error(error.error || 'Export failed');
+                let errorMsg = `HTTP ${response.status}`;
+                try {
+                    const error = await response.json();
+                    errorMsg = error.error || errorMsg;
+                } catch (e) {
+                    errorMsg = await response.text() || errorMsg;
+                }
+                throw new Error(errorMsg);
             }
 
             setProgress(80, 'Downloading file...');
@@ -583,29 +673,37 @@ async function exportMap() {
             // Download the file
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
+
+            debug(`${currentFormat.toUpperCase()} export complete, blob size:`, blob.size);
+
             const a = document.createElement('a');
             a.href = url;
-            a.download = `map_export_${Date.now()}.${currentFormat}`;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            setProgress(100, 'Download complete!');
+            setProgress(100, `Download started: ${filename}`);
+            setStatus(`Export saved: ${filename} (${(blob.size / 1024).toFixed(0)} KB)`, 'success');
+
             setTimeout(() => {
                 elements.exportModal.classList.remove('active');
-            }, 1500);
+            }, 2000);
         }
 
     } catch (error) {
         console.error('Export error:', error);
+        debug('Export failed:', error.message);
+
         elements.modalStatus.textContent = `Error: ${error.message}`;
-        elements.statusDot.classList.add('error');
+        elements.progressFill.style.background = '#f87171';
 
         setTimeout(() => {
             elements.exportModal.classList.remove('active');
-            setStatus(error.message, 'error');
-        }, 3000);
+            elements.progressFill.style.background = '';
+            setStatus(`Export failed: ${error.message}`, 'error');
+        }, 4000);
     }
 }
 
@@ -618,15 +716,187 @@ function setProgress(percent, message) {
 }
 
 /**
+ * Create or update the print composition overlay
+ * Shows frame, title, scale, and attribution as they will appear in export
+ */
+function updatePrintComposition() {
+    const mapContainer = document.getElementById('map-container');
+
+    // Remove existing composition overlay
+    let overlay = document.getElementById('print-composition');
+    if (overlay) {
+        overlay.remove();
+    }
+
+    // Create new overlay
+    overlay = document.createElement('div');
+    overlay.id = 'print-composition';
+    overlay.style.cssText = `
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 15;
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    `;
+
+    // Calculate dimensions based on viewport and paper aspect ratio
+    const output = calculateOutputSize();
+    const aspectRatio = output.widthMm / output.heightMm;
+
+    // Get available space
+    const containerRect = mapContainer.getBoundingClientRect();
+    const maxWidth = containerRect.width * 0.85;
+    const maxHeight = containerRect.height * 0.85;
+
+    // Calculate overlay dimensions maintaining aspect ratio
+    let overlayWidth, overlayHeight;
+    if (maxWidth / maxHeight > aspectRatio) {
+        // Constrained by height
+        overlayHeight = maxHeight;
+        overlayWidth = overlayHeight * aspectRatio;
+    } else {
+        // Constrained by width
+        overlayWidth = maxWidth;
+        overlayHeight = overlayWidth / aspectRatio;
+    }
+
+    overlay.style.width = `${overlayWidth}px`;
+    overlay.style.height = `${overlayHeight}px`;
+
+    // Calculate margins (simulate 10mm margins scaled to overlay)
+    const marginPx = Math.round((10 / output.widthMm) * overlayWidth);
+
+    // Create inner content area (with margins)
+    const contentArea = document.createElement('div');
+    contentArea.style.cssText = `
+        flex: 1;
+        margin: ${marginPx}px;
+        display: flex;
+        flex-direction: column;
+        border: 2px solid #333;
+        position: relative;
+        overflow: hidden;
+    `;
+
+    // Title area (top)
+    const title = elements.titleInput.value;
+    const subtitle = elements.subtitleInput.value;
+    if (title || subtitle) {
+        const titleArea = document.createElement('div');
+        titleArea.style.cssText = `
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.9);
+            text-align: center;
+            border-bottom: 1px solid #ccc;
+        `;
+        if (title) {
+            const titleEl = document.createElement('div');
+            titleEl.style.cssText = 'font-size: 16px; font-weight: bold; color: #333;';
+            titleEl.textContent = title;
+            titleArea.appendChild(titleEl);
+        }
+        if (subtitle) {
+            const subtitleEl = document.createElement('div');
+            subtitleEl.style.cssText = 'font-size: 12px; color: #666; margin-top: 2px;';
+            subtitleEl.textContent = subtitle;
+            titleArea.appendChild(subtitleEl);
+        }
+        contentArea.appendChild(titleArea);
+    }
+
+    // Map placeholder (center)
+    const mapPlaceholder = document.createElement('div');
+    mapPlaceholder.style.cssText = `
+        flex: 1;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #999;
+    `;
+    mapPlaceholder.textContent = '(Map renders here)';
+    contentArea.appendChild(mapPlaceholder);
+
+    // Footer area (bottom)
+    const footerArea = document.createElement('div');
+    footerArea.style.cssText = `
+        padding: 6px 12px;
+        background: rgba(255,255,255,0.9);
+        border-top: 1px solid #ccc;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 10px;
+        color: #666;
+    `;
+
+    // Scale (left)
+    const scaleEl = document.createElement('div');
+    scaleEl.textContent = `Scale: ${calculateScale()}`;
+    footerArea.appendChild(scaleEl);
+
+    // Attribution (right)
+    const attribution = elements.attributionInput.value;
+    if (attribution) {
+        const attrEl = document.createElement('div');
+        attrEl.style.cssText = 'text-align: right; max-width: 60%;';
+        attrEl.textContent = attribution.split('\n')[0]; // First line only
+        footerArea.appendChild(attrEl);
+    }
+
+    contentArea.appendChild(footerArea);
+    overlay.appendChild(contentArea);
+
+    // Add label showing paper size
+    const paperLabel = document.createElement('div');
+    const paperSize = elements.paperSizeSelect.value;
+    paperLabel.style.cssText = `
+        position: absolute;
+        top: -25px;
+        left: 0;
+        background: #e94560;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 11px;
+        border-radius: 4px;
+        white-space: nowrap;
+    `;
+    paperLabel.textContent = `${paperSize} ${currentOrientation} - ${output.widthPx}x${output.heightPx}px @ ${output.dpi}dpi`;
+    overlay.appendChild(paperLabel);
+
+    mapContainer.appendChild(overlay);
+    debug('Print composition overlay updated');
+}
+
+/**
+ * Hide print composition overlay
+ */
+function hidePrintComposition() {
+    const overlay = document.getElementById('print-composition');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+/**
  * Generate preview
  */
 async function generatePreview() {
     setStatus('Generating preview...', 'warning');
 
-    // For now, just fit the map to the bbox
+    // Fit map to bbox
     fitMapToBbox();
 
-    setStatus('Preview ready', 'success');
+    // Show print composition overlay
+    updatePrintComposition();
+
+    setStatus('Preview ready - composition overlay shown', 'success');
 }
 
 /**
