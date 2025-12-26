@@ -8,7 +8,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
-**Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar stabilt (100% tile success rate), men terrain-data (DEM, hillshade, contours) saknas. UI hanterar saknade terrain gracefully (inga 404-spam). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) för detaljer.
+**Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar stabilt (100% tile success rate), men terrain-data (DEM, hillshade, contours) saknas. **GLO30Provider implementerad** för automatisk DEM-nedladdning från Copernicus. Terrain-pipelinen är redo men väntar på DEM-nedladdning (kräver COPERNICUS_USERNAME och COPERNICUS_PASSWORD). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) och [SVEALAND_DEM_REQUIREMENTS.md](SVEALAND_DEM_REQUIREMENTS.md) för detaljer.
 
 ### NYA funktioner (2025-12-26) - Interactive Print Editor
 
@@ -255,9 +255,11 @@ Screenshots sparade i: `exports/screenshots/`
 ## Senaste fixar
 
 ### 2025-12-27
-1. **Svealand QA genomförd** - Verifierat OSM-lager fungerar (653 MB tiles, 12/18 tiles OK i health check). Terrain-data saknas (DEM, hillshade, contours). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md).
-2. **Martin config fixad** - Kommenterat bort saknade svealand contour sources för att förhindra startfel.
-3. **JavaScript-varning fixad** - Demo B Web: Korrigerat tema-validering i formulär. Inga konsol-fel längre.
+1. **GLO30Provider implementerad** - Automatisk DEM-nedladdning från Copernicus Data Space Ecosystem (CDSE) API. Stöd för GLO-30 tiles, merging och reprojektion till EPSG:3857. Se [SVEALAND_DEM_REQUIREMENTS.md](SVEALAND_DEM_REQUIREMENTS.md).
+2. **Svealand terrain-pipeline redo** - Alla scripts och konfigurationer på plats för terrain-generering. Väntar på DEM-nedladdning (kräver Copernicus credentials). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md).
+3. **Martin config uppdaterad** - Svealand contour sources aktiverade i `demo-a/tileserver/martin.yaml`.
+4. **Svealand QA genomförd** - Verifierat OSM-lager fungerar (653 MB tiles, 12/18 tiles OK i health check). Terrain-data saknas (DEM, hillshade, contours). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md).
+5. **JavaScript-varning fixad** - Demo B Web: Korrigerat tema-validering i formulär. Inga konsol-fel längre.
 
 ### 2025-12-26
 
