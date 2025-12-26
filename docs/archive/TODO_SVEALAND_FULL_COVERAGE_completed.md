@@ -1,7 +1,7 @@
 # TODO: Svealand Full Coverage
 
 > **Archived** – Completed 2025-12-26. All coverage requirements met (OSM + DEM + hillshade + contours). See STATUS.md for current status.
-> 
+>
 > **Note:** STATUS.md (line 42) still references this file. Update reference to point to archived location when updating STATUS.md.
 
 **Created**: 2025-12-27
