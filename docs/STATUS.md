@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-26 19:25
+**Senast uppdaterad**: 2025-12-27 (QA för svealand preset)
 
 ## Sammanfattning
 
@@ -8,7 +8,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Stockholm Wide status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är nu tillgängliga.
 
-**Svealand status**: ✅ **Full coverage** - Både OSM-lager och terrain-lager (hillshade, contours) är tillgängliga. Zoomnivåer är begränsade för att hantera stort område (hillshade: z9-14, contours: z8-13).
+**Svealand status**: ⚠️ **Partial coverage** - OSM-lager fungerar, men terrain-data (DEM, hillshade, contours) saknas. Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md) för detaljer.
 
 ---
 
@@ -19,12 +19,12 @@ Verifierad datatäckning per preset:
 | Datatyp | stockholm_core | stockholm_wide | svealand |
 |---------|----------------|----------------|----------|
 | OSM PBF | ✅ 3.5 MB | ✅ 17 MB | ✅ ~150 MB (est.) |
-| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB | ✅ ~180 MB (est.) |
-| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB | ✅ ~500 MB (est.) |
-| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB | ✅ ~50 MB (est.) |
-| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 | ✅ z9-14 (begränsat) |
-| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m | ✅ 2m/10m/50m |
-| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB | ✅ ~200 MB (est., z8-13) |
+| OSM tiles (mbtiles) | ✅ 4 MB | ✅ 21 MB | ✅ 653 MB (verifierad 2025-12-27) |
+| DEM (GeoTIFF) | ✅ 2.1 MB | ✅ 9.5 MB | ❌ MISSING |
+| Hillshade raster | ✅ 682 KB | ✅ 4.5 MB | ❌ MISSING |
+| Hillshade tiles (XYZ) | ✅ z10-16 | ✅ z10-16 | ❌ MISSING |
+| Contours GeoJSON | ✅ 2m/10m/50m | ✅ 2m/10m/50m | ❌ MISSING |
+| Contours tiles (mbtiles) | ✅ 540 MB | ✅ 37 MB | ❌ MISSING |
 
 ### DEM-datakälla
 
@@ -106,7 +106,7 @@ Stockholm Wide DEM-data laddades ned från **Copernicus DEM GLO-30** via AWS Ope
 | Demo A Tileserver | 8080 | Aktiv |
 | Demo A Hillshade | 8081 | Aktiv |
 | Demo A Exporter | 8082 | Aktiv |
-| Demo B Web | 3001 | Aktiv |
+| Demo B Web | 3001 | ✅ Aktiv (verifierad 2025-12-27) |
 | Demo B API | 5000 | Aktiv |
 | Demo B Renderer | 5001 | Aktiv |
 | Demo B DB | 5432 | Aktiv |
@@ -212,11 +212,21 @@ Artefakter: `exports/screenshots/qa_20251226_182055/`
 
 Se fullständig rapport: [QA_REPORT.md](QA_REPORT.md)
 
+**Svealand QA (2025-12-27)**: Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md)  
+Screenshots: `exports/screenshots/qa_20251227_120000_svealand/`
+
 Screenshots sparade i: `exports/screenshots/`
 
 ---
 
-## Senaste fixar (2025-12-26)
+## Senaste fixar
+
+### 2025-12-27
+1. **Svealand QA genomförd** - Verifierat OSM-lager fungerar (653 MB tiles, 12/18 tiles OK i health check). Terrain-data saknas (DEM, hillshade, contours). Se [QA_REPORT_SVEALAND.md](QA_REPORT_SVEALAND.md).
+2. **Martin config fixad** - Kommenterat bort saknade svealand contour sources för att förhindra startfel.
+3. **JavaScript-varning fixad** - Demo B Web: Korrigerat tema-validering i formulär. Inga konsol-fel längre.
+
+### 2025-12-26
 
 1. **Hillshade 404-fix** - Korrigerat TMS-schema för rätt y-koordinater
 2. **Mapnik XML-fix** - Borttagna ogiltiga wrapper-element
