@@ -1,0 +1,20 @@
+# Martin tileserver configuration for Demo A
+# Format for Martin v0.14.0
+
+# Listen configuration
+listen_addresses: '0.0.0.0:3000'
+
+# MBTiles sources
+mbtiles:
+  paths:
+    # Scan contours directory for all mbtiles files
+    - /data/tiles/contours
+    # Scan OSM directory for all mbtiles files
+    - /data/tiles/osm
+  sources:
+    # Named sources for contours
+    contours_2m: /data/tiles/contours/stockholm_core_2m.mbtiles
+    contours_10m: /data/tiles/contours/stockholm_core_10m.mbtiles
+    contours_50m: /data/tiles/contours/stockholm_core_50m.mbtiles
+    # Named source for OSM tiles
+    osm: /data/tiles/osm/stockholm_core.mbtiles

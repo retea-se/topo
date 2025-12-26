@@ -1,0 +1,49 @@
+{
+  "name": "Paper",
+  "background": "#faf8f5",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "low",
+    "mood": "calm"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 1.0,
+    "contrast": 1.0,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#d4e4f0",
+    "stroke": "#a8c5d8",
+    "strokeWidth": 0.5
+  },
+  "parks": {
+    "fill": "#e8f0e0",
+    "stroke": "#c8d8b8",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#8a8a8a",
+    "strokeWidth": {
+      "major": 1.5,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#d0d0d0",
+    "stroke": "#909090",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#b0b0b0",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
+
+
+

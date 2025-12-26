@@ -1,0 +1,49 @@
+{
+  "name": "Dark",
+  "background": "#1a1a1a",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "low",
+    "mood": "dramatic"
+  },
+  "hillshade": {
+    "opacity": 0.2,
+    "gamma": 0.9,
+    "contrast": 1.1,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#2a2a2a",
+    "stroke": "#404040",
+    "strokeWidth": 0.5
+  },
+  "parks": {
+    "fill": "#252525",
+    "stroke": "#353535",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#888888",
+    "strokeWidth": {
+      "major": 1.5,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#303030",
+    "stroke": "#555555",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#606060",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
+
+
+

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Topo Map Export - Demo B</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; }
+        select, input { padding: 8px; width: 100%; max-width: 300px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Topo Map Export - Demo B</h1>
+    <form id="export-form">
+        <div class="form-group">
+            <label>Theme:</label>
+            <select id="theme" name="theme">
+                <option value="paper">Paper</option>
+                <option value="ink">Ink</option>
+                <option value="mono">Mono</option>
+                <option value="muted-pastel">Muted Pastel</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Bbox Preset:</label>
+            <select id="bbox_preset" name="bbox_preset">
+                <option value="stockholm_core">Stockholm Core</option>
+                <option value="stockholm_wide">Stockholm Wide</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Render Mode:</label>
+            <select id="render_mode" name="render_mode">
+                <option value="print">Print</option>
+                <option value="screen">Screen</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>DPI:</label>
+            <input type="number" id="dpi" name="dpi" value="150" min="150" max="300">
+        </div>
+        <div class="form-group">
+            <label>Width (mm):</label>
+            <input type="number" id="width_mm" name="width_mm" value="420">
+        </div>
+        <div class="form-group">
+            <label>Height (mm):</label>
+            <input type="number" id="height_mm" name="height_mm" value="594">
+        </div>
+        <div class="form-group">
+            <label>Format:</label>
+            <select id="format" name="format">
+                <option value="png">PNG</option>
+                <option value="pdf">PDF</option>
+            </select>
+        </div>
+        <button type="submit">Export</button>
+    </form>
+
+    <script>
+        document.getElementById('export-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            data.dpi = parseInt(data.dpi);
+            data.width_mm = parseInt(data.width_mm);
+            data.height_mm = parseInt(data.height_mm);
+
+            try {
+                const renderResponse = await fetch('/api/render', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!renderResponse.ok) {
+                    const errorText = await renderResponse.text();
+                    throw new Error(errorText);
+                }
+
+                const blob = await renderResponse.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `export.${data.format}`;
+                a.click();
+            } catch (error) {
+                alert('Export failed: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+

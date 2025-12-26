@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Topo Map Export - Demo A</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
+    <script src="/themeToStyle.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .controls select, .controls input {
+            margin: 5px 0;
+            padding: 5px;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="controls">
+        <h3>Topo Map Export</h3>
+        <label>Theme:</label>
+        <select id="theme-select">
+            <option value="paper">Paper</option>
+            <option value="ink">Ink</option>
+            <option value="mono">Mono</option>
+            <option value="muted-pastel">Muted Pastel</option>
+            <option value="dark">Dark</option>
+        </select>
+        <br>
+        <label>Bbox Preset:</label>
+        <select id="bbox-select">
+            <option value="stockholm_core">Stockholm Core</option>
+            <option value="stockholm_wide">Stockholm Wide</option>
+        </select>
+        <br>
+        <label>Render Mode:</label>
+        <select id="render-mode-select">
+            <option value="screen">Screen</option>
+            <option value="print">Print</option>
+        </select>
+        <br>
+        <label>Layers:</label>
+        <div>
+            <label><input type="checkbox" id="toggle-buildings" checked> Buildings</label><br>
+            <label><input type="checkbox" id="toggle-contours" checked> Contours</label><br>
+            <label><input type="checkbox" id="toggle-hillshade" checked> Hillshade</label>
+        </div>
+        <br>
+        <button id="export-btn">Export</button>
+    </div>
+    <script src="map.js"></script>
+</body>
+</html>
+

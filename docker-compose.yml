@@ -1,0 +1,138 @@
+version: '3.8'
+
+volumes:
+  data:  # Persistent: /data (OSM, DEM, terrain, tiles, cache)
+  exports:  # Persistent: /exports (output images)
+
+services:
+  # Shared prep service
+  prep:
+    build:
+      context: ./prep-service
+      dockerfile: Dockerfile
+    volumes:
+      - data:/data
+    profiles: []
+    environment:
+      - DATA_DIR=/data
+
+  # Demo A services
+  demo-a-tileserver:
+    image: ghcr.io/maplibre/martin:v0.14.0
+    volumes:
+      - data:/data:ro
+      - ./demo-a/tileserver/martin.yaml:/config/martin.yaml:ro
+    ports:
+      - "8080:3000"
+    profiles: ["demoA"]
+    command: ["--config", "/config/martin.yaml"]
+    depends_on:
+      - prep
+
+  demo-a-hillshade-server:
+    image: nginx:1.25-alpine
+    volumes:
+      - data:/data:ro
+      - ./demo-a/tileserver/nginx-hillshade.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "8081:80"
+    profiles: ["demoA"]
+    depends_on:
+      - prep
+
+  demo-a-web:
+    build:
+      context: ./demo-a/web
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    profiles: ["demoA"]
+    volumes:
+      - ./themes:/app/themes:ro
+    environment:
+      - TILESERVER_URL=http://demo-a-tileserver:3000
+      - HILLSHADE_TILES_URL=http://demo-a-hillshade-server:80
+    depends_on:
+      - demo-a-tileserver
+      - demo-a-hillshade-server
+
+  demo-a-exporter:
+    build:
+      context: ./demo-a/exporter
+      dockerfile: Dockerfile
+    volumes:
+      - exports:/exports
+    ports:
+      - "8082:8082"
+    profiles: ["demoA"]
+    environment:
+      - WEB_URL=http://demo-a-web:3000
+    depends_on:
+      - demo-a-web
+
+  # Demo B services
+  demo-b-db:
+    image: postgis/postgis:16-3.4
+    volumes:
+      - data:/data:ro
+    profiles: ["demoB"]
+    environment:
+      POSTGRES_DB: gis
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
+
+  demo-b-importer:
+    build:
+      context: ./demo-b/importers/osm-importer
+      dockerfile: Dockerfile
+    volumes:
+      - data:/data:ro
+    profiles: ["demoB"]
+    environment:
+      - POSTGRES_HOST=demo-b-db
+      - POSTGRES_DB=gis
+      - POSTGRES_USER=postgres
+    depends_on:
+      - demo-b-db
+
+  demo-b-renderer:
+    build:
+      context: ./demo-b/renderer
+      dockerfile: Dockerfile
+    volumes:
+      - data:/data:ro
+      - exports:/exports
+      - ./themes:/app/themes:ro
+    profiles: ["demoB"]
+    environment:
+      - POSTGRES_HOST=demo-b-db
+      - POSTGRES_DB=gis
+      - POSTGRES_USER=postgres
+    depends_on:
+      - demo-b-db
+
+  demo-b-api:
+    build:
+      context: ./demo-b/api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    profiles: ["demoB"]
+    environment:
+      - RENDERER_SERVICE=demo-b-renderer:5001
+    depends_on:
+      - demo-b-renderer
+
+  demo-b-web:
+    build:
+      context: ./demo-b/web
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    profiles: ["demoB"]
+    environment:
+      - API_URL=http://demo-b-api:5000
+    depends_on:
+      - demo-b-api
+

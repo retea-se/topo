@@ -1,0 +1,49 @@
+{
+  "name": "Ink",
+  "background": "#ffffff",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "low",
+    "mood": "minimal"
+  },
+  "hillshade": {
+    "opacity": 0.12,
+    "gamma": 1.0,
+    "contrast": 1.0,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e8e8e8",
+    "stroke": "#c0c0c0",
+    "strokeWidth": 0.5
+  },
+  "parks": {
+    "fill": "#f0f0f0",
+    "stroke": "#d0d0d0",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#333333",
+    "strokeWidth": {
+      "major": 1.5,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#d8d8d8",
+    "stroke": "#666666",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#999999",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
+
+
+

@@ -1,0 +1,16 @@
+{
+  "name": "demo-a-exporter",
+  "version": "1.0.0",
+  "description": "Playwright export service for Demo A",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "playwright": "^1.49.1"
+  }
+}
+
+
+

@@ -1,0 +1,49 @@
+{
+  "name": "Mono",
+  "background": "#f5f5f5",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "low",
+    "mood": "neutral"
+  },
+  "hillshade": {
+    "opacity": 0.18,
+    "gamma": 1.0,
+    "contrast": 1.0,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e0e0e0",
+    "stroke": "#b0b0b0",
+    "strokeWidth": 0.5
+  },
+  "parks": {
+    "fill": "#eeeeee",
+    "stroke": "#cccccc",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#505050",
+    "strokeWidth": {
+      "major": 1.5,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#d5d5d5",
+    "stroke": "#808080",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#909090",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
+
+
+

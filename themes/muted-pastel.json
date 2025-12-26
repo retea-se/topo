@@ -1,0 +1,49 @@
+{
+  "name": "MutedPastel",
+  "background": "#fafafa",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "low",
+    "mood": "soft"
+  },
+  "hillshade": {
+    "opacity": 0.14,
+    "gamma": 1.0,
+    "contrast": 0.95,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e0ecef",
+    "stroke": "#b8d0d6",
+    "strokeWidth": 0.5
+  },
+  "parks": {
+    "fill": "#f0ede8",
+    "stroke": "#d8d0c4",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#9a9a8a",
+    "strokeWidth": {
+      "major": 1.5,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#e8e4df",
+    "stroke": "#b8b4af",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#c0b8b0",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
+
+
+

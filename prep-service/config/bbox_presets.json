@@ -1,0 +1,17 @@
+{
+  "presets": [
+    {
+      "name": "stockholm_core",
+      "bbox_wgs84": [17.90, 59.32, 18.08, 59.35],
+      "description": "Central Stockholm: Gamla Stan, Södermalm, Östermalm, Norrmalm"
+    },
+    {
+      "name": "stockholm_wide",
+      "bbox_wgs84": [17.75, 59.28, 18.25, 59.40],
+      "description": "Greater Stockholm: includes city center, surrounding suburbs, and archipelago waters"
+    }
+  ]
+}
+
+
+

@@ -1,0 +1,49 @@
+{
+  "name": "WarmPaper",
+  "background": "#f5f0e8",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "warm_minimal"
+  },
+  "hillshade": {
+    "opacity": 0.12,
+    "gamma": 1.0,
+    "contrast": 0.95,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e0ddd5",
+    "stroke": "#b8b5ad",
+    "strokeWidth": 0.4
+  },
+  "parks": {
+    "fill": "#ede8e0",
+    "stroke": "#d0c8b8",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#8b7d6b",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.6
+    }
+  },
+  "buildings": {
+    "fill": "#d8d0c5",
+    "stroke": "#9a9080",
+    "strokeWidth": 0.4
+  },
+  "contours": {
+    "stroke": "#a89a88",
+    "strokeWidth": {
+      "major": 0.6,
+      "minor": 0.3
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
+
+
+
