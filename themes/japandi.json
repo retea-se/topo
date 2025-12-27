@@ -1,0 +1,50 @@
+{
+  "name": "Japandi",
+  "background": "#f7f5f0",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "serene_minimal"
+  },
+  "hillshade": {
+    "opacity": 0.08,
+    "gamma": 1.0,
+    "contrast": 0.9,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e8e4dc",
+    "stroke": "#c4bfb5",
+    "strokeWidth": 0.3
+  },
+  "parks": {
+    "fill": "#eae6de",
+    "stroke": "#d4cfc5",
+    "strokeWidth": 0.2
+  },
+  "roads": {
+    "stroke": "#6b635a",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    }
+  },
+  "buildings": {
+    "fill": "#ddd8d0",
+    "stroke": "#a8a298",
+    "strokeWidth": 0.3
+  },
+  "contours": {
+    "stroke": "#b8b0a5",
+    "strokeWidth": {
+      "major": 0.5,
+      "minor": 0.25
+    },
+    "opacity": {
+      "major": 0.6,
+      "minor": 0.3
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

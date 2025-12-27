@@ -6,6 +6,32 @@
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
 
+### Fas 1: Nya Themes & Presets ✅ IMPLEMENTED (2025-12-27)
+
+5 nya interior design-inspirerade teman och 5 matchande export presets.
+
+**Nya Themes:**
+| Theme | Beskrivning |
+|-------|-------------|
+| Japandi | Serene Japanese-Scandinavian fusion, muted tones |
+| Scandi Minimal | Light and airy Scandinavian style, mustard accent |
+| Duotone | Bold two-color graphic, navy and coral |
+| Sepia | Classic aged photograph aesthetic |
+| Mint | Fresh modern mint green palette |
+
+**Nya Export Presets:**
+| Preset | Paper | Theme |
+|--------|-------|-------|
+| A2 Japandi | A2 Portrait | Japandi 🔒 |
+| A2 Scandi Minimal | A2 Portrait | Scandi Minimal 🔒 |
+| A2 Duotone | A2 Landscape | Duotone 🔒 |
+| A3 Sepia Classic | A3 Portrait | Sepia 🔒 |
+| A4 Mint Fresh | A4 Portrait | Mint 🔒 |
+
+**Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
+
+---
+
 ### v1.1 Operational Hardening ✅ IMPLEMENTED (2025-12-27)
 
 v1.1 fokuserar på att skydda reproducerbarhet och korrekthet över tid.
@@ -372,17 +398,16 @@ Stockholm Wide och Svealand DEM-data laddades ned från **Copernicus DEM GLO-30*
 
 ## Tillgängliga teman
 
-Alla 9 teman är tillgängliga i båda demos:
+**29 teman** är tillgängliga i Print Editor:
 
-1. paper
-2. ink
-3. mono
-4. dark
-5. gallery
-6. charcoal
-7. warm-paper
-8. blueprint-muted
-9. muted-pastel
+**Grundteman (9 st):**
+paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel
+
+**Utökade teman (15 st):**
+art-deco, bauhaus, chalk, copper, cyberpunk, forest, gold-foil, high-contrast, neon, night, ocean, silver-foil, thermal, vintage, void
+
+**Fas 1 teman (5 st) - NYA 2025-12-27:**
+japandi, scandi-minimal, duotone, sepia, mint
 
 ## Kända begränsningar
 

@@ -1,0 +1,50 @@
+{
+  "name": "Sepia",
+  "background": "#f4efe4",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "classic_aged"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 1.0,
+    "contrast": 1.0,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e8dfd0",
+    "stroke": "#8b7355",
+    "strokeWidth": 0.6
+  },
+  "parks": {
+    "fill": "#ebe4d8",
+    "stroke": "#a08060",
+    "strokeWidth": 0.4
+  },
+  "roads": {
+    "stroke": "#6b4423",
+    "strokeWidth": {
+      "major": 1.4,
+      "minor": 0.7
+    }
+  },
+  "buildings": {
+    "fill": "#d4c4a8",
+    "stroke": "#8b7355",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#8b7355",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "opacity": {
+      "major": 0.75,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
