@@ -765,6 +765,23 @@ Parametrar som kan justeras per stil eller export.
 
 ## Framtida förbättringar (ej schemalagda)
 
+### v1.1 — Operational Hardening (Design Complete)
+
+**Mål**: Skydda reproducerbarhet och korrekthet över tid.
+
+Design- och policydokument färdigt: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HARDENING.md)
+
+Fokusområden:
+- Reproducerbarhetkontrakt (SHA256 byte-identitet för Demo B)
+- Golden export-strategi (Tier 1 + Tier 2 presets)
+- CI/verifieringsdesign (5 pipeline-steg)
+- Beroendehantering och riskanalys
+- Utvecklararbetsflöden och guardrails
+
+**Status**: Design klar, implementation ej påbörjad.
+
+---
+
 ### Perspektiv / Pitch
 
 - Endast Demo A (MapLibre stödjer pitch)

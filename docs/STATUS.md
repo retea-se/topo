@@ -338,4 +338,6 @@ Screenshots sparade i: `exports/screenshots/`
 
 Se [ROADMAP.md](ROADMAP.md) för planerade funktioner.
 
+**v1.1 Operational Hardening**: Design- och policydokument färdigt (se [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HARDENING.md)). Fokus på reproducerbarhet, golden exports och CI-verifiering.
+
 **Nästa utvecklingsfas**: Se [NEXT_PHASE_PLAN.md](NEXT_PHASE_PLAN.md) för detaljerad plan med fokus på produktifiering, skalbarhet och UX-förbättringar.
