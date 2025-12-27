@@ -43,6 +43,10 @@ async function updateMapStyle(theme, preset, renderMode) {
       if (window.updateToggleStates) {
         window.updateToggleStates(window.currentCoverage);
       }
+      // Apply URL layer settings if present (for export parity)
+      if (window.applyLayerSettingsFromURL && window.urlLayerSettings) {
+        window.applyLayerSettingsFromURL(window.urlLayerSettings);
+      }
       if (window.updateLayerVisibility) {
         window.updateLayerVisibility();
       }
@@ -92,6 +96,17 @@ Promise.all([
     const themeName = urlParams.get('theme') || 'paper';
     const bboxPreset = urlParams.get('bbox_preset') || 'stockholm_core';
     const renderMode = urlParams.get('render_mode') || 'screen';
+    
+    // Parse layers parameter from URL (JSON string)
+    let urlLayerSettings = {};
+    const layersParam = urlParams.get('layers');
+    if (layersParam) {
+      try {
+        urlLayerSettings = JSON.parse(layersParam);
+      } catch (e) {
+        console.warn('Could not parse layers parameter:', layersParam);
+      }
+    }
 
     // Update global state from URL params
     currentPreset = bboxPreset;
@@ -271,6 +286,30 @@ Promise.all([
 
     // Update toggle states when coverage changes
     window.updateToggleStates = updateToggleStates;
+    
+    // Apply layer settings from URL parameters (for export parity)
+    function applyLayerSettingsFromURL(settings) {
+      if (!settings || Object.keys(settings).length === 0) return;
+      
+      Object.keys(layerToggles).forEach(layer => {
+        if (layerToggles[layer] && settings.hasOwnProperty(layer)) {
+          layerToggles[layer].checked = settings[layer] === true;
+        }
+      });
+      
+      // Update visibility after setting states
+      if (window.updateLayerVisibility) {
+        window.updateLayerVisibility();
+      }
+    }
+    
+    // Make applyLayerSettingsFromURL globally available for updateMapStyle
+    window.applyLayerSettingsFromURL = applyLayerSettingsFromURL;
+    
+    // Store URL layer settings globally for use in updateMapStyle
+    if (Object.keys(urlLayerSettings).length > 0) {
+      window.urlLayerSettings = urlLayerSettings;
+    }
 
     Object.keys(layerToggles).forEach(layer => {
       layerToggles[layer].addEventListener('change', () => {
@@ -285,13 +324,22 @@ Promise.all([
 
     // Export button
     document.getElementById('export-btn').addEventListener('click', () => {
+      // Collect current layer toggle states
+      const layerStates = {};
+      Object.keys(layerToggles).forEach(layer => {
+        if (layerToggles[layer]) {
+          layerStates[layer] = layerToggles[layer].checked;
+        }
+      });
+      
       const params = new URLSearchParams({
         bbox_preset: currentPreset,
         theme: document.getElementById('theme-select').value,
         render_mode: currentRenderMode,
         dpi: 150,
         width_mm: 420,
-        height_mm: 594
+        height_mm: 594,
+        layers: JSON.stringify(layerStates)
       });
       window.location.href = `http://localhost:8082/render?${params}`;
     });
