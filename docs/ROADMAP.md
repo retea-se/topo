@@ -1,6 +1,6 @@
 # Roadmap
 
-**Senast uppdaterad**: 2025-12-26 (Nordic Print Editor UI Complete)
+**Senast uppdaterad**: 2025-12-27 (v1.1 Operational Hardening Implemented)
 
 ## Statusförklaring
 
@@ -770,20 +770,27 @@ Parametrar som kan justeras per stil eller export.
 
 ## Framtida förbättringar (ej schemalagda)
 
-### v1.1 — Operational Hardening (Design Complete)
+### v1.1 — Operational Hardening ✅ IMPLEMENTED
 
 **Mål**: Skydda reproducerbarhet och korrekthet över tid.
 
-Design- och policydokument färdigt: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HARDENING.md)
+Design- och policydokument: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HARDENING.md)
 
-Fokusområden:
-- Reproducerbarhetkontrakt (SHA256 byte-identitet för Demo B)
-- Golden export-strategi (Tier 1 + Tier 2 presets)
-- CI/verifieringsdesign (5 pipeline-steg)
-- Beroendehantering och riskanalys
-- Utvecklararbetsflöden och guardrails
+| Komponent | Status |
+|-----------|--------|
+| Reproducerbarhetkontrakt (SHA256 byte-identitet för Demo B) | ✅ DONE |
+| Golden export-strategi (Tier 1 + Tier 2 presets) | ✅ DONE |
+| CI/verifieringsworkflows (demo-b-reproducibility, update-baselines) | ✅ DONE |
+| Beroendehantering (pinnade versioner i Dockerfile/requirements) | ✅ DONE |
+| Utvecklararbetsflöden och guardrails | ✅ DONE |
+| Operationell runbook | ✅ DONE |
 
-**Status**: Design klar, implementation ej påbörjad.
+**Dokumentation**:
+- [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HARDENING.md) - Design och policy
+- [OPERATIONAL_RUNBOOK.md](OPERATIONAL_RUNBOOK.md) - Driftdokumentation
+- [golden/demo_b/README.md](../golden/demo_b/README.md) - Golden baselines
+
+**Status**: ✅ Implementerad 2025-12-27.
 
 ---
 
@@ -817,6 +824,17 @@ Fokusområden:
 ---
 
 ## Changelog
+
+### 2025-12-27 (v1.1 Operational Hardening)
+
+- ✅ **v1.1 — Operational Hardening** KOMPLETT:
+  - Reproducerbarhetkontrakt implementerat (SHA256 byte-identitet)
+  - Golden export-strategi med Tier 1 + Tier 2 presets
+  - CI workflows: demo-b-reproducibility.yml, update-baselines.yml
+  - Dependency pinning (Python 3.11.7, Mapnik 3.1.0, pycairo 1.26.0)
+  - Operationell runbook (OPERATIONAL_RUNBOOK.md)
+  - qa_golden_demo_b.js med --tier1 och --regenerate flaggor
+  - metadata.json med SHA256 checksums och tier-definitioner
 
 ### 2025-12-26 (Nordic Print Editor Complete)
 

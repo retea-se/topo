@@ -1,10 +1,48 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 12:30 CET
+**Senast uppdaterad**: 2025-12-27 15:00 CET
 
 ## Sammanfattning
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
+
+### v1.1 Operational Hardening ✅ IMPLEMENTED (2025-12-27)
+
+v1.1 fokuserar på att skydda reproducerbarhet och korrekthet över tid.
+
+| Komponent | Status |
+|-----------|--------|
+| Reproducerbarhetkontrakt (SHA256 byte-identitet) | ✅ DONE |
+| Golden baselines (Tier 1 + Tier 2) | ✅ DONE |
+| CI workflow (demo-b-reproducibility.yml) | ✅ DONE |
+| Update-baselines workflow med guardrails | ✅ DONE |
+| Dependency pinning (Python 3.11.7, Mapnik 3.1.0) | ✅ DONE |
+| Operationell runbook | ✅ DONE |
+
+**Golden Baselines (Demo B):**
+
+| Preset | Tier | Region | SHA256 |
+|--------|------|--------|--------|
+| A4_Quick_v1 | Tier 1 | stockholm_core | PENDING |
+| A2_Paper_v1 | Tier 1 | stockholm_core | PENDING |
+| A3_Blueprint_v1 | Tier 2 | stockholm_core | PENDING |
+| A1_Terrain_v1 | Tier 2 | stockholm_wide | PENDING |
+
+*PENDING = baselines skapas vid första CI-körning*
+
+**Test commands:**
+```bash
+# Tier 1 (fast, för varje PR)
+node scripts/qa_golden_demo_b.js --tier1
+
+# Full test (Tier 1 + Tier 2)
+node scripts/qa_golden_demo_b.js
+```
+
+**Dokumentation:**
+- [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HARDENING.md) - Design och policy
+- [OPERATIONAL_RUNBOOK.md](OPERATIONAL_RUNBOOK.md) - Driftdokumentation
+- [golden/demo_b/README.md](../golden/demo_b/README.md) - Golden baselines
 
 ### Phase 9 - Export Presets ✅ DONE
 
