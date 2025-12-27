@@ -13,6 +13,7 @@ let isDrawingMode = false;
 let currentFormat = 'png';
 let currentOrientation = 'portrait';
 let styleChangeInProgress = false;
+let pendingStyleChange = false;
 let isPreviewMode = false;
 
 // Export Preset State (Phase 9.2)
@@ -184,12 +185,22 @@ async function loadTheme(name) {
  * Update map style with current theme
  */
 async function updateMapStyle() {
-    if (!map || !currentTheme) return;
+    console.log('[updateMapStyle] Called, map:', !!map, 'currentTheme:', !!currentTheme);
 
-    if (styleChangeInProgress) {
-        debug('Style change already in progress, skipping');
+    if (!map || !currentTheme) {
+        console.log('[updateMapStyle] Early return: map=', !!map, 'currentTheme=', !!currentTheme);
         return;
     }
+
+    if (styleChangeInProgress) {
+        console.log('[updateMapStyle] Style change already in progress, queuing');
+        debug('Style change already in progress, queuing');
+        pendingStyleChange = true;
+        return;
+    }
+    pendingStyleChange = false;
+
+    console.log('[updateMapStyle] Starting style change');
     styleChangeInProgress = true;
 
     const savedViewState = {
@@ -218,8 +229,21 @@ async function updateMapStyle() {
                 window.currentCoverage
             );
 
-            map.once('style.load', () => {
-                debug('Style loaded, restoring view state');
+            // Force MapLibre to update by adding a unique metadata field
+            // This ensures MapLibre sees it as a different style object
+            if (!style.metadata) {
+                style.metadata = {};
+            }
+            style.metadata['theme-update-timestamp'] = Date.now();
+
+            // Remove any existing style.load listeners to avoid conflicts
+            map.off('style.load');
+
+            // If style.load doesn't fire within 2 seconds, manually trigger the update
+            // This can happen if MapLibre determines the style hasn't changed
+            let styleLoadTimeout;
+            const performStyleUpdate = () => {
+                console.log('[updateMapStyle] Performing style update');
                 map.jumpTo({
                     center: savedViewState.center,
                     zoom: savedViewState.zoom,
@@ -237,9 +261,57 @@ async function updateMapStyle() {
                         updatePrintComposition();
                     }, 50);
                 }
-            });
 
+                // Check if there's a pending style change and apply it
+                if (pendingStyleChange) {
+                    console.log('[updateMapStyle] Applying pending style change');
+                    setTimeout(() => updateMapStyle(), 50);
+                }
+            };
+
+            // Use 'on' instead of 'once' to ensure it fires, but remove it after first call
+            const styleLoadHandler = () => {
+                console.log('[updateMapStyle] style.load event fired');
+                clearTimeout(styleLoadTimeout);
+                debug('Style loaded, restoring view state');
+                performStyleUpdate();
+
+                // Remove listener after handling
+                map.off('style.load', styleLoadHandler);
+            };
+
+            map.on('style.load', styleLoadHandler);
+
+            console.log('[updateMapStyle] Calling map.setStyle()');
+            console.log('[updateMapStyle] Style object keys:', Object.keys(style));
+            console.log('[updateMapStyle] Current map style loaded:', map.isStyleLoaded());
+
+            // Force style update - MapLibre might not trigger style.load if style is too similar
+            // So we need to ensure the style actually changes
             map.setStyle(style);
+
+            // Fallback: if style.load doesn't fire within 2 seconds, manually trigger the update
+            // This is needed because MapLibre might not trigger style.load if it determines
+            // the style hasn't changed significantly, but we still need to update the map
+            styleLoadTimeout = setTimeout(() => {
+                console.warn('[updateMapStyle] style.load event did not fire within 2s, manually updating');
+                if (map.isStyleLoaded()) {
+                    // Force map to update by triggering a repaint
+                    map.triggerRepaint();
+                    performStyleUpdate();
+                    map.off('style.load', styleLoadHandler);
+                } else {
+                    console.warn('[updateMapStyle] Map style not loaded yet, waiting...');
+                    // Wait a bit more and try again
+                    setTimeout(() => {
+                        if (map.isStyleLoaded()) {
+                            map.triggerRepaint();
+                            performStyleUpdate();
+                            map.off('style.load', styleLoadHandler);
+                        }
+                    }, 1000);
+                }
+            }, 2000);
         } else {
             styleChangeInProgress = false;
         }
@@ -1635,6 +1707,8 @@ function setupEventListeners() {
     // Theme select
     elements.themeSelect.addEventListener('change', async (e) => {
         const themeName = e.target.value;
+        console.log('[Theme Change] Theme selected:', themeName);
+
         currentTheme = await loadTheme(themeName);
 
         if (!currentTheme) {
@@ -1643,10 +1717,16 @@ function setupEventListeners() {
             return;
         }
 
+        console.log('[Theme Change] Theme loaded, currentTheme:', currentTheme);
+        console.log('[Theme Change] Calling updateMapStyle(), styleChangeInProgress:', styleChangeInProgress);
+
         await updateMapStyle();
+
+        console.log('[Theme Change] updateMapStyle() completed');
 
         // Update preview composition if in preview mode (even if map style update is pending)
         if (isPreviewMode) {
+            console.log('[Theme Change] In preview mode, updating composition');
             // Small delay to ensure map style has started updating
             setTimeout(() => {
                 updatePrintComposition();
