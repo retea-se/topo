@@ -53,20 +53,29 @@ function identifyLabelLayers(map) {
     const sourceLayer = layer['source-layer'];
     const layerId = layer.id;
 
-    // Matcha baserat på source-layer och layer-id
-    if (sourceLayer === 'transportation_name' || 
-        layerId.includes('transportation') && layerId.includes('name')) {
+    // Matcha baserat på layer-id (mer robust än source-layer)
+    // Vi använder de exakta layer-ids som skapas i themeToStyle.js
+    if (layerId === 'transportation-name') {
       result.streetNames.push(layerId);
-    } else if (sourceLayer === 'place' || 
-               layerId.includes('place') && layerId.includes('name')) {
+    } else if (layerId === 'place-name') {
       result.placeNames.push(layerId);
-    } else if (sourceLayer === 'poi' || 
-               layerId.includes('poi') && layerId.includes('name')) {
+    } else if (layerId === 'poi-name') {
       result.poiNames.push(layerId);
-    } else if (sourceLayer === 'water_name' || 
-               layerId.includes('water') && layerId.includes('name')) {
+    } else if (layerId === 'water-name') {
       result.waterNames.push(layerId);
-    } else if (sourceLayer === 'park' && layerId.includes('name')) {
+    } else if (layerId === 'park-name') {
+      result.parkNames.push(layerId);
+    }
+    // Fallback: matcha baserat på source-layer om layer-id inte matchar
+    else if (sourceLayer === 'transportation_name') {
+      result.streetNames.push(layerId);
+    } else if (sourceLayer === 'place') {
+      result.placeNames.push(layerId);
+    } else if (sourceLayer === 'poi') {
+      result.poiNames.push(layerId);
+    } else if (sourceLayer === 'water_name') {
+      result.waterNames.push(layerId);
+    } else if (sourceLayer === 'park' && layer.layout && layer.layout['text-field']) {
       result.parkNames.push(layerId);
     }
   });
@@ -86,12 +95,16 @@ function applyLabelProfile(map, profile) {
   }
 
   const labelLayers = identifyLabelLayers(map);
+  console.log(`Applying profile "${profile}" to layers:`, labelLayers);
 
   // Om inga label-layers hittades, försök skapa dem dynamiskt
   if (labelLayers.streetNames.length === 0 && 
       labelLayers.placeNames.length === 0 &&
-      labelLayers.poiNames.length === 0) {
+      labelLayers.poiNames.length === 0 &&
+      labelLayers.waterNames.length === 0 &&
+      labelLayers.parkNames.length === 0) {
     console.warn('No label layers found. Labels may need to be added to style first.');
+    console.warn('Available layers:', map.getStyle().layers.map(l => l.id));
     return;
   }
 
