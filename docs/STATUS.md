@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 10:20 CET
+**Senast uppdaterad**: 2025-12-27 12:30 CET
 
 ## Sammanfattning
 
@@ -119,15 +119,20 @@ Print export now matches preview - all composition elements are correctly render
 |---------|--------|
 | Frame/Border in export | ✅ FIXED |
 | Title/Subtitle in export | ✅ FIXED |
-| Scale bar in export | ✅ FIXED |
+| Scale bar in export | ✅ FIXED (calculated, not hardcoded) |
 | Attribution in export | ✅ FIXED |
 | Golden baseline tests | ✅ 3/3 PASS |
 | Regression test script | ✅ IMPLEMENTED |
+| 18-case audit matrix | ✅ IMPLEMENTED |
 
 **Golden Baselines:**
 - A3_Blueprint_v1_Classic: `48e4bbd0f787...` (2480x1754 px)
 - A2_Paper_v1_Minimal: `ef0c5bb30a2b...` (3508x2480 px)
-- A1_Terrain_v1_Bold: `4df10114b61b...` (3508x4967 px)
+- A1_Terrain_v1_Bold: `b800e7908bad...` (3508x4967 px)
+
+**Scale Calculation Fix (2025-12-27):**
+- Exporter now calculates scale dynamically based on bbox and paper width
+- Previously hardcoded "1:50 000" replaced with calculated values (e.g., "1:25K" for stockholm_wide)
 
 **Test:** `node scripts/qa_golden_print_export.js`
 
