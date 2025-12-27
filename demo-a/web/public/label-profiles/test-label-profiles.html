@@ -434,7 +434,6 @@
                 const result = window.LabelProfiles.applyLabelProfile(map, profile, {
                     typographyPreset: typography
                 });
-                console.log('[LabelProfiles] Apply result:', result);
 
                 if (result.success) {
                     setStatus('Profil "' + profile + '" med typografi "' + typography + '"', 'success');
@@ -554,7 +553,6 @@
                     const statusEl = document.getElementById('main-status');
                     if (statusEl.textContent.indexOf('Applicerar kartstil') !== -1) {
                         // Still waiting, trigger initialization
-                        console.log('[LabelProfiles] Using idle event fallback');
                         initializeAfterStyleLoad();
                     }
                 });
@@ -613,13 +611,11 @@
 
                 // Get initial inventory
                 const inventory = window.LabelProfiles.inventorySymbolLayers(map);
-                console.log('[LabelProfiles] Initial inventory:', inventory);
                 updateInventoryDisplay(inventory);
 
                 // Check if we have label layers
                 if (inventory.summary.withTextField === 0) {
                     setStatus('Inga label layers hittades i stilen', 'error');
-                    console.error('No label layers found. All layers:', map.getStyle().layers.map(function(l) { return { id: l.id, type: l.type }; }));
                 } else {
                     setStatus('Klar! ' + inventory.summary.withTextField + ' label layers hittades.', 'success');
                     applyProfileAndUpdate(currentProfile, currentTypography);

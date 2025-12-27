@@ -28,7 +28,7 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
   // Note: 'osm' source points to stockholm_wide.mbtiles which contains complete_ways data
   const style = {
     version: 8,
-    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+    glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
     sources: {
       osm: {
         type: 'vector',
