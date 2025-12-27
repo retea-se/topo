@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Label Profiles Test - Topo Map Export</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
+    <script src="/themeToStyle.js"></script>
+    <script src="/label-profiles/labelProfiles.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            min-width: 250px;
+        }
+        .controls h3 {
+            margin: 0 0 15px 0;
+            font-size: 18px;
+            color: #333;
+        }
+        .controls label {
+            display: block;
+            margin: 10px 0 5px 0;
+            font-size: 14px;
+            font-weight: 500;
+            color: #555;
+        }
+        .controls select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        .controls select:hover {
+            border-color: #999;
+        }
+        .controls select:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+        .profile-description {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .status {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e8f4f8;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #2c5f7d;
+        }
+        .status.error {
+            background: #fee;
+            color: #c33;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="controls">
+        <h3>Label Profiles Test</h3>
+        <label for="profile-select">Label Profile:</label>
+        <select id="profile-select">
+            <option value="off">Off (default)</option>
+            <option value="minimal">Minimal Streets</option>
+            <option value="landmarks">Landmarks</option>
+        </select>
+        <div class="profile-description" id="profile-description">
+            <strong>Off:</strong> Inga labels eller gatunamn visas.
+        </div>
+        <div class="status" id="status">Laddar karta...</div>
+    </div>
+
+    <script>
+        let map;
+        let currentProfile = 'off';
+        let tileserverUrl = 'http://localhost:8080';
+        let hillshadeTilesUrl = 'http://localhost:8081';
+
+        // Profile descriptions
+        const profileDescriptions = {
+            off: '<strong>Off:</strong> Inga labels eller gatunamn visas.',
+            minimal: '<strong>Minimal Streets:</strong> Visar endast högre vägklasser (primary, secondary, tertiary) med diskret typografi.',
+            landmarks: '<strong>Landmarks:</strong> Visar POI/områdesnamn (park, vatten, platser) men inte gatunamn.'
+        };
+
+        // Update profile description
+        function updateDescription(profile) {
+            const descEl = document.getElementById('profile-description');
+            descEl.innerHTML = profileDescriptions[profile] || '';
+        }
+
+        // Update status
+        function updateStatus(message, isError = false) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = isError ? 'status error' : 'status';
+        }
+
+        // Load theme
+        async function loadTheme(name) {
+            try {
+                const response = await fetch(`/themes/${name}.json`);
+                if (!response.ok) throw new Error(`Theme ${name} not found`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error loading theme:', error);
+                return null;
+            }
+        }
+
+        // Initialize map
+        async function initMap() {
+            updateStatus('Laddar tema...');
+
+            // Try to get config from API, fallback to defaults
+            let config;
+            try {
+                const response = await fetch('/api/config');
+                if (response.ok) {
+                    config = await response.json();
+                    tileserverUrl = config.tileserverUrl || tileserverUrl;
+                    hillshadeTilesUrl = config.hillshadeTilesUrl || hillshadeTilesUrl;
+                }
+            } catch (e) {
+                console.warn('Could not fetch config, using defaults:', e);
+            }
+
+            // Load default theme
+            const theme = await loadTheme('paper');
+            if (!theme) {
+                updateStatus('Kunde inte ladda tema. Kontrollera att servern körs.', true);
+                return;
+            }
+
+            updateStatus('Skapar karta...');
+
+            // Create map
+            map = new maplibregl.Map({
+                container: 'map',
+                style: {
+                    version: 8,
+                    sources: {},
+                    layers: [{
+                        id: 'background',
+                        type: 'background',
+                        paint: { 'background-color': theme.background || '#faf8f5' }
+                    }]
+                },
+                center: [18.04, 59.335], // Stockholm Core
+                zoom: 13
+            });
+
+            map.on('load', async () => {
+                updateStatus('Laddar kartstil...');
+
+                // Get coverage info
+                let coverage = { osm: true, contours: false, hillshade: false };
+                try {
+                    const response = await fetch('/api/coverage/stockholm_core');
+                    if (response.ok) {
+                        coverage = await response.json();
+                    }
+                } catch (e) {
+                    console.warn('Could not fetch coverage, using defaults:', e);
+                }
+
+                // Apply style using themeToMapLibreStyle
+                if (typeof window.themeToMapLibreStyle === 'function') {
+                    const style = window.themeToMapLibreStyle(
+                        theme,
+                        tileserverUrl,
+                        hillshadeTilesUrl,
+                        'stockholm_core',
+                        'screen',
+                        coverage
+                    );
+
+                    map.setStyle(style);
+
+                    map.once('style.load', () => {
+                        updateStatus('Karta laddad. Växla profil för att se labels.');
+                        
+                        // Apply initial profile
+                        if (window.LabelProfiles) {
+                            window.LabelProfiles.applyLabelProfile(map, currentProfile);
+                        }
+                    });
+                } else {
+                    updateStatus('themeToMapLibreStyle inte tillgänglig. Kontrollera att themeToStyle.js är laddad.', true);
+                }
+            });
+
+            // Profile selector change handler
+            document.getElementById('profile-select').addEventListener('change', (e) => {
+                currentProfile = e.target.value;
+                updateDescription(currentProfile);
+
+                if (map && map.isStyleLoaded() && window.LabelProfiles) {
+                    updateStatus(`Applicerar profil: ${currentProfile}...`);
+                    window.LabelProfiles.applyLabelProfile(map, currentProfile);
+                    updateStatus(`Profil "${currentProfile}" applicerad.`);
+                } else {
+                    updateStatus('Karta inte redo ännu. Vänta...');
+                }
+            });
+
+            // Watch for style changes to reapply profile
+            map.on('style.load', () => {
+                if (window.LabelProfiles && currentProfile) {
+                    // Small delay to ensure layers are fully loaded
+                    setTimeout(() => {
+                        window.LabelProfiles.applyLabelProfile(map, currentProfile);
+                    }, 100);
+                }
+            });
+        }
+
+        // Initialize on page load
+        initMap();
+    </script>
+</body>
+</html>
+

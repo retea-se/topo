@@ -261,6 +261,143 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
     });
   }
 
+  // Label layers - Street names, place names, POI, water names, park names
+  // These layers are controlled by label profiles (off/minimal/landmarks)
+  // Default visibility is 'none' - profiles will control visibility
+  
+  // Street names (transportation_name source-layer)
+  // Filter for higher road classes only (primary, secondary, tertiary, trunk, motorway)
+  style.layers.push({
+    id: 'transportation-name',
+    type: 'symbol',
+    source: 'osm',
+    'source-layer': 'transportation_name',
+    filter: ['in', ['get', 'class'], ['literal', ['primary', 'secondary', 'tertiary', 'trunk', 'motorway']]],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+      'text-size': isPrintMode ? 11 : 10,
+      'text-anchor': 'center',
+      'text-offset': [0, 0],
+      'text-allow-overlap': false,
+      'text-optional': true,
+      'symbol-placement': 'line',
+      'symbol-spacing': 250,
+      'visibility': 'none' // Default: off (controlled by label profile)
+    },
+    paint: {
+      'text-color': theme.roads?.stroke || '#707070',
+      'text-halo-width': 1,
+      'text-halo-color': theme.background || '#faf8f5',
+      'text-halo-blur': 1
+    }
+  });
+
+  // Place names (neighborhood, suburb, city, etc.)
+  style.layers.push({
+    id: 'place-name',
+    type: 'symbol',
+    source: 'osm',
+    'source-layer': 'place',
+    filter: ['in', ['get', 'class'], ['literal', ['neighborhood', 'suburb', 'city', 'town', 'village']]],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+      'text-size': [
+        'interpolate',
+        ['linear'],
+        ['get', 'rank'],
+        1, isPrintMode ? 16 : 14,
+        5, isPrintMode ? 12 : 10
+      ],
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+      'text-optional': true,
+      'visibility': 'none' // Default: off (controlled by label profile)
+    },
+    paint: {
+      'text-color': '#505050',
+      'text-halo-width': 1.5,
+      'text-halo-color': theme.background || '#faf8f5',
+      'text-halo-blur': 1
+    }
+  });
+
+  // POI names (points of interest)
+  style.layers.push({
+    id: 'poi-name',
+    type: 'symbol',
+    source: 'osm',
+    'source-layer': 'poi',
+    filter: ['has', 'name'],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+      'text-size': isPrintMode ? 10 : 9,
+      'text-anchor': 'left',
+      'text-offset': [0.5, 0],
+      'text-allow-overlap': false,
+      'text-optional': true,
+      'visibility': 'none' // Default: off (controlled by label profile)
+    },
+    paint: {
+      'text-color': '#606060',
+      'text-halo-width': 1,
+      'text-halo-color': theme.background || '#faf8f5',
+      'text-halo-blur': 0.5
+    }
+  });
+
+  // Water names
+  style.layers.push({
+    id: 'water-name',
+    type: 'symbol',
+    source: 'osm',
+    'source-layer': 'water_name',
+    filter: ['has', 'name'],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-font': ['Open Sans Italic', 'Arial Unicode MS Regular'],
+      'text-size': isPrintMode ? 12 : 11,
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+      'text-optional': true,
+      'symbol-placement': 'point',
+      'visibility': 'none' // Default: off (controlled by label profile)
+    },
+    paint: {
+      'text-color': theme.water?.stroke || '#94b8cc',
+      'text-halo-width': 1.5,
+      'text-halo-color': theme.background || '#faf8f5',
+      'text-halo-blur': 1
+    }
+  });
+
+  // Park names (from park source-layer with name field)
+  style.layers.push({
+    id: 'park-name',
+    type: 'symbol',
+    source: 'osm',
+    'source-layer': 'park',
+    filter: ['has', 'name'],
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+      'text-size': isPrintMode ? 11 : 10,
+      'text-anchor': 'center',
+      'text-allow-overlap': false,
+      'text-optional': true,
+      'symbol-placement': 'point',
+      'visibility': 'none' // Default: off (controlled by label profile)
+    },
+    paint: {
+      'text-color': theme.parks?.stroke || '#b0cca0',
+      'text-halo-width': 1,
+      'text-halo-color': theme.background || '#faf8f5',
+      'text-halo-blur': 1
+    }
+  });
+
   return style;
 }
 
