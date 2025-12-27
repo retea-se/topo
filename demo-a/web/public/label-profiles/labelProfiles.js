@@ -95,7 +95,6 @@ function applyLabelProfile(map, profile) {
   }
 
   const labelLayers = identifyLabelLayers(map);
-  console.log(`Applying profile "${profile}" to layers:`, labelLayers);
 
   // Om inga label-layers hittades, försök skapa dem dynamiskt
   if (labelLayers.streetNames.length === 0 &&
