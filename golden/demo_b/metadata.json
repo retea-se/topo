@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "created": "2025-12-27T13:00:00Z",
+  "description": "Golden baselines for Demo B (Mapnik) deterministic export verification",
+  "generator": {
+    "service": "demo-b-renderer",
+    "docker_image": "topo-demo-b-renderer:latest"
+  },
+  "reproducibility_contract": {
+    "guarantee": "SHA256 byte-identical across invocations",
+    "conditions": [
+      "Same Docker image SHA",
+      "Same font packages (DejaVu Sans)",
+      "Same data files (OSM tiles, DEM, hillshade)",
+      "Single-threaded rendering"
+    ]
+  },
+  "goldens": [
+    {
+      "id": "A4_Quick_v1",
+      "file": "A4_Quick_v1_golden.png",
+      "sha256": "PENDING",
+      "dimensions": {
+        "width_px": 1240,
+        "height_px": 1754,
+        "width_mm": 210,
+        "height_mm": 297,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_core",
+        "theme": "paper",
+        "format": "png",
+        "title": "",
+        "subtitle": "",
+        "layers": {
+          "hillshade": true,
+          "water": true,
+          "parks": true,
+          "roads": true,
+          "buildings": true,
+          "contours": true
+        }
+      },
+      "purpose": "Fast CI smoke test, reproducibility verification"
+    }
+  ],
+  "acceptance_threshold": {
+    "pixel_diff_percent_max": 0.0,
+    "note": "Demo B requires exact byte-identity. Any diff is a failure."
+  },
+  "regeneration_policy": {
+    "allowed_reasons": [
+      "Dependency upgrade with documented visual comparison",
+      "Bug fix correcting previously incorrect output",
+      "New baseline after major version release"
+    ],
+    "process": [
+      "Open PR with [BASELINE] in title",
+      "Attach before/after visual comparison",
+      "Update golden hashes",
+      "Update BASELINE.md with date, reason, author",
+      "Require explicit approval from maintainer"
+    ]
+  }
+}

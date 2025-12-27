@@ -71,6 +71,43 @@ app.get('/api/themes', (req, res) => {
   }
 });
 
+// API endpoint to get bbox presets (single source of truth)
+const BBOX_PRESETS_PATH = '/app/config/bbox_presets.json';
+
+app.get('/api/bbox-presets', (req, res) => {
+  try {
+    if (fs.existsSync(BBOX_PRESETS_PATH)) {
+      const config = JSON.parse(fs.readFileSync(BBOX_PRESETS_PATH, 'utf8'));
+      res.json(config.presets);
+    } else {
+      // Fallback if config file doesn't exist
+      res.json({
+        stockholm_core: {
+          name: 'Stockholm Core',
+          bbox: { west: 17.90, south: 59.32, east: 18.08, north: 59.35 },
+          center: [18.04, 59.335],
+          zoom: 13
+        },
+        stockholm_wide: {
+          name: 'Stockholm Wide',
+          bbox: { west: 17.75, south: 59.28, east: 18.25, north: 59.40 },
+          center: [18.0, 59.34],
+          zoom: 11
+        },
+        svealand: {
+          name: 'Svealand',
+          bbox: { west: 14.5, south: 58.5, east: 19.0, north: 61.0 },
+          center: [16.75, 59.75],
+          zoom: 8
+        }
+      });
+    }
+  } catch (err) {
+    console.error('Error reading bbox presets:', err);
+    res.status(500).json({ error: 'Failed to load bbox presets' });
+  }
+});
+
 // ============================================================================
 // Export Presets API (Phase 9)
 // ============================================================================

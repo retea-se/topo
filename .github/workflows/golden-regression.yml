@@ -1,0 +1,70 @@
+# Golden Regression Test - Nightly
+#
+# Runs the full golden baseline regression test against Demo A exporter.
+# Verifies that exports are byte-identical to stored golden baselines.
+#
+# Schedule: Daily at 04:00 UTC
+# Manual: Can be triggered via workflow_dispatch
+
+name: Golden Regression
+
+on:
+  schedule:
+    - cron: '0 4 * * *'  # 04:00 UTC daily
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  golden-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true  # Golden PNGs may be in LFS
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Start Docker Compose stack
+        run: |
+          docker compose up -d
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+      - name: Wait for exporter health
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:8082/health > /dev/null 2>&1; then
+              echo "Exporter is ready"
+              exit 0
+            fi
+            echo "Waiting for exporter... ($i/30)"
+            sleep 5
+          done
+          echo "Exporter failed to start"
+          docker compose logs exporter
+          exit 1
+
+      - name: Run golden regression test
+        run: node scripts/qa_golden_print_export.js
+
+      - name: Upload test artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-test-failure
+          path: |
+            exports/golden_test/
+            docker-compose.logs
+
+      - name: Collect Docker logs on failure
+        if: failure()
+        run: docker compose logs > docker-compose.logs 2>&1
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker compose down -v

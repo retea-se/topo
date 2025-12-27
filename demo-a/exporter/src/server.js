@@ -8,13 +8,33 @@ const app = express();
 const PORT = process.env.PORT || 8082;
 const WEB_URL = process.env.WEB_URL || 'http://demo-a-web:3000';
 const EXPORTS_DIR = process.env.EXPORTS_DIR || '/exports/demo-a';
+const BBOX_CONFIG_PATH = process.env.BBOX_CONFIG_PATH || '/config/bbox_presets.json';
 
-// Preset bboxes (must match editor.js PRESET_BBOXES)
-const PRESET_BBOXES = {
-  stockholm_core: { west: 17.90, south: 59.32, east: 18.08, north: 59.35 },
-  stockholm_wide: { west: 17.75, south: 59.28, east: 18.25, north: 59.40 },
-  svealand: { west: 14.5, south: 58.5, east: 19.0, north: 61.0 }
-};
+// Load bbox presets from config file (single source of truth)
+function loadBboxPresets() {
+  try {
+    if (fs.existsSync(BBOX_CONFIG_PATH)) {
+      const config = JSON.parse(fs.readFileSync(BBOX_CONFIG_PATH, 'utf8'));
+      const presets = {};
+      for (const [key, value] of Object.entries(config.presets)) {
+        presets[key] = value.bbox;
+      }
+      console.log(`Loaded ${Object.keys(presets).length} bbox presets from ${BBOX_CONFIG_PATH}`);
+      return presets;
+    }
+  } catch (err) {
+    console.warn(`Warning: Could not load bbox config from ${BBOX_CONFIG_PATH}: ${err.message}`);
+  }
+  // Fallback to hardcoded values
+  console.log('Using fallback bbox presets');
+  return {
+    stockholm_core: { west: 17.90, south: 59.32, east: 18.08, north: 59.35 },
+    stockholm_wide: { west: 17.75, south: 59.28, east: 18.25, north: 59.40 },
+    svealand: { west: 14.5, south: 58.5, east: 19.0, north: 61.0 }
+  };
+}
+
+const PRESET_BBOXES = loadBboxPresets();
 
 /**
  * Calculate map scale string based on bbox and paper dimensions

@@ -1,0 +1,73 @@
+# Smoke Test - Per Push
+#
+# Fast validation that core export functionality works.
+# Target: < 2 minutes total runtime.
+#
+# Tests:
+# 1. Docker Compose starts successfully
+# 2. Exporter responds to health check
+# 3. A4_Quick_v1 export produces correct dimensions
+# 4. Export file is non-empty and valid PNG
+
+name: Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start Docker Compose (minimal)
+        run: |
+          docker compose up -d web tileserver exporter
+          echo "Waiting for services..."
+          sleep 20
+
+      - name: Health check - exporter
+        run: |
+          curl -sf http://localhost:8082/health || {
+            echo "Exporter health check failed"
+            docker compose logs exporter
+            exit 1
+          }
+
+      - name: Export A4_Quick_v1 and verify dimensions
+        run: |
+          # Export smallest preset (A4 @ 150 DPI = 1240x1754 px)
+          curl -sf "http://localhost:8082/render?bbox_preset=stockholm_core&theme=paper&dpi=150&width_mm=210&height_mm=297&title=Smoke%20Test&layout_template=minimal&show_scale=false&show_attribution=false" -o /tmp/smoke_test.png
+
+          # Verify file exists and has content
+          if [ ! -s /tmp/smoke_test.png ]; then
+            echo "Export failed: empty or missing file"
+            exit 1
+          fi
+
+          # Verify PNG magic bytes
+          if ! file /tmp/smoke_test.png | grep -q "PNG image"; then
+            echo "Export failed: not a valid PNG"
+            file /tmp/smoke_test.png
+            exit 1
+          fi
+
+          # Verify dimensions using ImageMagick (pre-installed on ubuntu-latest)
+          DIMS=$(identify -format "%wx%h" /tmp/smoke_test.png)
+          EXPECTED="1240x1754"
+          if [ "$DIMS" != "$EXPECTED" ]; then
+            echo "Dimension mismatch: got $DIMS, expected $EXPECTED"
+            exit 1
+          fi
+
+          echo "Smoke test PASSED: $DIMS"
+
+      - name: Stop Docker Compose
+        if: always()
+        run: docker compose down -v

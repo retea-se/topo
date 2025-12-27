@@ -1,0 +1,31 @@
+# Golden file protection
+# Prevents accidental changes to golden baseline files
+
+GOLDEN_FILES=$(git diff --cached --name-only | grep -E '^golden/.*\.png$' || true)
+
+if [ -n "$GOLDEN_FILES" ]; then
+  echo ""
+  echo "=========================================="
+  echo "  GOLDEN FILE CHANGE DETECTED"
+  echo "=========================================="
+  echo ""
+  echo "The following golden baseline files are being modified:"
+  echo "$GOLDEN_FILES"
+  echo ""
+
+  if [ "$ALLOW_GOLDEN_CHANGE" != "1" ]; then
+    echo "ERROR: Golden file changes require explicit approval."
+    echo ""
+    echo "If this is intentional, commit with:"
+    echo "  ALLOW_GOLDEN_CHANGE=1 git commit -m '[BASELINE] your message'"
+    echo ""
+    echo "Policy: Golden files are the source of truth for visual regression."
+    echo "Changes must be reviewed and documented."
+    echo "=========================================="
+    exit 1
+  fi
+
+  echo "Golden file change APPROVED (ALLOW_GOLDEN_CHANGE=1)"
+  echo "=========================================="
+  echo ""
+fi
