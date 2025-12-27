@@ -16,6 +16,15 @@ let styleChangeInProgress = false;
 let pendingStyleChange = false;
 let isPreviewMode = false;
 
+// Feature flag for gallery UI (Phase 1)
+// Enable via URL: ?gallery=1
+const urlParams = new URLSearchParams(window.location.search);
+const useGalleryUI = urlParams.get('gallery') === '1';
+
+// Gallery state
+let galleryInitialized = false;
+let editorGallery = null;
+
 // Internationalization
 let currentLanguage = localStorage.getItem('editor_language') || 'en';
 
@@ -260,6 +269,93 @@ function setLanguage(lang) {
     const statusTextEl = document.getElementById('status-text');
     if (!isDrawingMode && statusTextEl && (statusTextEl.textContent === 'Ready' || statusTextEl.textContent === 'Redo')) {
         setStatus(t('ready'), 'success');
+    }
+}
+
+// === GALLERY UI INTEGRATION ===
+
+/**
+ * Initialize gallery UI if feature flag is enabled
+ * @param {Array} themesArray - Array of theme objects
+ */
+function initGalleryUI(themesArray) {
+    if (!useGalleryUI || galleryInitialized) return;
+
+    const container = document.getElementById('theme-gallery-container');
+    if (!container || typeof createGallery !== 'function') {
+        console.warn('[Editor] Gallery not available');
+        return;
+    }
+
+    // Hide dropdown, show gallery
+    if (elements.themeSelect) {
+        elements.themeSelect.style.display = 'none';
+    }
+    container.classList.remove('theme-gallery--hidden');
+
+    // Transform themes to gallery format
+    const galleryItems = themesArray.map(theme => ({
+        id: theme.id,
+        name: theme.name,
+        category: theme.meta?.mood || theme.meta?.category || '',
+        accentColor: theme.background || '#f0f0f0',
+        secondaryColor: theme.meta?.accent || null
+    }));
+
+    // Create gallery
+    editorGallery = createGallery({
+        container: container,
+        items: galleryItems,
+        selectedId: elements.themeSelect?.value || themesArray[0]?.id,
+        onChange: handleGalleryThemeChange
+    });
+
+    galleryInitialized = true;
+    console.log('[Editor] Gallery UI initialized with', galleryItems.length, 'themes');
+}
+
+/**
+ * Handle theme change from gallery
+ */
+async function handleGalleryThemeChange(item) {
+    console.log('[Gallery] Theme selected:', item.id);
+
+    // Show loading
+    if (editorGallery) {
+        editorGallery.setLoading(item.id, true);
+    }
+
+    try {
+        // Sync dropdown (without triggering its handler since we handle load here)
+        if (elements.themeSelect) {
+            elements.themeSelect.value = item.id;
+        }
+
+        // Load theme (same as dropdown handler)
+        currentTheme = await loadTheme(item.id);
+
+        if (!currentTheme) {
+            console.error(`Failed to load theme: ${item.id}`);
+            const themeErrorMsg = currentLanguage === 'sv'
+                ? `Fel vid laddning av tema: ${item.id}`
+                : `Error loading theme: ${item.id}`;
+            setStatus(themeErrorMsg, 'error');
+            return;
+        }
+
+        await updateMapStyle();
+
+        if (isPreviewMode) {
+            setTimeout(() => {
+                updatePrintComposition();
+            }, 100);
+        }
+
+        handleFieldChange();
+    } finally {
+        if (editorGallery) {
+            editorGallery.setLoading(item.id, false);
+        }
     }
 }
 
@@ -655,6 +751,113 @@ async function loadTheme(name) {
         console.error('Error loading theme:', error);
         return null;
     }
+}
+
+/**
+ * Initialize theme gallery (Phase 1 - feature flagged)
+ * @param {Array} themes - Theme catalog from API
+ */
+function initThemeGallery(themes) {
+    if (!useGalleryUI) {
+        console.log('[Gallery] Feature flag disabled, using dropdown');
+        return;
+    }
+
+    if (!window.ThemeGallery || !window.EditorStore) {
+        console.error('[Gallery] ThemeGallery or EditorStore not loaded');
+        return;
+    }
+
+    const galleryContainer = document.getElementById('theme-gallery-container');
+    if (!galleryContainer) {
+        console.error('[Gallery] Container #theme-gallery-container not found');
+        return;
+    }
+
+    // Initialize store with themes
+    window.EditorStore.setThemes(themes);
+
+    // Initialize gallery component
+    window.ThemeGallery.init(galleryContainer, {
+        onSelect: handleGalleryThemeSelect
+    });
+
+    // Initial render
+    window.ThemeGallery.render(themes, 'paper', null);
+
+    // Subscribe to store changes
+    window.EditorStore.subscribe((state) => {
+        window.ThemeGallery.updateSelection(
+            state.selection.themeId,
+            state.ui.loadingThemeId
+        );
+    });
+
+    // Hide dropdown, show gallery
+    const themeSelectWrapper = document.querySelector('#theme-group .form-group');
+    if (themeSelectWrapper) {
+        elements.themeSelect.style.display = 'none';
+    }
+    galleryContainer.classList.remove('theme-gallery--hidden');
+
+    galleryInitialized = true;
+    console.log('[Gallery] Initialized with', themes.length, 'themes');
+}
+
+/**
+ * Handle theme selection from gallery
+ * @param {string} themeId - Selected theme ID
+ */
+async function handleGalleryThemeSelect(themeId) {
+    console.log('[Gallery] Theme selected:', themeId);
+
+    // Check cache first
+    let themeData = window.EditorStore.getCachedTheme(themeId);
+
+    if (!themeData) {
+        // Show loading state
+        window.EditorStore.setLoading(true, themeId);
+
+        // Load theme
+        themeData = await loadTheme(themeId);
+
+        if (!themeData) {
+            console.error('[Gallery] Failed to load theme:', themeId);
+            window.EditorStore.setLoading(false, null);
+            const errorMsg = currentLanguage === 'sv'
+                ? `Fel vid laddning av tema: ${themeId}`
+                : `Error loading theme: ${themeId}`;
+            setStatus(errorMsg, 'error');
+            return;
+        }
+
+        // Cache the loaded theme
+        window.EditorStore.cacheTheme(themeId, themeData);
+    }
+
+    // Update global state (for compatibility with existing code)
+    currentTheme = themeData;
+
+    // Update store
+    window.EditorStore.setTheme(themeId);
+    window.EditorStore.setLoading(false, null);
+
+    // Sync dropdown (for consistency)
+    if (elements.themeSelect) {
+        elements.themeSelect.value = themeId;
+    }
+
+    // Update map
+    await updateMapStyle();
+
+    // Update preview if in preview mode
+    if (isPreviewMode) {
+        setTimeout(() => {
+            updatePrintComposition();
+        }, 100);
+    }
+
+    console.log('[Gallery] Theme applied:', themeId);
 }
 
 /**
@@ -2285,7 +2488,10 @@ async function init() {
             fetch('/api/themes').then(r => r.json())
         ]);
 
-        elements.themeSelect.innerHTML = '';
+        // Clear and populate theme dropdown (fallback UI)
+        while (elements.themeSelect.firstChild) {
+            elements.themeSelect.removeChild(elements.themeSelect.firstChild);
+        }
         themes.forEach(t => {
             const opt = document.createElement('option');
             opt.value = t.id;
@@ -2293,6 +2499,15 @@ async function init() {
             elements.themeSelect.appendChild(opt);
         });
 
+        // Initialize OLD theme gallery only if NOT using new gallery UI
+        if (!useGalleryUI) {
+            initThemeGallery(themes);
+        }
+
+        // Initialize new gallery UI if enabled
+        initGalleryUI(themes);
+
+        // Load initial theme
         currentTheme = await loadTheme('paper');
 
         // Load export presets (Phase 9.2)
@@ -2431,6 +2646,11 @@ function setupEventListeners() {
     elements.themeSelect.addEventListener('change', async (e) => {
         const themeName = e.target.value;
         console.log('[Theme Change] Theme selected:', themeName);
+
+        // Sync gallery selection (without emitting change to avoid double load)
+        if (editorGallery && useGalleryUI) {
+            editorGallery.select(themeName, { focus: false, emit: false });
+        }
 
         currentTheme = await loadTheme(themeName);
 
@@ -2611,6 +2831,7 @@ function setupEventListeners() {
             updatePrintComposition();
         }
     });
+
 }
 
 // Initialize

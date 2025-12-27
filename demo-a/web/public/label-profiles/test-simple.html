@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet" />
     <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
-    <script src="/themeToStyle.js"></script>
+    <script src="/themeToStyle.js?v=2"></script>
     <script src="/label-profiles/labelProfiles.js"></script>
     <style>
         body { margin: 0; padding: 20px; font-family: monospace; }
@@ -115,15 +115,15 @@
                 );
 
                 addLog('Style created, layers: ' + style.layers.length);
-                addLog('Label layers in style: ' + style.layers.filter(l => 
-                    l.id.includes('name') || l.type === 'symbol'
-                ).map(l => l.id).join(', '));
+                addLog('All layer IDs: ' + style.layers.map(l => l.id).join(', '));
+                addLog('Symbol layers: ' + style.layers.filter(l => l.type === 'symbol').map(l => l.id).join(', '));
+                addLog('Layers with "name" in ID: ' + style.layers.filter(l => l.id.includes('name')).map(l => l.id).join(', '));
 
                 map.setStyle(style);
 
                 map.once('style.load', () => {
                     addLog('Style loaded!');
-                    
+
                     setTimeout(() => {
                         // List all layers
                         const allLayers = map.getStyle().layers;
@@ -134,8 +134,8 @@
                         if (window.LabelProfiles) {
                             const labelLayers = window.LabelProfiles.identifyLabelLayers(map);
                             addLog('Identified label layers: ' + JSON.stringify(labelLayers));
-                            
-                            if (labelLayers.streetNames.length === 0 && 
+
+                            if (labelLayers.streetNames.length === 0 &&
                                 labelLayers.placeNames.length === 0 &&
                                 labelLayers.poiNames.length === 0) {
                                 addLog('WARNING: No label layers found!', true);

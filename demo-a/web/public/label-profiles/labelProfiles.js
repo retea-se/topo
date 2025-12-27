@@ -1,6 +1,6 @@
 /**
  * Label Profiles - Kontrollerade label- och POI-profiler
- * 
+ *
  * Tre profiler:
  * - "off": Inga labels/gatunamn
  * - "minimal": Kuraterat urval av gatunamn (högre vägklasser, diskret typografi)
@@ -98,7 +98,7 @@ function applyLabelProfile(map, profile) {
   console.log(`Applying profile "${profile}" to layers:`, labelLayers);
 
   // Om inga label-layers hittades, försök skapa dem dynamiskt
-  if (labelLayers.streetNames.length === 0 && 
+  if (labelLayers.streetNames.length === 0 &&
       labelLayers.placeNames.length === 0 &&
       labelLayers.poiNames.length === 0 &&
       labelLayers.waterNames.length === 0 &&
@@ -129,7 +129,7 @@ function applyLabelProfile(map, profile) {
   // Profil: "minimal" - visa endast högre vägklasser med diskret typografi
   if (profile === 'minimal') {
     // Dölj place/poi/water/park labels
-    [...labelLayers.placeNames, ...labelLayers.poiNames, 
+    [...labelLayers.placeNames, ...labelLayers.poiNames,
      ...labelLayers.waterNames, ...labelLayers.parkNames].forEach(layerId => {
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, 'visibility', 'none');
@@ -140,7 +140,7 @@ function applyLabelProfile(map, profile) {
     labelLayers.streetNames.forEach(layerId => {
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, 'visibility', 'visible');
-        
+
         // Diskret typografi: liten text, låg kontrast, subtil halo
         const currentTextSize = map.getLayoutProperty(layerId, 'text-size');
         if (currentTextSize) {
@@ -213,7 +213,7 @@ function applyLabelProfile(map, profile) {
 function adjustColorForContrast(color, factor) {
   // Enkel implementation: konvertera till RGB, justera, konvertera tillbaka
   if (!color.startsWith('#')) return color;
-  
+
   const hex = color.slice(1);
   const r = parseInt(hex.slice(0, 2), 16);
   const g = parseInt(hex.slice(2, 4), 16);
@@ -221,10 +221,10 @@ function adjustColorForContrast(color, factor) {
 
   // Beräkna ljushet
   const brightness = (r * 299 + g * 587 + b * 114) / 1000;
-  
+
   // Om mörk: gör ljusare, om ljus: gör mörkare
   const adjust = brightness < 128 ? factor * 50 : -factor * 50;
-  
+
   const newR = Math.max(0, Math.min(255, Math.round(r + adjust)));
   const newG = Math.max(0, Math.min(255, Math.round(g + adjust)));
   const newB = Math.max(0, Math.min(255, Math.round(b + adjust)));

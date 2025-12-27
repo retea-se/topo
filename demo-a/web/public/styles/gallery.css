@@ -1,0 +1,275 @@
+/**
+ * Gallery Styles for Editor Gallery MVP
+ * Phase 1 - Theme Gallery with responsive layout
+ */
+
+/* ========================================
+   GALLERY GRID
+   ======================================== */
+
+.theme-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 4px 0;
+}
+
+/* Tablet: 3 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .theme-gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ========================================
+   GALLERY CARD
+   ======================================== */
+
+.gallery-card {
+  position: relative;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  overflow: hidden;
+}
+
+.gallery-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--accent, #4a6fa5);
+}
+
+.gallery-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-light, #e8eef5);
+  border-color: var(--accent, #4a6fa5);
+}
+
+.gallery-card:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   CARD CONTENT
+   ======================================== */
+
+.gallery-card__preview {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.gallery-card__swatch {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mini map preview simulation */
+.gallery-card__swatch::after {
+  content: '';
+  position: absolute;
+  width: 40%;
+  height: 40%;
+  border-radius: 2px;
+  opacity: 0.3;
+  background: currentColor;
+}
+
+.gallery-card__info {
+  padding: 10px 12px;
+  border-top: 1px solid var(--border-color, #e0e0e0);
+  background: var(--bg-secondary, #ffffff);
+}
+
+.gallery-card__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary, #2d3436);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gallery-card__meta {
+  font-size: 11px;
+  color: var(--text-muted, #b2bec3);
+  margin-top: 2px;
+}
+
+/* ========================================
+   SELECTED STATE
+   ======================================== */
+
+.gallery-card.selected {
+  border-color: var(--accent, #4a6fa5);
+  border-width: 2px;
+  box-shadow: 0 0 0 3px var(--accent-light, #e8eef5);
+}
+
+.gallery-card.selected .gallery-card__info {
+  background: var(--accent-light, #e8eef5);
+}
+
+/* Checkmark overlay */
+.gallery-card__check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent, #4a6fa5);
+  color: #ffffff;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+.gallery-card.selected .gallery-card__check {
+  display: flex;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.gallery-card.loading {
+  pointer-events: none;
+}
+
+.gallery-card.loading .gallery-card__preview::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.7);
+  z-index: 1;
+}
+
+.gallery-card__spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border-color, #e0e0e0);
+  border-top-color: var(--accent, #4a6fa5);
+  border-radius: 50%;
+  animation: gallery-spin 0.8s linear infinite;
+  z-index: 2;
+  display: none;
+}
+
+.gallery-card.loading .gallery-card__spinner {
+  display: block;
+}
+
+@keyframes gallery-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ========================================
+   GALLERY CONTAINER
+   ======================================== */
+
+.gallery-section {
+  margin-top: 12px;
+}
+
+.gallery-section__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.gallery-section__count {
+  font-size: 12px;
+  color: var(--text-muted, #b2bec3);
+}
+
+/* Fallback: show dropdown when gallery is disabled */
+.theme-gallery--hidden {
+  display: none;
+}
+
+.theme-select-fallback {
+  display: none;
+}
+
+.theme-select-fallback.visible {
+  display: block;
+}
+
+/* ========================================
+   MOBILE BOTTOM SHEET (Phase 1 - tap only)
+   ======================================== */
+
+@media (max-width: 767px) {
+  .theme-gallery {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .gallery-card__preview {
+    height: 70px;
+  }
+
+  .gallery-card__info {
+    padding: 8px 10px;
+  }
+
+  .gallery-card__name {
+    font-size: 12px;
+  }
+
+  /* Larger touch targets */
+  .gallery-card {
+    min-height: 100px;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .gallery-card.selected {
+    border-width: 3px;
+    border-color: #000000;
+  }
+
+  .gallery-card__check {
+    background: #000000;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .gallery-card {
+    transition: none;
+  }
+
+  .gallery-card__spinner {
+    animation: none;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+.gallery-card:focus-visible {
+  outline: 2px solid var(--accent, #4a6fa5);
+  outline-offset: 2px;
+}

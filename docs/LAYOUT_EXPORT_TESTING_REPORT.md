@@ -1,7 +1,7 @@
 # Layout Export Testing Report
 
-**Datum**: 2025-01-27  
-**Branch**: `feature/layout-designs`  
+**Datum**: 2025-01-27
+**Branch**: `feature/layout-designs`
 **Status**: ✅ **PASS** - Alla layout exports fungerar korrekt
 
 ---

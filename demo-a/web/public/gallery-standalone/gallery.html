@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Topo Gallery - Standalone Reference</title>
+  <link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+  <main class="demo-container">
+    <h1>Gallery UI Reference Implementation</h1>
+    <p class="demo-subtitle">Standalone, accessible theme gallery component</p>
+
+    <!-- DEMO 1: Full panel mode -->
+    <section class="demo-section">
+      <h2>Panel Mode (Desktop/Tablet)</h2>
+      <div class="demo-panel">
+        <div id="gallery-panel" class="topo-gallery"></div>
+      </div>
+    </section>
+
+    <!-- DEMO 2: Bottom sheet mode -->
+    <section class="demo-section">
+      <h2>Bottom Sheet Mode (Mobile)</h2>
+      <div class="demo-phone-frame">
+        <div class="demo-phone-preview">
+          <div class="demo-map-placeholder">Map Preview</div>
+        </div>
+        <div class="demo-bottom-sheet" id="bottom-sheet">
+          <div class="demo-sheet-handle" id="sheet-handle">
+            <span class="demo-sheet-handle-bar"></span>
+          </div>
+          <div class="demo-sheet-tabs">
+            <button class="demo-tab active" data-tab="themes">Themes</button>
+            <button class="demo-tab" data-tab="frames">Frames</button>
+            <button class="demo-tab" data-tab="size">Size</button>
+          </div>
+          <div class="demo-sheet-content">
+            <div id="gallery-sheet" class="topo-gallery"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Selection output -->
+    <section class="demo-section">
+      <h2>Selection State</h2>
+      <div class="demo-output">
+        <div class="demo-output-row">
+          <span class="demo-output-label">Selected theme:</span>
+          <span class="demo-output-value" id="selected-output">None</span>
+        </div>
+        <div class="demo-output-row">
+          <span class="demo-output-label">Accent color:</span>
+          <span class="demo-output-value">
+            <span id="selected-color-swatch" class="demo-color-swatch"></span>
+            <code id="selected-color-code">-</code>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Demo -->
+    <section class="demo-section">
+      <h2>Programmatic API</h2>
+      <div class="demo-actions">
+        <button onclick="selectRandom()">Select Random</button>
+        <button onclick="selectById('ink')">Select "Ink"</button>
+        <button onclick="logState()">Log State</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="gallery.js"></script>
+  <script>
+    // === MOCK DATA ===
+    const MOCK_THEMES = [
+      { id: 'paper', name: 'Paper', category: 'Light', accentColor: '#faf8f5', secondaryColor: '#e8e4df' },
+      { id: 'ink', name: 'Ink', category: 'Dark', accentColor: '#1a1a2e', secondaryColor: '#16213e' },
+      { id: 'mono', name: 'Mono', category: 'Minimal', accentColor: '#f5f5f5', secondaryColor: '#e0e0e0' },
+      { id: 'dark', name: 'Dark', category: 'Dark', accentColor: '#121212', secondaryColor: '#1e1e1e' },
+      { id: 'charcoal', name: 'Charcoal', category: 'Dark', accentColor: '#36454f', secondaryColor: '#4a5568' },
+      { id: 'warm-paper', name: 'Warm Paper', category: 'Light', accentColor: '#fdf6e3', secondaryColor: '#f5e6c8' },
+      { id: 'blueprint', name: 'Blueprint', category: 'Technical', accentColor: '#1e3a5f', secondaryColor: '#2c5282' },
+      { id: 'gallery', name: 'Gallery', category: 'Light', accentColor: '#ffffff', secondaryColor: '#f7f7f7' },
+      { id: 'muted-pastel', name: 'Muted Pastel', category: 'Soft', accentColor: '#e8e4e1', secondaryColor: '#d4cfc9' },
+      { id: 'void', name: 'Void', category: 'Dark', accentColor: '#0a0a0a', secondaryColor: '#151515' },
+      { id: 'arctic', name: 'Arctic', category: 'Cool', accentColor: '#e8f4f8', secondaryColor: '#cce7ef' },
+      { id: 'sepia', name: 'Sepia', category: 'Warm', accentColor: '#f4ecd8', secondaryColor: '#e8dcc4' },
+      { id: 'forest', name: 'Forest', category: 'Nature', accentColor: '#2d4a3e', secondaryColor: '#3d5a4e' },
+      { id: 'ocean', name: 'Ocean', category: 'Cool', accentColor: '#1a365d', secondaryColor: '#2a4a7d' },
+      { id: 'sunset', name: 'Sunset', category: 'Warm', accentColor: '#fed7aa', secondaryColor: '#fbbf24' },
+      { id: 'night', name: 'Night', category: 'Dark', accentColor: '#1e1e2f', secondaryColor: '#2d2d44' },
+      { id: 'copper', name: 'Copper', category: 'Metallic', accentColor: '#b87333', secondaryColor: '#cd853f' },
+      { id: 'lavender', name: 'Lavender', category: 'Soft', accentColor: '#e6e6fa', secondaryColor: '#d8bfd8' },
+      { id: 'mint', name: 'Mint', category: 'Fresh', accentColor: '#e0f2e9', secondaryColor: '#b2dfdb' },
+      { id: 'vintage', name: 'Vintage', category: 'Classic', accentColor: '#f5f0e1', secondaryColor: '#e8dcc8' },
+      { id: 'neon', name: 'Neon', category: 'Vibrant', accentColor: '#0d0d0d', secondaryColor: '#ff00ff' },
+      { id: 'cyberpunk', name: 'Cyberpunk', category: 'Vibrant', accentColor: '#0d0221', secondaryColor: '#ff00ff' },
+      { id: 'swiss', name: 'Swiss', category: 'Minimal', accentColor: '#ffffff', secondaryColor: '#ff0000' },
+      { id: 'bauhaus', name: 'Bauhaus', category: 'Artistic', accentColor: '#f5f5dc', secondaryColor: '#1a1a1a' },
+      { id: 'japandi', name: 'Japandi', category: 'Minimal', accentColor: '#f5f0e8', secondaryColor: '#d4c4b0' },
+      { id: 'chalk', name: 'Chalk', category: 'Light', accentColor: '#f8f8f8', secondaryColor: '#e8e8e8' },
+      { id: 'thermal', name: 'Thermal', category: 'Technical', accentColor: '#1a0a2e', secondaryColor: '#ff6b35' },
+      { id: 'duotone', name: 'Duotone', category: 'Artistic', accentColor: '#2d3436', secondaryColor: '#0984e3' },
+      { id: 'gold-foil', name: 'Gold Foil', category: 'Luxury', accentColor: '#1a1a1a', secondaryColor: '#d4af37' },
+      { id: 'silver-foil', name: 'Silver Foil', category: 'Luxury', accentColor: '#1a1a1a', secondaryColor: '#c0c0c0' },
+      { id: 'woodblock', name: 'Woodblock', category: 'Artistic', accentColor: '#f5e6d3', secondaryColor: '#8b4513' },
+      { id: 'pencil-sketch', name: 'Pencil Sketch', category: 'Artistic', accentColor: '#fafafa', secondaryColor: '#4a4a4a' },
+      { id: 'vaporwave', name: 'Vaporwave', category: 'Retro', accentColor: '#ff71ce', secondaryColor: '#01cdfe' },
+      { id: 'glitch', name: 'Glitch', category: 'Digital', accentColor: '#0a0a0a', secondaryColor: '#00ff41' },
+      { id: 'high-contrast', name: 'High Contrast', category: 'Accessible', accentColor: '#000000', secondaryColor: '#ffffff' },
+      { id: 'scandi-minimal', name: 'Scandi Minimal', category: 'Minimal', accentColor: '#f9f7f4', secondaryColor: '#e5e1dc' },
+      { id: 'art-deco', name: 'Art Deco', category: 'Classic', accentColor: '#1a1a2e', secondaryColor: '#d4af37' },
+    ];
+
+    // === GALLERY INSTANCES ===
+    let panelGallery;
+    let sheetGallery;
+
+    // Initialize galleries
+    document.addEventListener('DOMContentLoaded', () => {
+      // Panel gallery
+      panelGallery = createGallery({
+        container: '#gallery-panel',
+        items: MOCK_THEMES,
+        selectedId: 'paper',
+        onChange: handleSelection
+      });
+
+      // Sheet gallery (shares state via callback)
+      sheetGallery = createGallery({
+        container: '#gallery-sheet',
+        items: MOCK_THEMES,
+        selectedId: 'paper',
+        onChange: handleSelection
+      });
+
+      // Bottom sheet toggle (tap only - no swipe in Phase 1)
+      const sheetHandle = document.getElementById('sheet-handle');
+      const bottomSheet = document.getElementById('bottom-sheet');
+
+      sheetHandle.addEventListener('click', () => {
+        bottomSheet.classList.toggle('expanded');
+      });
+
+      // Tab switching
+      document.querySelectorAll('.demo-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
+          e.target.classList.add('active');
+        });
+      });
+
+      // Initial output
+      updateOutput(MOCK_THEMES.find(t => t.id === 'paper'));
+    });
+
+    // Handle selection from either gallery
+    function handleSelection(item) {
+      // Sync both galleries
+      panelGallery.select(item.id);
+      sheetGallery.select(item.id);
+      updateOutput(item);
+    }
+
+    function updateOutput(item) {
+      if (!item) return;
+      document.getElementById('selected-output').textContent = item.name;
+      document.getElementById('selected-color-code').textContent = item.accentColor;
+      document.getElementById('selected-color-swatch').style.backgroundColor = item.accentColor;
+    }
+
+    // API demo functions
+    function selectRandom() {
+      const randomItem = MOCK_THEMES[Math.floor(Math.random() * MOCK_THEMES.length)];
+      panelGallery.select(randomItem.id);
+      sheetGallery.select(randomItem.id);
+      updateOutput(randomItem);
+    }
+
+    function selectById(id) {
+      panelGallery.select(id);
+      sheetGallery.select(id);
+      updateOutput(MOCK_THEMES.find(t => t.id === id));
+    }
+
+    function logState() {
+      console.log('Panel gallery selected:', panelGallery.getSelected());
+      console.log('All items:', panelGallery.getItems().length);
+    }
+  </script>
+</body>
+</html>

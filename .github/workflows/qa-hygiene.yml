@@ -1,0 +1,131 @@
+# =============================================================================
+# QA Hygiene Pipeline
+# =============================================================================
+#
+# PURPOSE:
+# Automated quality assurance checks for the topo cartographic project.
+# Validates golden coverage, theme schemas, and documentation link integrity.
+#
+# SPECIFICATION:
+# See exports/QA_HYGIENE_CI_PLAN.md for full implementation details.
+#
+# GATES:
+#   - golden-coverage:   HARD GATE (tier1 missing = PR blocked, exit 1)
+#   - theme-validation:  HARD GATE (schema errors = PR blocked, exit 1)
+#   - doc-audit:         LOG ONLY (130 ERROR exists, tracked but not blocking)
+#
+# EXIT CODES:
+#   Exit 0 = Pass (green)
+#   Exit 1 = Fail (red) - blocks if HARD GATE
+#   Exit 2 = Warning (yellow) - logged but does not block
+#
+# ARTIFACTS:
+#   All reports retained for 30 days for debugging and trend tracking.
+#
+# =============================================================================
+
+name: QA Hygiene
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  # ===========================================================================
+  # Job 1: Golden Coverage Check
+  # ===========================================================================
+  # GATE TYPE: HARD
+  # Validates that all tier1 production presets have golden baseline files.
+  # Exit 1 = tier1 preset missing golden (blocks PR)
+  # Exit 2 = tier2 preset missing golden (warning, does not block)
+  #
+  golden-coverage:
+    name: Golden Coverage Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Golden Coverage Audit
+        run: python scripts/qa_golden_coverage.py
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-coverage-report
+          path: exports/GOLDEN_COVERAGE_REPORT_V3.md
+          retention-days: 30
+
+  # ===========================================================================
+  # Job 2: Theme Validation
+  # ===========================================================================
+  # GATE TYPE: HARD (schema errors only)
+  # Validates theme JSON schemas and effect pipeline integrity.
+  # WCAG contrast and color similarity warnings are logged but do not block.
+  #
+  theme-validation:
+    name: Theme Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Theme Validation
+        run: python scripts/qa_theme_validation.py
+
+      - name: Upload Validation Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-validation-report
+          path: exports/THEME_RECIPE_SUMMARY_V3.md
+          retention-days: 30
+
+  # ===========================================================================
+  # Job 3: Doc Link Audit
+  # ===========================================================================
+  # GATE TYPE: LOG ONLY (Fas 4)
+  # Audits documentation for broken links and missing references.
+  # Currently 130 ERROR exists - runs as non-blocking to track progress.
+  #
+  # UPGRADE PATH:
+  #   Fas 4: LOG ONLY (current) - continue-on-error: true
+  #   Fas 5: Remediation - fix errors until count < 20
+  #   Fas 6: SOFT GATE - remove continue-on-error when ERROR = 0
+  #
+  doc-audit:
+    name: Doc Link Audit (Log Only)
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Fas 4: LOG ONLY - does not block PRs
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Doc Link Audit
+        run: python scripts/qa_doc_audit.py
+
+      - name: Upload Audit Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doc-audit-report
+          path: exports/DOC_LINK_AUDIT_V3.md
+          retention-days: 30

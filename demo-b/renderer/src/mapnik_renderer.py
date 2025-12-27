@@ -2,9 +2,12 @@
 import mapnik
 import tempfile
 import os
+import io
 from pathlib import Path
+from PIL import Image
 from renderer_interface import RendererInterface
 from theme_to_mapnik import theme_to_mapnik_xml
+from effects import apply_effect_pipeline
 
 class MapnikRenderer(RendererInterface):
     """Mapnik-based renderer."""
@@ -13,7 +16,7 @@ class MapnikRenderer(RendererInterface):
         # Register default fonts path
         mapnik.register_fonts('/usr/share/fonts/truetype/dejavu')
 
-    def render(self, theme: dict, bbox_3857: tuple, output_size: tuple, dpi: int, format: str = 'png', preset: str = 'stockholm_core', layers: dict = None, coverage: dict = None) -> bytes:
+    def render(self, theme: dict, bbox_3857: tuple, output_size: tuple, dpi: int, format: str = 'png', preset: str = 'stockholm_core', layers: dict = None, coverage: dict = None, preset_id: str = None) -> bytes:
         """Render map using Mapnik.
 
         Args:
@@ -24,6 +27,7 @@ class MapnikRenderer(RendererInterface):
             format: 'png' or 'pdf'
             preset: Bbox preset name (used for hillshade file path)
             layers: Layer visibility dict (e.g. {'hillshade': True, 'water': False, ...})
+            preset_id: Preset identifier for deterministic effect seeding
 
         Returns:
             Rendered image bytes
@@ -66,6 +70,23 @@ class MapnikRenderer(RendererInterface):
             if format == 'png':
                 im = mapnik.Image(width, height)
                 mapnik.render(map_obj, im)
+
+                # Apply post-render effects if configured
+                effects_config = theme.get('effects')
+                if effects_config:
+                    # Convert Mapnik image to PIL for effect processing
+                    png_bytes = im.tostring('png')
+                    pil_image = Image.open(io.BytesIO(png_bytes))
+
+                    # Apply effect pipeline with deterministic seed
+                    seed = preset_id or preset or 'default'
+                    pil_image = apply_effect_pipeline(pil_image, effects_config, seed)
+
+                    # Convert back to PNG bytes
+                    output_buffer = io.BytesIO()
+                    pil_image.save(output_buffer, format='PNG')
+                    return output_buffer.getvalue()
+
                 return im.tostring('png')
             elif format == 'pdf':
                 # Mapnik PDF rendering via Cairo

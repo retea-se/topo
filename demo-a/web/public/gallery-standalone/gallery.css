@@ -1,0 +1,556 @@
+/**
+ * Topo Gallery - Standalone CSS
+ * Scandinavian, accessible, responsive theme gallery
+ */
+
+/* ========================================
+   CSS CUSTOM PROPERTIES (CONTRACT)
+   ======================================== */
+
+:root {
+  /* Spacing */
+  --topo-gallery-gap: 12px;
+  --topo-gallery-padding: 16px;
+  --topo-gallery-card-padding: 12px;
+
+  /* Sizing */
+  --topo-gallery-card-min-height: 100px;
+  --topo-gallery-card-preview-height: 60px;
+  --topo-gallery-columns: 2;
+
+  /* Colors - Scandinavian neutral palette */
+  --topo-gallery-bg: #fafafa;
+  --topo-gallery-card-bg: #ffffff;
+  --topo-gallery-card-border: #e5e5e5;
+  --topo-gallery-card-border-hover: #d0d0d0;
+  --topo-gallery-card-border-selected: #4a6fa5;
+  --topo-gallery-card-bg-selected: #f0f4f8;
+  --topo-gallery-text-primary: #2d3436;
+  --topo-gallery-text-secondary: #6b7280;
+  --topo-gallery-text-category: #9ca3af;
+  --topo-gallery-focus-ring: rgba(74, 111, 165, 0.4);
+  --topo-gallery-check-bg: #4a6fa5;
+  --topo-gallery-check-color: #ffffff;
+
+  /* Borders */
+  --topo-gallery-radius: 8px;
+  --topo-gallery-border-width: 1px;
+  --topo-gallery-border-width-selected: 2px;
+
+  /* Animation */
+  --topo-gallery-transition: 150ms ease;
+
+  /* Shadows */
+  --topo-gallery-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --topo-gallery-shadow-selected: 0 0 0 3px var(--topo-gallery-focus-ring);
+}
+
+/* ========================================
+   GALLERY CONTAINER
+   ======================================== */
+
+.topo-gallery {
+  background: var(--topo-gallery-bg);
+  padding: var(--topo-gallery-padding);
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.topo-gallery__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--topo-gallery-gap);
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--topo-gallery-card-border);
+}
+
+.topo-gallery__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--topo-gallery-text-primary);
+  letter-spacing: -0.2px;
+}
+
+.topo-gallery__count {
+  font-size: 12px;
+  color: var(--topo-gallery-text-secondary);
+}
+
+/* ========================================
+   GALLERY GRID
+   ======================================== */
+
+.topo-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--topo-gallery-columns), 1fr);
+  gap: var(--topo-gallery-gap);
+}
+
+/* Responsive columns */
+@media (min-width: 768px) {
+  .topo-gallery__grid {
+    --topo-gallery-columns: 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .topo-gallery__grid {
+    --topo-gallery-columns: 2;
+  }
+}
+
+@media (min-width: 1280px) {
+  .topo-gallery__grid {
+    --topo-gallery-columns: 3;
+  }
+}
+
+/* ========================================
+   GALLERY CARD
+   ======================================== */
+
+.topo-gallery__card {
+  position: relative;
+  min-height: var(--topo-gallery-card-min-height);
+  background: var(--topo-gallery-card-bg);
+  border: var(--topo-gallery-border-width) solid var(--topo-gallery-card-border);
+  border-radius: var(--topo-gallery-radius);
+  cursor: pointer;
+  transition:
+    transform var(--topo-gallery-transition),
+    box-shadow var(--topo-gallery-transition),
+    border-color var(--topo-gallery-transition),
+    background var(--topo-gallery-transition);
+  overflow: hidden;
+
+  /* Remove default button styles if using button element */
+  font-family: inherit;
+  font-size: inherit;
+  text-align: left;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Hover state (desktop) */
+@media (hover: hover) {
+  .topo-gallery__card:hover {
+    border-color: var(--topo-gallery-card-border-hover);
+    box-shadow: var(--topo-gallery-shadow-hover);
+    transform: translateY(-2px);
+  }
+}
+
+/* Focus state (keyboard) */
+.topo-gallery__card:focus {
+  outline: none;
+  box-shadow: var(--topo-gallery-shadow-selected);
+  border-color: var(--topo-gallery-card-border-selected);
+}
+
+.topo-gallery__card:focus-visible {
+  outline: 2px solid var(--topo-gallery-card-border-selected);
+  outline-offset: 2px;
+}
+
+/* Active/pressed state */
+.topo-gallery__card:active {
+  transform: translateY(0);
+  transition-duration: 50ms;
+}
+
+/* Selected state */
+.topo-gallery__card[aria-selected="true"] {
+  border-color: var(--topo-gallery-card-border-selected);
+  border-width: var(--topo-gallery-border-width-selected);
+  background: var(--topo-gallery-card-bg-selected);
+  box-shadow: var(--topo-gallery-shadow-selected);
+}
+
+/* ========================================
+   CARD CONTENT
+   ======================================== */
+
+.topo-gallery__card-preview {
+  height: var(--topo-gallery-card-preview-height);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.topo-gallery__card-swatch {
+  position: absolute;
+  inset: 0;
+}
+
+/* Secondary color accent bar */
+.topo-gallery__card-swatch::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--card-secondary-color, transparent);
+}
+
+.topo-gallery__card-info {
+  padding: var(--topo-gallery-card-padding);
+  background: var(--topo-gallery-card-bg);
+}
+
+.topo-gallery__card[aria-selected="true"] .topo-gallery__card-info {
+  background: var(--topo-gallery-card-bg-selected);
+}
+
+.topo-gallery__card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--topo-gallery-text-primary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.topo-gallery__card-category {
+  font-size: 11px;
+  color: var(--topo-gallery-text-category);
+  margin: 2px 0 0 0;
+}
+
+/* ========================================
+   CHECKMARK (SELECTED INDICATOR)
+   ======================================== */
+
+.topo-gallery__card-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--topo-gallery-check-bg);
+  color: var(--topo-gallery-check-color);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.topo-gallery__card[aria-selected="true"] .topo-gallery__card-check {
+  display: flex;
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+
+.topo-gallery__card[data-loading="true"] {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.topo-gallery__card-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--topo-gallery-card-border);
+  border-top-color: var(--topo-gallery-card-border-selected);
+  border-radius: 50%;
+  display: none;
+  z-index: 3;
+}
+
+.topo-gallery__card[data-loading="true"] .topo-gallery__card-spinner {
+  display: block;
+  animation: topo-gallery-spin 0.8s linear infinite;
+}
+
+@keyframes topo-gallery-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ========================================
+   MOBILE OPTIMIZATIONS
+   ======================================== */
+
+@media (max-width: 767px) {
+  .topo-gallery {
+    --topo-gallery-columns: 2;
+    --topo-gallery-gap: 10px;
+    --topo-gallery-padding: 12px;
+  }
+
+  .topo-gallery__card {
+    min-height: 90px;
+  }
+
+  .topo-gallery__card-preview {
+    height: 50px;
+  }
+
+  .topo-gallery__card-info {
+    padding: 10px;
+  }
+
+  .topo-gallery__card-name {
+    font-size: 12px;
+  }
+
+  /* Ensure minimum touch target */
+  .topo-gallery__card {
+    min-height: 44px;
+  }
+}
+
+/* ========================================
+   ACCESSIBILITY
+   ======================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .topo-gallery__card[aria-selected="true"] {
+    border-width: 3px;
+    border-color: #000000;
+  }
+
+  .topo-gallery__card-check {
+    background: #000000;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .topo-gallery__card {
+    transition: none;
+  }
+
+  .topo-gallery__card-spinner {
+    animation: none;
+  }
+}
+
+/* ========================================
+   DEMO PAGE STYLES (NOT PART OF COMPONENT)
+   ======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+  color: #2d3436;
+  line-height: 1.5;
+}
+
+.demo-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.demo-container h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+}
+
+.demo-subtitle {
+  color: #6b7280;
+  margin: 0 0 40px 0;
+}
+
+.demo-section {
+  margin-bottom: 48px;
+}
+
+.demo-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #4b5563;
+}
+
+/* Panel demo */
+.demo-panel {
+  height: 400px;
+  width: 100%;
+  max-width: 500px;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+/* Phone frame demo */
+.demo-phone-frame {
+  width: 375px;
+  height: 667px;
+  border: 1px solid #e5e5e5;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #ffffff;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.demo-phone-preview {
+  height: 50%;
+  background: linear-gradient(135deg, #e8eef5 0%, #dde4ec 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demo-map-placeholder {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+.demo-bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #ffffff;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  transition: height 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.demo-bottom-sheet.expanded {
+  height: 85%;
+}
+
+.demo-sheet-handle {
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.demo-sheet-handle-bar {
+  width: 36px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.demo-sheet-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.demo-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: #f3f4f6;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.demo-tab.active {
+  background: #4a6fa5;
+  color: #ffffff;
+}
+
+.demo-sheet-content {
+  flex: 1;
+  overflow: hidden;
+}
+
+.demo-sheet-content .topo-gallery {
+  height: 100%;
+}
+
+/* Output display */
+.demo-output {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 400px;
+}
+
+.demo-output-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.demo-output-row:not(:last-child) {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.demo-output-label {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.demo-output-value {
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.demo-color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #e5e5e5;
+}
+
+/* Action buttons */
+.demo-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.demo-actions button {
+  padding: 10px 16px;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.demo-actions button:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.demo-actions button:active {
+  background: #f3f4f6;
+}

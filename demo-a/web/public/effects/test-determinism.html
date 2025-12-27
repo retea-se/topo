@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Risograph Effect Determinism Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .test { margin: 20px 0; padding: 10px; border: 1px solid #ccc; }
+        .pass { background: #d4edda; border-color: #28a745; }
+        .fail { background: #f8d7da; border-color: #dc3545; }
+        canvas { border: 1px solid #ddd; margin: 5px; }
+        .canvases { display: flex; gap: 10px; flex-wrap: wrap; }
+        h2 { color: #333; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Risograph Effect Determinism Tests</h1>
+    <p>These tests verify that the risograph effect produces deterministic output.</p>
+
+    <div id="results"></div>
+    <div id="canvases" class="canvases"></div>
+
+    <!-- Load effect modules -->
+    <script src="utils.js"></script>
+    <script src="risograph.js"></script>
+    <script src="index.js"></script>
+
+    <script>
+        const results = document.getElementById('results');
+        const canvasContainer = document.getElementById('canvases');
+        let passCount = 0;
+        let failCount = 0;
+
+        function log(testName, message, isPass) {
+            const div = document.createElement('div');
+            div.className = 'test ' + (isPass ? 'pass' : 'fail');
+
+            const strong = document.createElement('strong');
+            strong.textContent = testName + ': ' + (isPass ? 'PASS' : 'FAIL');
+            div.appendChild(strong);
+
+            const text = document.createTextNode(' - ' + message);
+            div.appendChild(text);
+
+            results.appendChild(div);
+            if (isPass) passCount++;
+            else failCount++;
+        }
+
+        function createTestCanvas(width, height) {
+            width = width || 200;
+            height = height || 200;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            // Create gradient pattern
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const r = Math.floor(255 * x / width);
+                    const g = Math.floor(255 * y / height);
+                    const b = Math.floor(255 * (1 - x / width));
+                    ctx.fillStyle = 'rgb(' + r + ',' + g + ',' + b + ')';
+                    ctx.fillRect(x, y, 1, 1);
+                }
+            }
+
+            return canvas;
+        }
+
+        function getImageData(canvas) {
+            const ctx = canvas.getContext('2d');
+            return ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+
+        function imageDataEqual(data1, data2) {
+            if (data1.data.length !== data2.data.length) return false;
+            for (let i = 0; i < data1.data.length; i++) {
+                if (data1.data[i] !== data2.data[i]) return false;
+            }
+            return true;
+        }
+
+        function countDifferences(data1, data2) {
+            let count = 0;
+            for (let i = 0; i < data1.data.length; i += 4) {
+                if (data1.data[i] !== data2.data[i] ||
+                    data1.data[i+1] !== data2.data[i+1] ||
+                    data1.data[i+2] !== data2.data[i+2]) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        const risoConfig = {
+            enabled: true,
+            channels: [
+                { color: '#e84855', offset: { x: 2, y: 1 } },
+                { color: '#2d9cdb', offset: { x: -1, y: 2 } }
+            ],
+            grain: { opacity: 0.06 },
+            blendMode: 'multiply'
+        };
+
+        // Run tests
+        function runTests() {
+            console.log('Running determinism tests...');
+
+            // Test 1: Same seed produces identical output
+            (function() {
+                const canvas1 = createTestCanvas();
+                const canvas2 = createTestCanvas();
+
+                const data1 = getImageData(canvas1);
+                const data2 = getImageData(canvas2);
+
+                window.applyRisograph(data1, risoConfig, 'test_seed_123');
+                window.applyRisograph(data2, risoConfig, 'test_seed_123');
+
+                const ctx1 = canvas1.getContext('2d');
+                const ctx2 = canvas2.getContext('2d');
+                ctx1.putImageData(data1, 0, 0);
+                ctx2.putImageData(data2, 0, 0);
+
+                const result1 = getImageData(canvas1);
+                const result2 = getImageData(canvas2);
+
+                if (imageDataEqual(result1, result2)) {
+                    log('Test 1', 'Same seed produces identical output', true);
+                } else {
+                    var diff = countDifferences(result1, result2);
+                    log('Test 1', 'Output differs! ' + diff + ' pixels different', false);
+                }
+
+                canvas1.title = 'Test 1a';
+                canvas2.title = 'Test 1b';
+                canvasContainer.appendChild(canvas1);
+                canvasContainer.appendChild(canvas2);
+            })();
+
+            // Test 2: Different seeds produce different output
+            (function() {
+                const canvas3 = createTestCanvas();
+                const canvas4 = createTestCanvas();
+
+                const data3 = getImageData(canvas3);
+                const data4 = getImageData(canvas4);
+
+                window.applyRisograph(data3, risoConfig, 'seed_A');
+                window.applyRisograph(data4, risoConfig, 'seed_B');
+
+                const ctx3 = canvas3.getContext('2d');
+                const ctx4 = canvas4.getContext('2d');
+                ctx3.putImageData(data3, 0, 0);
+                ctx4.putImageData(data4, 0, 0);
+
+                const result3 = getImageData(canvas3);
+                const result4 = getImageData(canvas4);
+
+                if (!imageDataEqual(result3, result4)) {
+                    var diff = countDifferences(result3, result4);
+                    log('Test 2', 'Different seeds produce different output (' + diff + ' pixels differ)', true);
+                } else {
+                    log('Test 2', 'Output is identical for different seeds', false);
+                }
+
+                canvas3.title = 'Seed A';
+                canvas4.title = 'Seed B';
+                canvasContainer.appendChild(canvas3);
+                canvasContainer.appendChild(canvas4);
+            })();
+
+            // Test 3: Effect modifies the image
+            (function() {
+                const canvas5 = createTestCanvas();
+                const originalData = getImageData(canvas5);
+                const originalCopy = new Uint8ClampedArray(originalData.data);
+
+                const data5 = getImageData(canvas5);
+                window.applyRisograph(data5, risoConfig, 'test');
+
+                let changed = false;
+                for (let i = 0; i < data5.data.length; i++) {
+                    if (data5.data[i] !== originalCopy[i]) {
+                        changed = true;
+                        break;
+                    }
+                }
+
+                if (changed) {
+                    log('Test 3', 'Effect modifies the image', true);
+                } else {
+                    log('Test 3', 'Effect did not modify the image', false);
+                }
+            })();
+
+            // Test 4: Seed string hashing is deterministic
+            (function() {
+                const seedFromString = window.EffectUtils.seedFromString;
+                const seed1 = seedFromString('my_preset_id');
+                const seed2 = seedFromString('my_preset_id');
+                const seed3 = seedFromString('my_preset_id');
+
+                if (seed1 === seed2 && seed2 === seed3) {
+                    log('Test 4', 'Consistent hash: ' + seed1, true);
+                } else {
+                    log('Test 4', 'Inconsistent hashes: ' + seed1 + ', ' + seed2 + ', ' + seed3, false);
+                }
+            })();
+
+            // Test 5: Multiple runs deterministic
+            (function() {
+                const testResults = [];
+                for (let i = 0; i < 5; i++) {
+                    const canvas = createTestCanvas();
+                    const data = getImageData(canvas);
+                    window.applyRisograph(data, risoConfig, 'determinism_test');
+                    testResults.push(new Uint8ClampedArray(data.data));
+                }
+
+                let allIdentical = true;
+                for (let i = 1; i < testResults.length; i++) {
+                    for (let j = 0; j < testResults[0].length; j++) {
+                        if (testResults[0][j] !== testResults[i][j]) {
+                            allIdentical = false;
+                            break;
+                        }
+                    }
+                    if (!allIdentical) break;
+                }
+
+                if (allIdentical) {
+                    log('Test 5', '5 runs with same seed produced identical output', true);
+                } else {
+                    log('Test 5', 'Multiple runs produced different output', false);
+                }
+            })();
+
+            // Summary
+            const summary = document.createElement('div');
+            summary.style.marginTop = '20px';
+            summary.style.padding = '15px';
+            summary.style.background = failCount === 0 ? '#d4edda' : '#f8d7da';
+            summary.style.borderRadius = '5px';
+
+            const h2 = document.createElement('h2');
+            h2.textContent = 'Summary: ' + passCount + ' passed, ' + failCount + ' failed';
+            summary.appendChild(h2);
+            results.appendChild(summary);
+
+            console.log('Tests complete: ' + passCount + ' passed, ' + failCount + ' failed');
+        }
+
+        // Run tests when page loads
+        window.onload = runTests;
+    </script>
+</body>
+</html>

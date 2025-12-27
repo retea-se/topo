@@ -1,6 +1,6 @@
 # Roadmap
 
-**Senast uppdaterad**: 2025-12-27 (v1.1 Operational Hardening Implemented)
+**Senast uppdaterad**: 2025-12-27 (Roadmap-initiativ: Fyra nya epics planerade - Phase 12-15)
 
 ## Statusförklaring
 
@@ -289,6 +289,29 @@ Varje preset definierar:
 | 50/50 sidebar/map layout | ✅ DONE |
 | Subtle attribution styling | ✅ DONE |
 | 5 layout templates (Classic, Modern, Minimal, Elegant, Bold) | ✅ DONE |
+
+### 10.7 Gallery UI Component (2025-12-27)
+
+| Uppgift | Status |
+|---------|--------|
+| Gallery UI Contract v1.0 | ✅ DONE |
+| Standalone reference implementation | ✅ DONE |
+| ARIA accessibility (role=listbox, role=option, aria-selected) | ✅ DONE |
+| Keyboard navigation (Arrow, Home/End, Enter/Space) | ✅ DONE |
+| CSS-only responsive columns (2-3 columns) | ✅ DONE |
+| Loading state (setLoading API) | ✅ DONE |
+| Editor integration template | ✅ DONE |
+| Browser verification | ✅ DONE (partial - Playwright timeout issues) |
+
+**Dokumentation**:
+- [GALLERY_UI_CONTRACT.md](GALLERY_UI_CONTRACT.md) - API & styling contract
+- [GALLERY_TEST_REPORT.md](GALLERY_TEST_REPORT.md) - Test results
+
+**Filer**:
+- `demo-a/web/public/gallery-standalone/gallery.js` - Component logic
+- `demo-a/web/public/gallery-standalone/gallery.css` - Component styles
+- `demo-a/web/public/gallery-standalone/gallery.html` - Reference demo
+- `demo-a/web/public/gallery-standalone/editor-integration.js` - Integration template
 
 ### Framgångskriterier
 
@@ -829,6 +852,324 @@ Parametrar som kan justeras per stil eller export.
 
 ---
 
+## Fas 3b - Effect Pipeline ✅ COMPLETE
+
+**Mål**: Implementera post-render Effect Pipeline för visuella effekter (risograph, grain, etc.).
+
+**Dokumentation**: [EFFECT_PIPELINE_ARCHITECTURE.md](EFFECT_PIPELINE_ARCHITECTURE.md)
+
+### Översikt
+
+Effect Pipeline applicerar visuella effekter **efter** baskartan renderats, på pixeldata snarare än vektordata.
+
+```
+Theme JSON → Style Gen → Renderer → Effect Pipeline → Output
+```
+
+### Implementation
+
+| Uppgift | Status |
+|---------|--------|
+| Effect Pipeline architecture design | ✅ DONE |
+| Demo A integration (MapLibre/Canvas) | ✅ DONE |
+| Demo B integration (Mapnik/PIL) | ✅ DONE |
+| Risograph effect (JavaScript) | ✅ DONE |
+| Risograph effect (Python) | ✅ DONE |
+| Determinism testing (Browser) | ✅ DONE (5/5 PASS) |
+| Determinism testing (Python) | ✅ DONE (6/6 PASS) |
+| Risograph theme (riso-red-cyan.json) | ✅ DONE |
+| Export preset (A2_Riso_RedCyan_v1) | ✅ DONE |
+| Architecture documentation | ✅ DONE |
+
+### Risograph Effect Features
+
+- **Color Channel Separation**: ITU-R BT.601 luminance conversion
+- **Registration Offset**: Integer pixel offsets per channel (simulates misregistration)
+- **Multiply Blend**: Authentic ink-on-paper effect
+- **Seeded Grain**: Mulberry32 PRNG for deterministic texture
+- **Debounced Application**: Smooth interactive performance
+
+### File Structure
+
+```
+demo-a/web/public/effects/
+├── index.js              # Effect pipeline dispatcher
+├── risograph.js          # Risograph implementation (JS)
+├── utils.js              # Shared utilities
+└── test-determinism.html # Browser determinism tests
+
+demo-b/renderer/src/effects/
+├── __init__.py           # Package init + pipeline function
+├── risograph.py          # Risograph implementation (Python)
+├── utils.py              # Shared utilities
+└── test_risograph_determinism.py  # Python determinism tests
+```
+
+### Testning
+
+```bash
+# Python tests
+cd demo-b/renderer/src/effects
+python -m pytest test_risograph_determinism.py -v
+
+# Browser tests
+# Open demo-a/web/public/effects/test-determinism.html
+```
+
+---
+
+## Phase 11 - Sweden Full Coverage ⬜ PLANERAD
+
+**Mål**: Utöka täckningen till hela Sverige med regionindelning.
+
+**Detaljerad plan**: [SWEDEN_FULL_COVERAGE_PLAN.md](SWEDEN_FULL_COVERAGE_PLAN.md)
+
+### Översikt
+
+| Region | Bbox (WGS84) | Yta (grader²) | Status |
+|--------|--------------|---------------|--------|
+| stockholm_core | 17.90-18.08, 59.32-59.35 | 0.005 | ✅ DONE |
+| stockholm_wide | 17.75-18.25, 59.28-59.40 | 0.06 | ✅ DONE |
+| svealand | 14.5-19.0, 58.5-61.0 | 11.25 | ✅ DONE |
+| götaland | 10.5-19.5, 55.3-59.0 | ~33 | ⬜ TODO |
+| norrland_syd | 14.0-20.0, 61.0-65.0 | ~24 | ⬜ TODO |
+| norrland_nord | 14.0-24.2, 65.0-69.1 | ~42 | ⬜ TODO |
+
+### Fas 11.1 - Förberedelser
+
+| Uppgift | Status |
+|---------|--------|
+| Skapa nya preset-definitioner i bbox_presets.json | ⬜ TODO |
+| Uppdatera preset_limits.json med nya begränsningar | ⬜ TODO |
+| Skapa build-scripts för nya regioner | ⬜ TODO |
+| Verifiera Copernicus-konto och credentials | ⬜ TODO |
+
+### Fas 11.2 - Götaland
+
+| Uppgift | Status |
+|---------|--------|
+| Klipp OSM för götaland | ⬜ TODO |
+| Generera OSM tiles | ⬜ TODO |
+| Ladda ner DEM (Copernicus GLO-30) | ⬜ TODO |
+| Generera hillshade (z8-13) | ⬜ TODO |
+| Extrahera konturer (50m, 100m) | ⬜ TODO |
+| Generera contour tiles | ⬜ TODO |
+| QA-verifiering | ⬜ TODO |
+
+### Fas 11.3 - Norrland Syd
+
+| Uppgift | Status |
+|---------|--------|
+| Samma steg som Götaland | ⬜ TODO |
+
+### Fas 11.4 - Norrland Nord
+
+| Uppgift | Status |
+|---------|--------|
+| Samma steg som Götaland | ⬜ TODO |
+
+### Fas 11.5 - Integration
+
+| Uppgift | Status |
+|---------|--------|
+| Uppdatera Martin-config | ⬜ TODO |
+| Uppdatera Nginx-routing | ⬜ TODO |
+| Uppdatera themeToStyle.js | ⬜ TODO |
+| Full QA över alla regioner | ⬜ TODO |
+| Dokumentation | ⬜ TODO |
+
+### Resurskrav
+
+| Resurs | Uppskattning |
+|--------|--------------|
+| Diskutrymme | ~150-200 GB |
+| Byggtid (totalt) | ~48-72 timmar |
+| RAM (Docker) | 16 GB rekommenderat |
+
+### Beslutspunkter
+
+Innan implementation måste följande beslutas:
+
+1. **Regionindelning vs Monolitisk**: Rekommendation är regionindelning
+2. **Zoom-nivåer**: z8-12 för hillshade, z8-11 för contours
+3. **DEM-källa**: GLO-30 (Copernicus)
+4. **Contour-intervall**: 50m och 100m för storskalig täckning
+5. **Prioriteringsordning**: Götaland först (mest befolkat)
+
+---
+
+## Phase 12 - Produktionsdeterminism som officiell produktgaranti 🟡 KORTSIKTIG
+
+**Mål**: Formalisera byte-identiska exports som ett explicit produktlöfte för reprints, serietryck och B2B-användning.
+
+**Syfte**: Stärka trovärdighet och differentiering utan att öka UI-komplexitet.
+
+**Avgränsning**: Ingen ny renderingsteknik, endast formalisering och automatisering av befintliga flöden.
+
+### Översikt
+
+Systemet garanterar redan deterministiska exports (SHA256 byte-identitet verifierad för Demo B). Denna phase formaliserar detta som en explicit produktgaranti och automatisering.
+
+### Fas 12.1 - CI-integration för determinism
+
+| Uppgift | Status |
+|---------|--------|
+| Determinism-tester i CI (render-jämförelser) | ⬜ TODO |
+| Render smoke tests för print-pipen | ⬜ TODO |
+| Automatiserad SHA256-verifiering per preset | ⬜ TODO |
+| Regression detection vid rendering-ändringar | ⬜ TODO |
+
+### Fas 12.2 - Dokumentation och garantier
+
+| Uppgift | Status |
+|---------|--------|
+| Produktgaranti-dokumentation (reprints, serietryck) | ⬜ TODO |
+| B2B-determinism SLA-dokumentation | ⬜ TODO |
+| Marknadsföringsmaterial för determinism-fördelar | ⬜ TODO |
+
+### Krav
+
+- ✅ Determinism redan verifierad (v1.1 Operational Hardening)
+- ⬜ CI-integration för kontinuerlig verifiering
+- ⬜ Explicit produktgaranti-dokumentation
+- ⬜ Automatiserad regression detection
+
+**Prioritet**: Hög (låg risk, direkt värde för B2B)
+
+---
+
+## Phase 13 - Kuraterade temakollektioner 🟡 KORTSIKTIG
+
+**Mål**: Utöka befintliga "gallery ready"-teman med nya kuraterade varianter (säsongs-, material- eller limited-edition-inspirerade).
+
+**Syfte**: Öka kommersiell attraktionskraft och återköpsfrekvens.
+
+**Avgränsning**: Inga användardefinierade färgpaletter. Teman paketeras som färdiga stilar i UI (ej fri färgkonfiguration).
+
+### Översikt
+
+Systemet har redan 24 teman implementerade. Denna phase fokuserar på att utöka med kuraterade kollektioner som är designade för specifika användningsfall eller säsonger.
+
+### Fas 13.1 - Kollektionsdesign
+
+| Uppgift | Status |
+|---------|--------|
+| Säsongsteman (vår, sommar, höst, vinter) | ⬜ TODO |
+| Material-inspirerade teman (trä, metall, papper) | ⬜ TODO |
+| Limited-edition varianter | ⬜ TODO |
+| Kuraterad "gallery ready"-kollektion | ⬜ TODO |
+
+### Fas 13.2 - UI-integration
+
+| Uppgift | Status |
+|---------|--------|
+| Temakollektioner som separata kategorier i UI | ⬜ TODO |
+| Kollektionsvisning i Print Editor | ⬜ TODO |
+| Preset-paketering per kollektion | ⬜ TODO |
+
+### Krav
+
+- ✅ Befintliga 24 teman som bas
+- ⬜ Nya kuraterade teman (4-8 st)
+- ⬜ UI-kategorisering av kollektioner
+- ⬜ Preset-paketering per kollektion
+
+**Prioritet**: Medel (byggt på befintlig infrastruktur)
+
+---
+
+## Phase 14 - Kontrollerade label- och POI-profiler 🟡 STRATEGISK
+
+**Mål**: Införa ett litet antal hårt kuraterade presets för labels och POI (Points of Interest) som möjliggör personalisering utan att urholka estetik eller visuell stabilitet.
+
+**Syfte**: Möjliggöra personalisering utan att urholka estetik eller visuell stabilitet.
+
+**Avgränsning**: Inga fria toggles per lager, inga contour-labels. "Labels off" förblir default.
+
+### Översikt
+
+Systemet har redan layer toggles implementerade (Phase 7). Denna phase lägger till kontrollerade label- och POI-profiler som är deterministiska och följer tydliga estetiska constraints.
+
+### Fas 14.1 - Profildefinitioner
+
+| Uppgift | Status |
+|---------|--------|
+| Minimal gatuetikett-profil | ⬜ TODO |
+| Utvalda landmärken-profil | ⬜ TODO |
+| Estetiska constraints per profil | ⬜ TODO |
+| Determinism-verifiering per profil | ⬜ TODO |
+
+### Fas 14.2 - UI-integration
+
+| Uppgift | Status |
+|---------|--------|
+| Label-profil selector i Print Editor | ⬜ TODO |
+| Preview av label-profil | ⬜ TODO |
+| Preset-integration (label-profil i preset) | ⬜ TODO |
+
+### Krav
+
+- ✅ Layer toggles redan implementerade (Phase 7)
+- ⬜ Kuraterade label-profiler (2-3 st)
+- ⬜ Estetiska constraints dokumenterade
+- ⬜ Determinism-verifiering per profil
+- ⬜ UI-integration för profilval
+
+**Prioritet**: Medel (strategisk, ny funktionalitet)
+
+---
+
+## Phase 15 - Stegvis geografisk expansion 🟡 STRATEGISK
+
+**Mål**: Utöka från nuvarande Stockholm-bboxar till fler fördefinierade städer/bbox-presets.
+
+**Syfte**: Öka marknadsräckvidd med bibehållen produktionskontroll.
+
+**Avgränsning**: Ingen fri ritning av bounding box i första steget. Använd befintliga Stockholm-presets som kvalitetsmall.
+
+### Översikt
+
+Phase 11 fokuserar på regional täckning (Svealand, Götaland, Norrland). Denna phase fokuserar på stadsnivå med fördefinierade bbox-presets för specifika städer.
+
+### Fas 15.1 - Stadspreset-definitioner
+
+| Uppgift | Status |
+|---------|--------|
+| Identifiera prioriterade städer (Göteborg, Malmö, Uppsala, etc.) | ⬜ TODO |
+| Bbox-presets per stad (core + wide varianter) | ⬜ TODO |
+| Kvalitetsmall baserad på Stockholm-presets | ⬜ TODO |
+| Preset_limits.json uppdateringar per stad | ⬜ TODO |
+
+### Fas 15.2 - Data-generering per stad
+
+| Uppgift | Status |
+|---------|--------|
+| OSM-tiles per stad | ⬜ TODO |
+| DEM-täckning per stad | ⬜ TODO |
+| Hillshade-tiles per stad | ⬜ TODO |
+| Contour-tiles per stad | ⬜ TODO |
+| QA-verifiering per stad | ⬜ TODO |
+
+### Fas 15.3 - UI-integration
+
+| Uppgift | Status |
+|---------|--------|
+| Stadspreset-selector i Print Editor | ⬜ TODO |
+| Bbox-preset dropdown med städer | ⬜ TODO |
+| Preset-visualisering per stad | ⬜ TODO |
+
+### Krav
+
+- ✅ Stockholm-presets som kvalitetsmall
+- ✅ Befintlig build-pipeline (Phase 6)
+- ⬜ Stadspreset-definitioner (5-10 städer)
+- ⬜ Data-generering per stad
+- ⬜ UI-integration för stadspreset-val
+
+**Prioritet**: Medel (strategisk, högre komplexitet, bygger på Phase 11)
+
+---
+
 ## Framtida förbättringar (ej schemalagda)
 
 ### v1.1 — Operational Hardening ✅ IMPLEMENTED
@@ -878,13 +1219,87 @@ Design- och policydokument: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HAR
 
 ## Implementation Order (rekommenderad)
 
-1. **Phase 7** - UI Layer Controls (grundläggande interaktivitet)
-2. **Phase 8** - Print Composition System (professionella exports)
-3. **Phase 9** - Preset Export System (användarvänlighet)
+### Kortsiktiga (låg risk)
+
+1. **Phase 7** - UI Layer Controls (grundläggande interaktivitet) ✅ DONE
+2. **Phase 8** - Print Composition System (professionella exports) ✅ DONE
+3. **Phase 9** - Preset Export System (användarvänlighet) ✅ DONE
+4. **Phase 12** - Produktionsdeterminism som officiell produktgaranti (låg risk, direkt B2B-värde)
+5. **Phase 13** - Kuraterade temakollektioner (byggt på befintlig infrastruktur)
+
+### Strategiska (medel-hög komplexitet)
+
+6. **Phase 14** - Kontrollerade label- och POI-profiler (ny funktionalitet)
+7. **Phase 11** - Sweden Full Coverage (regional expansion)
+8. **Phase 15** - Stegvis geografisk expansion (stadspresets)
 
 ---
 
 ## Changelog
+
+### 2025-12-27 (Gallery UI Component)
+
+- ✅ **Phase 10.7 - Gallery UI Component** KOMPLETT:
+  - Gallery UI Contract v1.0 dokumenterad
+  - Standalone reference implementation (gallery.js, gallery.css, gallery.html)
+  - Full ARIA accessibility (role=listbox, role=option, aria-selected, keyboard nav)
+  - CSS-only responsive columns (media queries at 768/1024/1280px)
+  - setLoading() API för loading state
+  - Editor integration template (editor-integration.js)
+  - Scandinavian design med CSS custom properties
+  - Browser verification (partial - Playwright MCP timeout issues)
+  - Nya dokumentfiler:
+    - `docs/GALLERY_UI_CONTRACT.md` - Full API & styling contract
+    - `docs/GALLERY_TEST_REPORT.md` - Test results and manual checklist
+
+### 2025-12-27 (Roadmap-initiativ - Fyra nya epics)
+
+- ⬜ **Phase 12 - Produktionsdeterminism som officiell produktgaranti** planerad:
+  - Formalisering av byte-identiska exports som produktlöfte
+  - CI-integration för determinism-tester och render smoke tests
+  - Produktgaranti-dokumentation för reprints, serietryck och B2B
+  - Prioritet: Hög (låg risk, direkt värde för B2B)
+- ⬜ **Phase 13 - Kuraterade temakollektioner** planerad:
+  - Utökning av befintliga teman med säsongs-, material- och limited-edition-varianter
+  - UI-kategorisering av temakollektioner
+  - Preset-paketering per kollektion
+  - Prioritet: Medel (byggt på befintlig infrastruktur)
+- ⬜ **Phase 14 - Kontrollerade label- och POI-profiler** planerad:
+  - Hårt kuraterade presets för labels (minimal gatuetikett, utvalda landmärken)
+  - Estetiska constraints och determinism-verifiering
+  - UI-integration för profilval
+  - Prioritet: Medel (strategisk, ny funktionalitet)
+- ⬜ **Phase 15 - Stegvis geografisk expansion** planerad:
+  - Utökning till fler fördefinierade städer/bbox-presets (Göteborg, Malmö, Uppsala, etc.)
+  - Användning av Stockholm-presets som kvalitetsmall
+  - Stadspreset-selector i Print Editor
+  - Prioritet: Medel (strategisk, högre komplexitet)
+
+### 2025-12-27 (Fas 3b - Effect Pipeline / Risograph)
+
+- ✅ **Fas 3b - Effect Pipeline** KOMPLETT:
+  - Post-render Effect Pipeline architecture implementerad
+  - Risograph-effekt i Demo A (JavaScript/Canvas) och Demo B (Python/PIL)
+  - Determinism verifierad (same input + seed = identical output)
+  - Mulberry32 PRNG för seeded grain-textur
+  - Debounced effect application för smooth interaktivitet
+  - Nya filer:
+    - `demo-a/web/public/effects/` (utils.js, risograph.js, index.js, test-determinism.html)
+    - `demo-b/renderer/src/effects/` (__init__.py, risograph.py, utils.py, test_risograph_determinism.py)
+    - `themes/riso-red-cyan.json` - Risograph-enabled theme
+    - `config/export_presets/A2_Riso_RedCyan_v1.json` - Export preset
+    - `docs/EFFECT_PIPELINE_ARCHITECTURE.md` - Architecture documentation
+  - Tester: Python 6/6 PASS, Browser 5/5 PASS
+
+### 2025-12-27 (Phase 11 - Sweden Full Coverage Plan)
+
+- ⬜ **Phase 11 - Sweden Full Coverage** planerad:
+  - Detaljerad plan skapad: [SWEDEN_FULL_COVERAGE_PLAN.md](SWEDEN_FULL_COVERAGE_PLAN.md)
+  - Regionindelning: götaland, norrland_syd, norrland_nord
+  - Uppskattad diskåtgång: 150-200 GB
+  - Uppskattad byggtid: 48-72 timmar
+  - Beslutspunkter definierade
+  - Risker och mitigationer dokumenterade
 
 ### 2025-12-27 (New Themes & Presets - Batch 2)
 

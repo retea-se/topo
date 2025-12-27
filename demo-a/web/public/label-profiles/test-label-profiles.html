@@ -210,17 +210,17 @@
                         // Wait a bit for all layers to be fully loaded
                         setTimeout(() => {
                             updateStatus('Karta laddad. Kontrollerar label-layers...');
-                            
+
                             // Debug: List all layers
                             const style = map.getStyle();
                             console.log('All layers in style:', style.layers.map(l => ({ id: l.id, type: l.type, sourceLayer: l['source-layer'] })));
-                            
+
                             // Check if label layers exist
                             if (window.LabelProfiles) {
                                 const labelLayers = window.LabelProfiles.identifyLabelLayers(map);
                                 console.log('Identified label layers:', labelLayers);
-                                
-                                if (labelLayers.streetNames.length === 0 && 
+
+                                if (labelLayers.streetNames.length === 0 &&
                                     labelLayers.placeNames.length === 0 &&
                                     labelLayers.poiNames.length === 0 &&
                                     labelLayers.waterNames.length === 0 &&

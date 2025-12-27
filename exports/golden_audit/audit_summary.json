@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-12-27T09:57:53.783Z",
+  "timestamp": "2025-12-27T15:20:48.395Z",
   "total_cases": 18,
   "cases": [
     {
@@ -9,7 +9,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 9824915,
+      "export_size_bytes": 9824806,
       "errors": 0,
       "fatal_error": null
     },
@@ -31,7 +31,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 9952428,
+      "export_size_bytes": 9952327,
       "errors": 0,
       "fatal_error": null
     },
@@ -53,7 +53,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 9947343,
+      "export_size_bytes": 9947257,
       "errors": 0,
       "fatal_error": null
     },
@@ -75,7 +75,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 5128745,
+      "export_size_bytes": 5129334,
       "errors": 0,
       "fatal_error": null
     },
@@ -97,7 +97,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 5201941,
+      "export_size_bytes": 5202529,
       "errors": 0,
       "fatal_error": null
     },
@@ -119,7 +119,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 5201992,
+      "export_size_bytes": 5201901,
       "errors": 0,
       "fatal_error": null
     },
@@ -141,7 +141,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 5670274,
+      "export_size_bytes": 5670190,
       "errors": 0,
       "fatal_error": null
     },
@@ -163,7 +163,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 5668011,
+      "export_size_bytes": 5667928,
       "errors": 0,
       "fatal_error": null
     },
@@ -185,7 +185,7 @@
       "variant": "A",
       "preview_captured": true,
       "export_captured": true,
-      "export_size_bytes": 5677474,
+      "export_size_bytes": 5677390,
       "errors": 0,
       "fatal_error": null
     },

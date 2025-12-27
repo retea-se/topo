@@ -1,0 +1,63 @@
+{
+  "name": "Riso Red-Cyan",
+  "background": "#f5f0e6",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "artistic_print"
+  },
+  "hillshade": {
+    "opacity": 0.18,
+    "gamma": 1.0,
+    "contrast": 1.1,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#3a5a7c",
+    "stroke": "#2a4a6c",
+    "strokeWidth": 0.8
+  },
+  "parks": {
+    "fill": "#6b8b6b",
+    "stroke": "#4a6a4a",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#2a2a2a",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 1.0
+    }
+  },
+  "buildings": {
+    "fill": "#4a4a4a",
+    "stroke": "#2a2a2a",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#5a5a5a",
+    "strokeWidth": {
+      "major": 0.9,
+      "minor": 0.4
+    },
+    "opacity": {
+      "major": 0.7,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  },
+  "effects": {
+    "risograph": {
+      "enabled": true,
+      "channels": [
+        { "color": "#e84855", "offset": { "x": 2, "y": 1 } },
+        { "color": "#2d9cdb", "offset": { "x": -1, "y": 2 } }
+      ],
+      "grain": {
+        "opacity": 0.06
+      },
+      "blendMode": "multiply"
+    }
+  }
+}

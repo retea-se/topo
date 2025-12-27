@@ -1,12 +1,132 @@
 [
   {
     "type": "warning",
-    "text": "[GroupMarkerNotSet(crbug.com/242999)!:A840190064280000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.",
-    "time": "2025-12-27T10:01:32.275Z"
+    "text": "[GroupMarkerNotSet(crbug.com/242999)!:A800190024380000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.",
+    "time": "2025-12-27T15:24:36.667Z"
   },
   {
     "type": "log",
     "text": "Map loaded",
-    "time": "2025-12-27T10:01:32.286Z"
+    "time": "2025-12-27T15:24:36.679Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Called, map: true currentTheme: true",
+    "time": "2025-12-27T15:24:36.684Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Starting style change",
+    "time": "2025-12-27T15:24:36.684Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Calling map.setStyle()",
+    "time": "2025-12-27T15:24:36.727Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Style object keys: [version, sources, layers, metadata]",
+    "time": "2025-12-27T15:24:36.727Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Current map style loaded: false",
+    "time": "2025-12-27T15:24:36.727Z"
+  },
+  {
+    "type": "log",
+    "text": "Effect pipeline initialized",
+    "time": "2025-12-27T15:24:36.738Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Called, map: true currentTheme: true",
+    "time": "2025-12-27T15:24:37.612Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Style change already in progress, queuing",
+    "time": "2025-12-27T15:24:37.612Z"
+  },
+  {
+    "type": "log",
+    "text": "[Theme Change] Theme selected: blueprint-muted",
+    "time": "2025-12-27T15:24:38.250Z"
+  },
+  {
+    "type": "log",
+    "text": "[Theme Change] Theme loaded, currentTheme: {name: BlueprintMuted, background: #f8f8f5, meta: Object, hillshade: Object, water: Object}",
+    "time": "2025-12-27T15:24:38.389Z"
+  },
+  {
+    "type": "log",
+    "text": "[Theme Change] Calling updateMapStyle(), styleChangeInProgress: true",
+    "time": "2025-12-27T15:24:38.391Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Called, map: true currentTheme: true",
+    "time": "2025-12-27T15:24:38.392Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Style change already in progress, queuing",
+    "time": "2025-12-27T15:24:38.395Z"
+  },
+  {
+    "type": "log",
+    "text": "[Theme Change] updateMapStyle() completed",
+    "time": "2025-12-27T15:24:38.395Z"
+  },
+  {
+    "type": "warning",
+    "text": "[updateMapStyle] style.load event did not fire within 2s, manually updating",
+    "time": "2025-12-27T15:24:38.739Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Performing style update",
+    "time": "2025-12-27T15:24:38.739Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Applying pending style change",
+    "time": "2025-12-27T15:24:38.740Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Called, map: true currentTheme: true",
+    "time": "2025-12-27T15:24:38.870Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Starting style change",
+    "time": "2025-12-27T15:24:38.874Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Calling map.setStyle()",
+    "time": "2025-12-27T15:24:39.037Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Style object keys: [version, sources, layers, metadata]",
+    "time": "2025-12-27T15:24:39.037Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Current map style loaded: true",
+    "time": "2025-12-27T15:24:39.037Z"
+  },
+  {
+    "type": "warning",
+    "text": "[updateMapStyle] style.load event did not fire within 2s, manually updating",
+    "time": "2025-12-27T15:24:41.048Z"
+  },
+  {
+    "type": "log",
+    "text": "[updateMapStyle] Performing style update",
+    "time": "2025-12-27T15:24:41.048Z"
   }
 ]

@@ -61,7 +61,7 @@ def test_valid_preset_passes():
     }
 
     auditor = PresetAuditor()
-    
+
     # Mock the config loading
     with tempfile.TemporaryDirectory() as tmpdir:
         # Create minimal schema

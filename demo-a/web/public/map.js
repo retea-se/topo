@@ -3,6 +3,8 @@ let map;
 let currentTheme = null;
 let currentPreset = 'stockholm_core';
 let currentRenderMode = 'screen';
+let currentPresetId = null; // For deterministic effect seeding
+let debouncedEffectApply = null; // Debounced effect pipeline
 
 async function loadTheme(name) {
   try {
@@ -164,7 +166,55 @@ Promise.all([
       if (initialTheme) {
         await updateMapStyle(initialTheme, currentPreset, currentRenderMode);
       }
+
+      // Initialize effect pipeline
+      setupEffectPipeline();
     });
+
+    // Setup effect pipeline for post-render effects
+    function setupEffectPipeline() {
+      if (!window.EffectPipeline) {
+        console.log('Effect pipeline not loaded');
+        return;
+      }
+
+      // Create debounced effect applier (100ms delay for smooth interaction)
+      debouncedEffectApply = window.EffectPipeline.createDebounced(100);
+
+      // Apply effects after map finishes rendering
+      map.on('idle', () => {
+        applyEffectsToCanvas();
+      });
+
+      console.log('Effect pipeline initialized');
+    }
+
+    // Apply effects to the map canvas
+    function applyEffectsToCanvas() {
+      if (!currentTheme || !currentTheme.effects) {
+        return;
+      }
+
+      if (!window.EffectPipeline || !window.EffectPipeline.hasEnabledEffects(currentTheme)) {
+        return;
+      }
+
+      const canvas = map.getCanvas();
+      if (!canvas) {
+        return;
+      }
+
+      // Generate deterministic seed from preset/theme
+      const seed = currentPresetId || `${currentPreset}_${currentTheme.name || 'default'}`;
+
+      // Apply effects (debounced)
+      if (debouncedEffectApply) {
+        debouncedEffectApply(canvas, currentTheme.effects, seed);
+      }
+    }
+
+    // Expose for editor.js to trigger effect application
+    window.applyMapEffects = applyEffectsToCanvas;
 
     // Theme selector
     document.getElementById('theme-select').addEventListener('change', async (e) => {

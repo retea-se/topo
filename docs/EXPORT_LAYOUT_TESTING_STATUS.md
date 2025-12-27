@@ -1,7 +1,7 @@
 # Export Layout Testing Status
 
-**Datum**: 2025-01-27  
-**Branch**: `feature/layout-designs`  
+**Datum**: 2025-01-27
+**Branch**: `feature/layout-designs`
 **Status**: ✅ **COMPLETE** - Alla layouts fungerar i export
 
 ---

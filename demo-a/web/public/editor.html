@@ -17,6 +17,10 @@
     <script src="/effects/utils.js"></script>
     <script src="/effects/risograph.js"></script>
     <script src="/effects/index.js"></script>
+    <!-- Gallery MVP (Phase 1) -->
+    <link rel="stylesheet" href="/gallery-standalone/gallery.css">
+    <script src="/store.js"></script>
+    <script src="/gallery-standalone/gallery.js"></script>
     <style>
         /* Nordic/Scandinavian Design System */
         :root {
@@ -869,6 +873,8 @@
                     <select id="theme-select">
                         <option value="paper">Loading...</option>
                     </select>
+                    <!-- Theme Gallery (Phase 1 - enabled via ?gallery=1) -->
+                    <div id="theme-gallery-container" class="theme-gallery theme-gallery--hidden"></div>
                 </div>
                 <div class="form-group" id="layers-group">
                     <label class="field-label" id="layers-label"><span data-i18n="layers">Layers</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
