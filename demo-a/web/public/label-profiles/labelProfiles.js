@@ -95,6 +95,7 @@ function applyLabelProfile(map, profile) {
   }
 
   const labelLayers = identifyLabelLayers(map);
+  console.log(`[LabelProfiles] Applying profile "${profile}" to layers:`, labelLayers);
 
   // Om inga label-layers hittades, försök skapa dem dynamiskt
   if (labelLayers.streetNames.length === 0 &&
@@ -190,13 +191,18 @@ function applyLabelProfile(map, profile) {
       }
     });
 
-    // Visa place/poi/water/park labels
-    [...labelLayers.placeNames, ...labelLayers.poiNames,
-     ...labelLayers.waterNames, ...labelLayers.parkNames].forEach(layerId => {
-      if (map.getLayer(layerId)) {
-        map.setLayoutProperty(layerId, 'visibility', 'visible');
-      }
-    });
+        // Visa place/poi/water/park labels
+        const landmarkLayers = [...labelLayers.placeNames, ...labelLayers.poiNames,
+         ...labelLayers.waterNames, ...labelLayers.parkNames];
+        console.log(`[LabelProfiles] Landmarks profile: Found ${landmarkLayers.length} landmark layers to show`);
+        landmarkLayers.forEach(layerId => {
+          if (map.getLayer(layerId)) {
+            console.log(`[LabelProfiles] Setting ${layerId} to visible`);
+            map.setLayoutProperty(layerId, 'visibility', 'visible');
+          } else {
+            console.warn(`[LabelProfiles] Layer ${layerId} not found in map`);
+          }
+        });
     return;
   }
 

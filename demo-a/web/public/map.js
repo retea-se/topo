@@ -51,7 +51,7 @@ async function updateMapStyle(theme, preset, renderMode) {
       // Debug: Log layers after style is loaded
       const loadedStyle = map.getStyle();
       console.log('Style layers after style.load:', loadedStyle.layers.map(l => ({ id: l.id, type: l.type })));
-      
+
       // Update toggle states based on coverage
       if (window.updateToggleStates) {
         window.updateToggleStates(window.currentCoverage);

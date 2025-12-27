@@ -21,8 +21,22 @@ let isPreviewMode = false;
 const urlParams = new URLSearchParams(window.location.search);
 const useGalleryUI = urlParams.get('gallery') === '1';
 
+// Feature flag for Editor 2.0 (Phase 2A)
+// Enable via URL: ?editor=2
+const useEditorV2 = urlParams.get('editor') === '2';
+
+// Feature flag for Theme Selector UI (Phase 15)
+// Enable via URL: ?collections=1
+const useThemeSelectorUI = urlParams.get('collections') === '1';
+
+// Editor 2.0 state
+let sectionNav = null;
+
 // Gallery state
 let galleryInitialized = false;
+
+// Theme Selector state (Phase 15)
+let themeSelectorInitialized = false;
 let editorGallery = null;
 
 // Internationalization
@@ -264,6 +278,11 @@ function setLanguage(lang) {
             btn.classList.add('active');
         }
     });
+
+    // Update Editor 2.0 section navigation language
+    if (sectionNav) {
+        sectionNav.setLanguage(lang);
+    }
 
     // Update status messages that might be displayed
     const statusTextEl = document.getElementById('status-text');
@@ -858,6 +877,108 @@ async function handleGalleryThemeSelect(themeId) {
     }
 
     console.log('[Gallery] Theme applied:', themeId);
+}
+
+/**
+ * Initialize Theme Selector UI (Phase 15)
+ * @param {Array} themes - Theme catalog from API
+ */
+async function initThemeSelector(themes) {
+    if (!useThemeSelectorUI) {
+        console.log('[ThemeSelector] Feature flag disabled, using fallback');
+        return;
+    }
+
+    if (!window.ThemeSelector || !window.EditorStore) {
+        console.error('[ThemeSelector] ThemeSelector or EditorStore not loaded');
+        return;
+    }
+
+    const container = document.getElementById('theme-gallery-container');
+    if (!container) {
+        console.error('[ThemeSelector] Container #theme-gallery-container not found');
+        return;
+    }
+
+    // Initialize store with themes
+    window.EditorStore.setThemes(themes);
+
+    // Determine current preset ID for default collection
+    const currentPresetId = selectedExportPreset || null;
+
+    // Initialize ThemeSelector
+    await window.ThemeSelector.init(container, {
+        presetId: currentPresetId,
+        onThemeSelect: handleThemeSelectorSelect
+    });
+
+    // Hide dropdown, show selector
+    if (elements.themeSelect) {
+        elements.themeSelect.style.display = 'none';
+    }
+    container.classList.remove('theme-gallery--hidden');
+
+    themeSelectorInitialized = true;
+    console.log('[ThemeSelector] Initialized with', themes.length, 'themes');
+}
+
+/**
+ * Handle theme selection from ThemeSelector (Phase 15)
+ * @param {string} themeId - Selected theme ID
+ */
+async function handleThemeSelectorSelect(themeId) {
+    console.log('[ThemeSelector] Theme selected:', themeId);
+
+    // Check cache first
+    let themeData = window.EditorStore.getCachedTheme(themeId);
+
+    if (!themeData) {
+        // Show loading state
+        window.EditorStore.setLoading(true, themeId);
+
+        // Load theme
+        themeData = await loadTheme(themeId);
+
+        if (!themeData) {
+            console.error('[ThemeSelector] Failed to load theme:', themeId);
+            window.EditorStore.setLoading(false, null);
+            const errorMsg = currentLanguage === 'sv'
+                ? `Fel vid laddning av tema: ${themeId}`
+                : `Error loading theme: ${themeId}`;
+            setStatus(errorMsg, 'error');
+            return;
+        }
+
+        // Cache the loaded theme
+        window.EditorStore.cacheTheme(themeId, themeData);
+    }
+
+    // Update global state (for compatibility with existing code)
+    currentTheme = themeData;
+
+    // Update store
+    window.EditorStore.setTheme(themeId);
+    window.EditorStore.setLoading(false, null);
+
+    // Sync dropdown (for consistency)
+    if (elements.themeSelect) {
+        elements.themeSelect.value = themeId;
+    }
+
+    // Update map
+    await updateMapStyle();
+
+    // Update preview if in preview mode
+    if (isPreviewMode) {
+        setTimeout(() => {
+            updatePrintComposition();
+        }, 100);
+    }
+
+    // Handle field change for preset modification detection
+    handleFieldChange();
+
+    console.log('[ThemeSelector] Theme applied:', themeId);
 }
 
 /**
@@ -2022,6 +2143,11 @@ async function applyExportPreset(presetId) {
         presetModified = false;
         presetOriginalValues = null;
 
+        // Reset ThemeSelector to all-themes (Phase 15)
+        if (themeSelectorInitialized && window.ThemeSelector) {
+            window.ThemeSelector.setPreset(null);
+        }
+
         unlockAllFields();
         updatePresetStatus(null);
         clearValidationErrors();
@@ -2037,6 +2163,11 @@ async function applyExportPreset(presetId) {
     selectedExportPreset = presetId;
     selectedExportPresetData = presetData;
     presetModified = false;
+
+    // Update ThemeSelector with new preset (Phase 15)
+    if (themeSelectorInitialized && window.ThemeSelector) {
+        window.ThemeSelector.setPreset(presetId);
+    }
 
     // Store original values for modification detection
     presetOriginalValues = {
@@ -2475,6 +2606,67 @@ function handleFieldChange() {
     validatePreset();
 }
 
+// =============================================================================
+// Editor 2.0 - Section Navigation (Phase 2A)
+// =============================================================================
+
+/**
+ * Initialize Editor 2.0 section navigation
+ * Called only when ?editor=2 flag is present
+ */
+function initSectionNav() {
+    if (!useEditorV2) return;
+
+    // Add editor-v2 class to body for CSS grid layout
+    document.body.classList.add('editor-v2');
+
+    // Check for createSectionNav global
+    if (typeof window.createSectionNav !== 'function') {
+        console.error('[Editor 2.0] createSectionNav not found. Make sure section-nav.js is loaded.');
+        return;
+    }
+
+    // Find container
+    const container = document.getElementById('section-nav-container');
+    if (!container) {
+        console.error('[Editor 2.0] #section-nav-container not found in DOM');
+        return;
+    }
+
+    // Create section navigation
+    sectionNav = window.createSectionNav({
+        container: container,
+        initialSection: 'style', // Start with style section (most common)
+        onSectionChange: (sectionId, previousSection) => {
+            showSection(sectionId);
+        }
+    });
+
+    // Set initial language
+    sectionNav.setLanguage(currentLanguage);
+
+    // Show initial section
+    showSection('style');
+
+    console.log('[Editor 2.0] Section navigation initialized');
+}
+
+/**
+ * Show a specific section, hide others
+ * @param {string} sectionId - Section ID to show (map, labels, style, frames, size, export)
+ */
+function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section-content[data-section]');
+
+    sections.forEach(section => {
+        const isActive = section.dataset.section === sectionId;
+        section.setAttribute('data-active', isActive ? 'true' : 'false');
+        section.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+    });
+
+    console.log('[Editor 2.0] Showing section:', sectionId);
+}
+
 /**
  * Initialize the editor
  */
@@ -2482,6 +2674,9 @@ async function init() {
     try {
         // Initialize translations first
         updateTranslations();
+
+        // Initialize Editor 2.0 section navigation (if enabled)
+        initSectionNav();
 
         const [config, themes] = await Promise.all([
             fetch('/api/config').then(r => r.json()),
@@ -2506,6 +2701,9 @@ async function init() {
 
         // Initialize new gallery UI if enabled
         initGalleryUI(themes);
+
+        // Initialize Theme Selector UI if enabled (Phase 15)
+        await initThemeSelector(themes);
 
         // Load initial theme
         currentTheme = await loadTheme('paper');
