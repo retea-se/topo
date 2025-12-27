@@ -1,0 +1,462 @@
+{
+  "timestamp": "2025-12-27T10:46:42.145379",
+  "total_cases": 18,
+  "compared": 18,
+  "same_size": 0,
+  "thresholds": {
+    "fail": 0.5,
+    "warn": 0.1
+  },
+  "results": [
+    {
+      "case_id": "A1_Terrain_v1/bold/variant_A",
+      "preset": "A1_Terrain_v1",
+      "template": "bold",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          4967
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A1_Terrain_v1/bold/variant_B",
+      "preset": "A1_Terrain_v1",
+      "template": "bold",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          4967
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A1_Terrain_v1/classic/variant_A",
+      "preset": "A1_Terrain_v1",
+      "template": "classic",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          4967
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A1_Terrain_v1/classic/variant_B",
+      "preset": "A1_Terrain_v1",
+      "template": "classic",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          4967
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A1_Terrain_v1/minimal/variant_A",
+      "preset": "A1_Terrain_v1",
+      "template": "minimal",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          4967
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A1_Terrain_v1/minimal/variant_B",
+      "preset": "A1_Terrain_v1",
+      "template": "minimal",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          4967
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A2_Paper_v1/bold/variant_A",
+      "preset": "A2_Paper_v1",
+      "template": "bold",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 2480)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          2480
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A2_Paper_v1/bold/variant_B",
+      "preset": "A2_Paper_v1",
+      "template": "bold",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 2480)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          2480
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A2_Paper_v1/classic/variant_A",
+      "preset": "A2_Paper_v1",
+      "template": "classic",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 2480)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          2480
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A2_Paper_v1/classic/variant_B",
+      "preset": "A2_Paper_v1",
+      "template": "classic",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 2480)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          2480
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A2_Paper_v1/minimal/variant_A",
+      "preset": "A2_Paper_v1",
+      "template": "minimal",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 2480)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          2480
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A2_Paper_v1/minimal/variant_B",
+      "preset": "A2_Paper_v1",
+      "template": "minimal",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (3508, 2480)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          3508,
+          2480
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A3_Blueprint_v1/bold/variant_A",
+      "preset": "A3_Blueprint_v1",
+      "template": "bold",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (2480, 1754)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          2480,
+          1754
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A3_Blueprint_v1/bold/variant_B",
+      "preset": "A3_Blueprint_v1",
+      "template": "bold",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (2480, 1754)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          2480,
+          1754
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A3_Blueprint_v1/classic/variant_A",
+      "preset": "A3_Blueprint_v1",
+      "template": "classic",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (2480, 1754)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          2480,
+          1754
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A3_Blueprint_v1/classic/variant_B",
+      "preset": "A3_Blueprint_v1",
+      "template": "classic",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (2480, 1754)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          2480,
+          1754
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A3_Blueprint_v1/minimal/variant_A",
+      "preset": "A3_Blueprint_v1",
+      "template": "minimal",
+      "variant": "A",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (2480, 1754)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          2480,
+          1754
+        ]
+      },
+      "status": "N/A"
+    },
+    {
+      "case_id": "A3_Blueprint_v1/minimal/variant_B",
+      "preset": "A3_Blueprint_v1",
+      "template": "minimal",
+      "variant": "B",
+      "preview_exists": true,
+      "export_exists": true,
+      "comparison": {
+        "compared": true,
+        "error": "Size mismatch: (1280, 720) vs (2480, 1754)",
+        "diff_percent": 100.0,
+        "diff_pixels": null,
+        "total_pixels": null,
+        "dimensions_match": false,
+        "img1_size": [
+          1280,
+          720
+        ],
+        "img2_size": [
+          2480,
+          1754
+        ]
+      },
+      "status": "N/A"
+    }
+  ]
+}

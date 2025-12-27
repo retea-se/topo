@@ -1,0 +1,31 @@
+{
+  "test_id": "A3_Blueprint_v1_bold_B",
+  "preset": "A3_Blueprint_v1",
+  "bbox_preset": "stockholm_core",
+  "theme": "blueprint-muted",
+  "template": "bold",
+  "variant": "B",
+  "width_mm": 420,
+  "height_mm": 297,
+  "dpi": 150,
+  "title": "Stockholm Blueprint",
+  "subtitle": "Technical Map",
+  "show_scale": false,
+  "show_attribution": false,
+  "timestamp": "2025-12-27T10:02:14.619Z",
+  "results": {
+    "editor_loaded": true,
+    "preset_selected": true,
+    "theme_selected": true,
+    "paper_configured": true,
+    "template_selected": true,
+    "title_set": true,
+    "toggles_set": true,
+    "preview_activated": true,
+    "preview_captured": true,
+    "export_captured": true
+  },
+  "preview_file": "preview.png",
+  "export_file": "export.png",
+  "export_size_bytes": 5201045
+}

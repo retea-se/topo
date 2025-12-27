@@ -284,10 +284,19 @@ let currentLayoutTemplate = 'classic';
  * Generate CSS for frame style with optional patterns and glow
  */
 function getFrameStyleCSS(template) {
-    let css = `border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};`;
+    let css = '';
     
-    // Note: Glow effects are handled via CSS classes, not inline CSS
-    // This is set separately on the overlay element
+    // Handle double frame style specially (uses outline for inner border)
+    if (template.frameStyle === 'double') {
+        const outerWidth = template.frameWidth || 4;
+        css = `border: ${outerWidth}px solid ${template.frameColor};`;
+        // CSS variable for double frame inner color (set via style attribute)
+        css += ` --frame-inner-color: ${template.frameColor};`;
+    } else if (template.frameStyle === 'none') {
+        css = `border: none;`;
+    } else {
+        css = `border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};`;
+    }
     
     return css;
 }
@@ -963,6 +972,13 @@ function updatePrintComposition() {
     
     // Build frame CSS with helper function
     let frameCSS = getFrameStyleCSS(template);
+    
+    // Add double frame class if needed
+    if (template.frameStyle === 'double') {
+        overlay.classList.add('frame-double');
+        // Set CSS variable for inner border color
+        overlay.style.setProperty('--frame-inner-color', template.frameColor);
+    }
     
     // Add grid pattern class if specified
     if (template.framePattern === 'grid') {

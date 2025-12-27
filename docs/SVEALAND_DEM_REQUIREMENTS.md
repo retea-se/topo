@@ -80,3 +80,5 @@ After DEM is downloaded:
 2. Extract contours: `python3 /app/src/extract_contours.py --preset svealand`
 3. Generate tiles (see build scripts)
 
+
+

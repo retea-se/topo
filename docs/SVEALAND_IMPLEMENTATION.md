@@ -113,3 +113,5 @@ När QA körs kommer artefakter sparas i:
 2. DEM data kräver manuell nedladdning eller Copernicus credentials
 3. Stor datamängd: Svealand är mycket större än Stockholm-presets
 
+
+

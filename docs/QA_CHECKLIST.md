@@ -100,6 +100,6 @@ Om din PR ändrar:
 
 ---
 
-**Senast uppdaterad:** 2025-12-27  
+**Senast uppdaterad:** 2025-12-27
 **Syfte:** Institutionellt minne för QA-processer, inte enforcement
 

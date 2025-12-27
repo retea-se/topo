@@ -33,3 +33,5 @@ Write-Host "Du kan nu använda Chrome DevTools MCP i Cursor." -ForegroundColor G
 
 
 
+
+

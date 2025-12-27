@@ -157,6 +157,6 @@ cat golden/print_export/metadata.json
 
 ---
 
-**Senast uppdaterad:** 2025-12-27  
+**Senast uppdaterad:** 2025-12-27
 **Underhållare:** Se `docs/STATUS.md` för aktuell status
 

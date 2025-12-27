@@ -20,14 +20,14 @@ def get_cors_headers(origin=None):
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
         'Access-Control-Max-Age': '86400',
     }
-    
+
     # Check if origin is allowed
     if origin and origin in ALLOWED_ORIGINS:
         headers['Access-Control-Allow-Origin'] = origin
     elif origin is None:
         # Default to first allowed origin if no origin specified
         headers['Access-Control-Allow-Origin'] = ALLOWED_ORIGINS[0]
-    
+
     return headers
 
 @app.before_request

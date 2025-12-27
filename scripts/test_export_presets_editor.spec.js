@@ -30,7 +30,7 @@ test.describe('Export Preset UI (Phase 9.2)', () => {
       if (type === 'error' || type === 'warning') {
         const text = msg.text();
         // Filter out known non-critical errors/warnings
-        if (!text.includes('favicon') && 
+        if (!text.includes('favicon') &&
             !text.includes('sourcemap') &&
             !text.includes('WebGL') &&
             !text.includes('GPU stall') &&

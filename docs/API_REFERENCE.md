@@ -404,3 +404,5 @@ No rate limiting is currently implemented. However, large exports (high DPI, lar
 - [PRESET_LIMITS.md](PRESET_LIMITS.md) - Detailed preset limits documentation
 - [STATUS.md](STATUS.md) - System status and feature availability
 
+
+

@@ -298,3 +298,5 @@ Lägg till i `themes/paper.json`:
 - **Theme support**: Nya lager bör ha tema-stöd för konsistens
 
 
+
+

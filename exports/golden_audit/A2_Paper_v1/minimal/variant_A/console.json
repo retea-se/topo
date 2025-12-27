@@ -1,0 +1,12 @@
+[
+  {
+    "type": "warning",
+    "text": "[GroupMarkerNotSet(crbug.com/242999)!:A840190064280000]Automatic fallback to software WebGL has been deprecated. Please use the --enable-unsafe-swiftshader (about:flags#enable-unsafe-swiftshader) flag to opt in to lower security guarantees for trusted content.",
+    "time": "2025-12-27T09:58:54.296Z"
+  },
+  {
+    "type": "log",
+    "text": "Map loaded",
+    "time": "2025-12-27T09:58:54.307Z"
+  }
+]
