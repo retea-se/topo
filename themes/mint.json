@@ -1,0 +1,50 @@
+{
+  "name": "Mint",
+  "background": "#f0faf5",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "fresh_modern"
+  },
+  "hillshade": {
+    "opacity": 0.10,
+    "gamma": 1.0,
+    "contrast": 0.95,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#d4f0e8",
+    "stroke": "#3eb489",
+    "strokeWidth": 0.6
+  },
+  "parks": {
+    "fill": "#e0f5ed",
+    "stroke": "#6bc4a0",
+    "strokeWidth": 0.4
+  },
+  "roads": {
+    "stroke": "#2d8a6e",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.6
+    }
+  },
+  "buildings": {
+    "fill": "#c8e8dc",
+    "stroke": "#4aa882",
+    "strokeWidth": 0.4
+  },
+  "contours": {
+    "stroke": "#3eb489",
+    "strokeWidth": {
+      "major": 0.7,
+      "minor": 0.35
+    },
+    "opacity": {
+      "major": 0.7,
+      "minor": 0.35
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

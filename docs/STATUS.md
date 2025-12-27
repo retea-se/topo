@@ -1,10 +1,86 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 16:00 CET
+**Senast uppdaterad**: 2025-01-27 18:00 CET
 
 ## Sammanfattning
 
 Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktionalitet.
+
+### Fas 1: Nya Themes & Presets ✅ IMPLEMENTED (2025-12-27)
+
+5 nya interior design-inspirerade teman och 5 matchande export presets.
+
+**Nya Themes:**
+| Theme | Beskrivning |
+|-------|-------------|
+| Japandi | Serene Japanese-Scandinavian fusion, muted tones |
+| Scandi Minimal | Light and airy Scandinavian style, mustard accent |
+| Duotone | Bold two-color graphic, navy and coral |
+| Sepia | Classic aged photograph aesthetic |
+| Mint | Fresh modern mint green palette |
+
+**Nya Export Presets:**
+| Preset | Paper | Theme |
+|--------|-------|-------|
+| A2 Japandi | A2 Portrait | Japandi 🔒 |
+| A2 Scandi Minimal | A2 Portrait | Scandi Minimal 🔒 |
+| A2 Duotone | A2 Landscape | Duotone 🔒 |
+| A3 Sepia Classic | A3 Portrait | Sepia 🔒 |
+| A4 Mint Fresh | A4 Portrait | Mint 🔒 |
+
+**Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
+
+---
+
+### Fas 2: Nya Themes & Presets ✅ IMPLEMENTED (2025-12-27)
+
+5 nya expressiva teman och 5 matchande export presets.
+
+**Nya Themes:**
+| Theme | Beskrivning |
+|-------|-------------|
+| Arctic | Cool glacial blues, calm winter landscape |
+| Sunset | Warm golden hour tones, romantic atmosphere |
+| Lavender | Soft calming purples, relaxing aesthetic |
+| Swiss | Clean modernist, bold black/white/red accent |
+| Vaporwave | Retro 80s neon, pink/cyan/purple on dark |
+
+**Nya Export Presets:**
+| Preset | Paper | Theme |
+|--------|-------|-------|
+| A2 Arctic | A2 Portrait | Arctic 🔒 |
+| A2 Sunset | A2 Landscape | Sunset 🔒 |
+| A3 Lavender | A3 Portrait | Lavender 🔒 |
+| A2 Swiss | A2 Portrait | Swiss 🔒 |
+| A2 Vaporwave | A2 Landscape | Vaporwave 🔒 |
+
+**Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
+
+---
+
+### Fas 3a: Advanced Themes & Presets ✅ IMPLEMENTED (2025-12-27)
+
+3 nya avancerade teman med distinkt visuell karaktär och 3 matchande presets.
+
+**Nya Themes:**
+| Theme | Beskrivning |
+|-------|-------------|
+| Woodblock | Japanese ukiyo-e inspired, bold graphic with traditional colors |
+| Pencil Sketch | Hand-drawn architectural illustration, grayscale linework |
+| Glitch | Digital corruption aesthetic, neon cyberpunk on black |
+
+**Nya Export Presets:**
+| Preset | Paper | Theme | Specialinställningar |
+|--------|-------|-------|---------------------|
+| A2 Woodblock | A2 Portrait | Woodblock 🔒 | Stockholm Wide |
+| A3 Pencil Sketch | A3 Portrait | Pencil Sketch 🔒 | Scale bar on |
+| A2 Glitch | A2 Landscape | Glitch 🔒 | Stockholm Wide |
+
+**Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
+
+**Total themes i systemet:** 32
+
+---
 
 ### v1.1 Operational Hardening ✅ IMPLEMENTED (2025-12-27)
 
@@ -101,7 +177,7 @@ node scripts/qa_golden_demo_b.js
 | Custom bbox support | ✅ Implementerat |
 | Playwright test suite | ✅ **25/25 PASS** |
 | **Viewport stabilitet vid theme-byte** | ✅ **FIXAD** |
-| **Print composition overlay** | ✅ **NY** |
+| **Print composition overlay** | ✅ **NY** (15 layout templates: 5 original + 10 nya) |
 | **PNG export via fetch+blob** | ✅ **FIXAD** |
 
 **Åtkomst**: http://localhost:3000/editor
@@ -145,6 +221,51 @@ Se [USAGE.md](USAGE.md#testning-med-playwright) för detaljer.
 **Utförda fixar:**
 1. **Viewport Stabilitet**: `updateMapStyle()` sparar nu `{center, zoom, bearing, pitch}` före `setStyle()` och återställer efter `style.load` event. Viewport-drift = 0.000000.
 2. **Print Composition Overlay**: Ny `updatePrintComposition()` funktion visar ram, titel, skala och attribution i preview.
+
+#### Layout Designs Extension (2025-01-27) ✅ COMPLETE
+
+**Ny funktionalitet**: 10 nya layout designs tillagda till print editor.
+
+| Feature | Status |
+|---------|--------|
+| Layout templates (total: 15) | ✅ 15 layouts (5 original + 10 nya) |
+| Font loading (Google Fonts) | ✅ Playfair Display, Orbitron, Rajdhani, Courier Prime |
+| CSS effects (grid, glow, decorative) | ✅ Implementerat |
+| Title positions (8 olika) | ✅ top-left, top-right, bottom-right, bottom-center, diagonal, etc. |
+| Frame styles (solid, double, none, glow) | ✅ Implementerat |
+| Scale/attribution positioning | ✅ Flexibel positioning |
+| Browser testing (preview mode) | ✅ Alla layouts testade och fungerar |
+| Export testing | ✅ Alla layouts fungerar i export (5/5 tester PASS) |
+| Exporter server updates | ✅ Fullständig rendering-logik implementerad |
+
+**Nya layouts**:
+1. Minimalist - Extremt minimal, nästan ingen ram
+2. Scientific - Vetenskaplig, datavisualiserings-stil
+3. Blueprint - Teknisk, arkitektur-inspirerad med grid pattern
+4. Gallery Print - Ren, konstnärlig
+5. Vintage Map - Klassisk kartografisk stil med double frame
+6. Artistic - Expressiv, kreativ med diagonal placement
+7. Night Mode - Mörk med neon-accents och glow
+8. Heritage - Historisk, museum-stil
+9. Prestige - Premium, lyxig med guld-banner
+10. Cyberpunk - Futuristisk, tech-inspirerad med neon glow
+
+**Testresultat**:
+- ✅ Alla 15 layouts renderas korrekt i preview mode
+- ✅ Layout-byte fungerar utan fel
+- ✅ Theme-byte fungerar med alla layouts
+- ✅ Console: Inga kritiska fel
+
+**Dokumentation**:
+- [LAYOUT_DESIGN_PROPOSAL.md](LAYOUT_DESIGN_PROPOSAL.md) - Design proposal
+- [LAYOUT_IMPLEMENTATION_PLAN.md](LAYOUT_IMPLEMENTATION_PLAN.md) - Implementation plan
+- [LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md](../exports/LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md) - Implementation rapport
+- [LAYOUT_EXPORT_TESTING_REPORT.md](LAYOUT_EXPORT_TESTING_REPORT.md) - Export testing rapport
+- [LAYOUT_DESIGNS_STATUS.md](LAYOUT_DESIGNS_STATUS.md) - Status sammanfattning
+
+**Test Script**: `scripts/test_layout_export.js` - Kör för att testa alla layout exports
+
+**Branch**: `feature/layout-designs` (✅ Redo för merge till main)
 3. **Export Fix**: Ändrat från `window.location.href` till `fetch()` + blob download. CORS-headers tillagda i exporter.
 
 **QA Verifiering:**
@@ -333,17 +454,16 @@ Stockholm Wide och Svealand DEM-data laddades ned från **Copernicus DEM GLO-30*
 
 ## Tillgängliga teman
 
-Alla 9 teman är tillgängliga i båda demos:
+**29 teman** är tillgängliga i Print Editor:
 
-1. paper
-2. ink
-3. mono
-4. dark
-5. gallery
-6. charcoal
-7. warm-paper
-8. blueprint-muted
-9. muted-pastel
+**Grundteman (9 st):**
+paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel
+
+**Utökade teman (15 st):**
+art-deco, bauhaus, chalk, copper, cyberpunk, forest, gold-foil, high-contrast, neon, night, ocean, silver-foil, thermal, vintage, void
+
+**Fas 1 teman (5 st) - NYA 2025-12-27:**
+japandi, scandi-minimal, duotone, sepia, mint
 
 ## Kända begränsningar
 

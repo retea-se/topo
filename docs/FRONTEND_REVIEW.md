@@ -331,3 +331,5 @@ Båda demos fungerar men har tydliga förbättringsmöjligheter. Demo A är mer 
 
 **Rekommendation:** Fokusera på att kombinera bästa från båda demos - live-feedback från Demo A med komplett konfiguration från Demo B.
 
+
+

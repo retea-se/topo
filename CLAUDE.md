@@ -4,6 +4,18 @@ This file defines HOW Claude should think and behave in this repository.
 
 ---
 
+## Session Startup
+
+**IMPORTANT**: At the start of each session, activate the Serena MCP server for this project:
+
+```
+mcp__plugin_serena_serena__activate_project(project="topo")
+```
+
+This enables semantic code analysis tools. Serena memories contain project-specific context.
+
+---
+
 ## Project Identity
 
 This is a **cartographic product**, not a demo project.

@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet" />
     <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.css" rel="stylesheet" />
+    <!-- Google Fonts for layout designs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.js"></script>
     <script src="/themeToStyle.js"></script>
@@ -655,6 +659,56 @@
             pointer-events: none;
         }
 
+        /* Layout Design CSS - Advanced effects */
+        /* Grid pattern for Blueprint layout */
+        .frame-grid-pattern {
+            background-image:
+                linear-gradient(rgba(74, 144, 226, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 144, 226, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Glow effects for Night Mode, Cyberpunk */
+        .frame-glow-cyan {
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5),
+                        0 0 20px rgba(0, 255, 255, 0.3),
+                        0 0 30px rgba(0, 255, 255, 0.1);
+        }
+
+        .frame-glow-neon {
+            box-shadow: 0 0 5px rgba(255, 0, 255, 0.8),
+                        0 0 10px rgba(255, 0, 255, 0.6),
+                        0 0 15px rgba(255, 0, 255, 0.4),
+                        0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Double frame effect - using outline for inner border */
+        .frame-double {
+            outline: 2px solid var(--frame-inner-color, #8b7355);
+            outline-offset: -4px;
+        }
+
+        /* Decorative title banner (Prestige) */
+        .title-banner {
+            background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Decorative underline (Vintage Map) */
+        .title-underline {
+            border-bottom: 3px double #8b7355;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Diagonal title (Artistic) */
+        .title-diagonal {
+            transform: rotate(-3deg);
+            transform-origin: left bottom;
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             #sidebar {
@@ -747,11 +801,25 @@
                 <div class="form-group">
                     <label>Layout</label>
                     <select id="layout-select">
+                        <!-- Original layouts -->
                         <option value="classic">Classic</option>
                         <option value="modern">Modern</option>
                         <option value="minimal">Minimal</option>
                         <option value="elegant">Elegant</option>
                         <option value="bold">Bold</option>
+                        <!-- New layouts - Simple -->
+                        <option value="minimalist">Minimalist</option>
+                        <option value="scientific">Scientific</option>
+                        <option value="blueprint">Blueprint</option>
+                        <!-- New layouts - Medium -->
+                        <option value="gallery-print">Gallery Print</option>
+                        <option value="vintage-map">Vintage Map</option>
+                        <option value="artistic">Artistic</option>
+                        <!-- New layouts - Advanced -->
+                        <option value="night-mode">Night Mode</option>
+                        <option value="heritage">Heritage</option>
+                        <option value="prestige">Prestige</option>
+                        <option value="cyberpunk">Cyberpunk</option>
                     </select>
                 </div>
                 <div class="form-row" style="margin-top: 12px;">

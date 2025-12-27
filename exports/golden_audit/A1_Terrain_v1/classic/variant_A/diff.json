@@ -1,0 +1,16 @@
+{
+  "compared": true,
+  "error": "Size mismatch: (1280, 720) vs (3508, 4967)",
+  "diff_percent": 100.0,
+  "diff_pixels": null,
+  "total_pixels": null,
+  "dimensions_match": false,
+  "img1_size": [
+    1280,
+    720
+  ],
+  "img2_size": [
+    3508,
+    4967
+  ]
+}

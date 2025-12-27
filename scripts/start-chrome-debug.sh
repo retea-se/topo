@@ -45,3 +45,5 @@ echo "Du kan nu använda Chrome DevTools MCP i Cursor."
 
 
 
+
+

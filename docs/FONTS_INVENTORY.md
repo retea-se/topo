@@ -1,6 +1,6 @@
 # Fonts & Rendering Dependencies Inventory
 
-**Datum:** 2024-12-27  
+**Datum:** 2024-12-27
 **Syfte:** Dokumentation av fonts och rendering-kritiska dependencies för v1.1 hardening (determinism)
 
 ---

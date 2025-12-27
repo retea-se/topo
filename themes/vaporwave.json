@@ -1,0 +1,50 @@
+{
+  "name": "Vaporwave",
+  "background": "#1a0a2e",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "retro_neon"
+  },
+  "hillshade": {
+    "opacity": 0.20,
+    "gamma": 1.2,
+    "contrast": 1.1,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#00d4ff",
+    "stroke": "#00ffff",
+    "strokeWidth": 0.6
+  },
+  "parks": {
+    "fill": "#2a1a4e",
+    "stroke": "#ff00ff",
+    "strokeWidth": 0.4
+  },
+  "roads": {
+    "stroke": "#ff71ce",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.6
+    }
+  },
+  "buildings": {
+    "fill": "#2e1a4a",
+    "stroke": "#01cdfe",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#b967ff",
+    "strokeWidth": {
+      "major": 0.7,
+      "minor": 0.35
+    },
+    "opacity": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

@@ -32,7 +32,7 @@ test.describe('Print Editor UI', () => {
       if (type === 'error' || type === 'warning') {
         const text = msg.text();
         // Filter out known non-critical errors/warnings
-        if (!text.includes('favicon') && 
+        if (!text.includes('favicon') &&
             !text.includes('sourcemap') &&
             !text.includes('WebGL') &&
             !text.includes('GPU stall') &&
@@ -259,7 +259,7 @@ test.describe('Print Editor Map Interaction', () => {
       if (type === 'error' || type === 'warning') {
         const text = msg.text();
         // Filter out known non-critical errors/warnings
-        if (!text.includes('favicon') && 
+        if (!text.includes('favicon') &&
             !text.includes('sourcemap') &&
             !text.includes('WebGL') &&
             !text.includes('GPU stall') &&

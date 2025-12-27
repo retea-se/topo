@@ -106,10 +106,235 @@ const LAYOUT_TEMPLATES = {
         frameStyle: 'solid',
         frameColor: '#4a6fa5',
         frameWidth: 2
+    },
+    // New layouts - Phase 1: Simple
+    minimalist: {
+        name: 'Minimalist',
+        titlePosition: 'none',
+        titleFont: "'Helvetica Neue', -apple-system, sans-serif",
+        titleSize: 0,
+        subtitleSize: 0,
+        titleBackground: 'transparent',
+        titleColor: 'rgba(0,0,0,0.2)',
+        frameStyle: 'solid',
+        frameColor: 'rgba(200, 200, 200, 0.3)',
+        frameWidth: 0.5,
+        scalePosition: 'none',
+        attributionPosition: 'none'
+    },
+    scientific: {
+        name: 'Scientific',
+        titlePosition: 'top-left',
+        titleFont: "'Arial', 'Helvetica', sans-serif",
+        titleSize: 20,
+        subtitleSize: 12,
+        titleBackground: 'rgba(255, 255, 255, 0.95)',
+        titleColor: '#2d3436',
+        frameStyle: 'solid',
+        frameColor: '#636e72',
+        frameWidth: 1,
+        scalePosition: 'bottom-right',
+        attributionPosition: 'bottom-right',
+        scaleFont: 'sans-serif'
+    },
+    blueprint: {
+        name: 'Blueprint',
+        titlePosition: 'top-left',
+        titleFont: "'Courier Prime', 'Courier New', 'Monaco', monospace",
+        titleSize: 16,
+        subtitleSize: 12,
+        titleTransform: 'uppercase',
+        titleBackground: 'rgba(245, 245, 245, 0.95)',
+        titleBackgroundPattern: 'grid',
+        titleColor: '#1a5fb4',
+        frameStyle: 'solid',
+        framePattern: 'grid',
+        frameColor: '#4a90e2',
+        frameWidth: 2,
+        scalePosition: 'bottom-right',
+        attributionPosition: 'bottom-right',
+        scaleFont: 'monospace'
+    },
+    // New layouts - Phase 2: Medium complexity
+    'gallery-print': {
+        name: 'Gallery Print',
+        titlePosition: 'bottom-right',
+        titleFont: "'Inter', -apple-system, sans-serif",
+        titleSize: 18,
+        subtitleSize: 12,
+        titleBackground: 'transparent',
+        titleColor: 'rgba(45, 52, 54, 0.9)',
+        titleShadow: '0 1px 3px rgba(255,255,255,0.8)',
+        frameStyle: 'none',
+        frameColor: 'transparent',
+        frameWidth: 0,
+        scalePosition: 'bottom-left',
+        attributionPosition: 'bottom-left'
+    },
+    'vintage-map': {
+        name: 'Vintage Map',
+        titlePosition: 'top-center',
+        titleFont: "'Times New Roman', 'Georgia', serif",
+        titleSize: 28,
+        subtitleSize: 14,
+        titleStyle: 'italic',
+        titleBackground: 'rgba(212, 196, 168, 0.92)',
+        titleColor: '#5c4033',
+        titleUnderline: true,
+        frameStyle: 'double',
+        frameColor: '#8b7355',
+        frameWidth: 4,
+        scalePosition: 'bottom-center',
+        attributionPosition: 'bottom-center',
+        scaleFont: 'serif'
+    },
+    artistic: {
+        name: 'Artistic',
+        titlePosition: 'diagonal',
+        titleFont: "'Inter', sans-serif",
+        titleSize: 26,
+        subtitleSize: 14,
+        titleStyle: 'italic',
+        titleFontWeight: 'bold',
+        titleBackground: 'rgba(253, 252, 250, 0.75)',
+        titleColor: '#4a6fa5',
+        frameStyle: 'none',
+        frameColor: 'transparent',
+        frameWidth: 0,
+        scalePosition: 'top-right',
+        attributionPosition: 'top-right'
+    },
+    // New layouts - Phase 3: Advanced
+    'night-mode': {
+        name: 'Night Mode',
+        titlePosition: 'top-right',
+        titleFont: "'Inter', sans-serif",
+        titleSize: 22,
+        subtitleSize: 13,
+        titleFontWeight: 'bold',
+        titleBackground: 'rgba(18, 18, 18, 0.85)',
+        titleColor: '#00ffff',
+        titleShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
+        frameStyle: 'solid',
+        frameColor: '#4a6580',
+        frameWidth: 2,
+        frameGlow: '0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3)',
+        scalePosition: 'bottom-left',
+        attributionPosition: 'bottom-left'
+    },
+    heritage: {
+        name: 'Heritage',
+        titlePosition: 'top-center',
+        titleFont: "'Garamond', 'Baskerville', serif",
+        titleSize: 24,
+        subtitleSize: 13,
+        titleBackground: 'rgba(253, 251, 248, 0.95)',
+        titleColor: '#5c4033',
+        frameStyle: 'double',
+        frameColor: '#8b7355',
+        frameWidth: 4,
+        scalePosition: 'bottom-center',
+        attributionPosition: 'bottom-center',
+        scaleFont: 'serif'
+    },
+    prestige: {
+        name: 'Prestige',
+        titlePosition: 'top-center',
+        titleFont: "'Playfair Display', serif",
+        titleSize: 32,
+        subtitleSize: 14,
+        titleFontWeight: 'bold',
+        titleBanner: true,
+        titleBackground: 'linear-gradient(135deg, #d4af37 0%, #f4d03f 100%)',
+        titleColor: '#1a1a1a',
+        frameStyle: 'double',
+        frameColor: '#d4af37',
+        frameWidth: 5,
+        scalePosition: 'bottom-center',
+        attributionPosition: 'bottom-center'
+    },
+    cyberpunk: {
+        name: 'Cyberpunk',
+        titlePosition: 'top-center',
+        titleFont: "'Orbitron', 'Rajdhani', sans-serif",
+        titleSize: 30,
+        subtitleSize: 14,
+        titleFontWeight: 'bold',
+        titleTransform: 'uppercase',
+        titleBackground: 'rgba(13, 2, 33, 0.9)',
+        titleColor: '#ff00ff',
+        titleShadow: '0 0 10px rgba(255, 0, 255, 0.8), 0 0 20px rgba(255, 0, 255, 0.6)',
+        frameStyle: 'solid',
+        frameColor: '#00ffff',
+        frameWidth: 3,
+        frameGlow: '0 0 5px rgba(255, 0, 255, 0.8), 0 0 10px rgba(255, 0, 255, 0.6), 0 0 15px rgba(0, 255, 255, 0.4)',
+        scalePosition: 'bottom-right',
+        attributionPosition: 'bottom-right',
+        scaleFont: 'monospace'
     }
 };
 
 let currentLayoutTemplate = 'classic';
+
+/**
+ * Helper functions for layout rendering
+ */
+
+/**
+ * Generate CSS for frame style with optional patterns and glow
+ */
+function getFrameStyleCSS(template) {
+    let css = '';
+
+    // Handle double frame style specially (uses outline for inner border)
+    if (template.frameStyle === 'double') {
+        const outerWidth = template.frameWidth || 4;
+        css = `border: ${outerWidth}px solid ${template.frameColor};`;
+        // CSS variable for double frame inner color (set via style attribute)
+        css += ` --frame-inner-color: ${template.frameColor};`;
+    } else if (template.frameStyle === 'none') {
+        css = `border: none;`;
+    } else {
+        css = `border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};`;
+    }
+
+    return css;
+}
+
+/**
+ * Get grid pattern background CSS (for Blueprint layout)
+ */
+function getGridPatternBackground() {
+    return `background-image:
+        linear-gradient(rgba(74, 144, 226, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(74, 144, 226, 0.15) 1px, transparent 1px);
+    background-size: 20px 20px;`;
+}
+
+/**
+ * Get title container CSS based on position
+ */
+function getTitleContainerCSS(template) {
+    const baseCSS = {
+        position: 'absolute',
+        padding: '14px 20px'
+    };
+
+    switch(template.titlePosition) {
+        case 'top-left':
+            return { ...baseCSS, top: 0, left: 0, textAlign: 'left' };
+        case 'top-right':
+            return { ...baseCSS, top: 0, right: 0, textAlign: 'right' };
+        case 'bottom-right':
+            return { ...baseCSS, bottom: 0, right: 0, textAlign: 'right', padding: '20px' };
+        case 'bottom-center':
+            return { ...baseCSS, bottom: 0, left: 0, right: 0, textAlign: 'center' };
+        case 'diagonal':
+            return { ...baseCSS, bottom: '20%', left: '5%', transform: 'rotate(-3deg)', transformOrigin: 'left bottom' };
+        default:
+            return baseCSS;
+    }
+}
 
 // DOM Elements
 const elements = {
@@ -661,7 +886,7 @@ function enterPreviewMode() {
     // Resize map after layout change
     setTimeout(() => {
         map.resize();
-        fitMapToBbox();
+        // Don't fit to bbox - preserve user's current viewport position
         updatePrintComposition();
     }, 100);
 
@@ -744,7 +969,37 @@ function updatePrintComposition() {
     // Create overlay
     const overlay = document.createElement('div');
     overlay.id = 'print-composition';
-    overlay.style.cssText = `
+
+    // Build frame CSS with helper function
+    let frameCSS = getFrameStyleCSS(template);
+
+    // Add double frame class if needed
+    if (template.frameStyle === 'double') {
+        overlay.classList.add('frame-double');
+        // Set CSS variable for inner border color
+        overlay.style.setProperty('--frame-inner-color', template.frameColor);
+    }
+
+    // Add grid pattern class if specified
+    if (template.framePattern === 'grid') {
+        overlay.classList.add('frame-grid-pattern');
+    }
+
+    // Add glow effect classes if specified
+    if (template.frameGlow) {
+        // Check if it's a neon/cyan glow
+        if (template.frameGlow.includes('255, 0, 255') || template.frameGlow.includes('ff00ff')) {
+            overlay.classList.add('frame-glow-neon');
+        } else if (template.frameGlow.includes('0, 255, 255') || template.frameGlow.includes('00ffff')) {
+            overlay.classList.add('frame-glow-cyan');
+        } else {
+            // Custom glow - add as inline style
+            frameCSS += ` box-shadow: ${template.frameGlow};`;
+        }
+    }
+
+    // Build overlay CSS
+    let overlayCSS = `
         position: absolute;
         top: ${top}px;
         left: ${left}px;
@@ -753,9 +1008,15 @@ function updatePrintComposition() {
         pointer-events: none;
         z-index: 15;
         box-sizing: border-box;
-        border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};
-        box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+        ${frameCSS}
     `;
+
+    // Add standard shadow (unless frame has custom glow)
+    if (!template.frameGlow) {
+        overlayCSS += `box-shadow: 0 4px 24px rgba(0,0,0,0.15);`;
+    }
+
+    overlay.style.cssText = overlayCSS;
 
     const title = elements.titleInput.value;
     const subtitle = elements.subtitleInput.value;
@@ -766,6 +1027,7 @@ function updatePrintComposition() {
     if (template.titlePosition !== 'none' && (title || subtitle)) {
         const titleContainer = document.createElement('div');
 
+        // Handle all title positions
         if (template.titlePosition === 'top-center') {
             titleContainer.style.cssText = `
                 position: absolute;
@@ -776,6 +1038,25 @@ function updatePrintComposition() {
                 background: ${template.titleBackground};
                 text-align: center;
             `;
+        } else if (template.titlePosition === 'top-left') {
+            titleContainer.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                padding: 14px 20px;
+                background: ${template.titleBackground};
+                text-align: left;
+                ${template.titleBackgroundPattern === 'grid' ? getGridPatternBackground() : ''}
+            `;
+        } else if (template.titlePosition === 'top-right') {
+            titleContainer.style.cssText = `
+                position: absolute;
+                top: 0;
+                right: 0;
+                padding: 14px 20px;
+                background: ${template.titleBackground};
+                text-align: right;
+            `;
         } else if (template.titlePosition === 'bottom-left') {
             titleContainer.style.cssText = `
                 position: absolute;
@@ -784,6 +1065,25 @@ function updatePrintComposition() {
                 right: 0;
                 padding: 24px 20px 16px;
                 background: ${template.titleBackground};
+            `;
+        } else if (template.titlePosition === 'bottom-right') {
+            titleContainer.style.cssText = `
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                padding: 20px;
+                background: ${template.titleBackground};
+                text-align: right;
+            `;
+        } else if (template.titlePosition === 'bottom-center') {
+            titleContainer.style.cssText = `
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 14px 20px;
+                background: ${template.titleBackground};
+                text-align: center;
             `;
         } else if (template.titlePosition === 'center-overlay') {
             titleContainer.style.cssText = `
@@ -794,28 +1094,76 @@ function updatePrintComposition() {
                 text-align: center;
                 padding: 24px;
             `;
+        } else if (template.titlePosition === 'diagonal') {
+            titleContainer.style.cssText = `
+                position: absolute;
+                bottom: 20%;
+                left: 5%;
+                padding: 16px 24px;
+                background: ${template.titleBackground};
+                transform: rotate(-3deg);
+                transform-origin: left bottom;
+                border-radius: 4px;
+            `;
+        }
+
+        // Add banner class for Prestige layout
+        if (template.titleBanner) {
+            titleContainer.classList.add('title-banner');
         }
 
         if (title) {
             const titleEl = document.createElement('div');
-            titleEl.style.cssText = `
+            let titleStyle = `
                 font-family: ${template.titleFont};
                 font-size: ${template.titleSize}px;
-                font-weight: 600;
+                font-weight: ${template.titleFontWeight || '600'};
                 color: ${template.titleColor || '#2d3436'};
                 ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
                 letter-spacing: 0.5px;
             `;
+
+            // Add text transform if specified
+            if (template.titleTransform) {
+                titleStyle += `text-transform: ${template.titleTransform};`;
+            }
+
+            // Add italic style if specified
+            if (template.titleStyle === 'italic') {
+                titleStyle += `font-style: italic;`;
+            }
+
+            titleEl.style.cssText = titleStyle;
             titleEl.textContent = title;
+
+            // Add underline wrapper if needed
+            if (template.titleUnderline) {
+                titleEl.classList.add('title-underline');
+            }
+
             titleContainer.appendChild(titleEl);
         }
 
         if (subtitle) {
             const subtitleEl = document.createElement('div');
+            // Determine subtitle color - use titleColor if it's a light color (for dark backgrounds), otherwise use a muted version
+            let subtitleColor = '#636e72'; // Default muted gray
+            if (template.titleColor) {
+                // If title color is bright (like white, cyan, magenta), use a muted version for subtitle
+                if (template.titleColor.includes('255') || template.titleColor.includes('#fff') || template.titleColor.includes('#00ffff') || template.titleColor.includes('#ff00ff')) {
+                    subtitleColor = template.titleColor.replace('1)', '0.75)').replace('ff)', 'c0)');
+                } else {
+                    // For dark colors, use a slightly lighter/muted version
+                    subtitleColor = template.titleColor.includes('rgba')
+                        ? template.titleColor.replace(/,\s*[0-9.]+\)/, ', 0.7)')
+                        : '#636e72';
+                }
+            }
+
             subtitleEl.style.cssText = `
                 font-family: ${template.titleFont};
                 font-size: ${template.subtitleSize}px;
-                color: ${template.titleColor ? 'rgba(255,255,255,0.75)' : '#636e72'};
+                color: ${subtitleColor};
                 ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
                 margin-top: 4px;
                 font-weight: 400;
@@ -828,60 +1176,93 @@ function updatePrintComposition() {
     }
 
     // Footer with scale and attribution
-    const hasFooterContent = showScale || showAttribution;
+    // Handle different positions based on template
+    const scalePos = template.scalePosition || 'bottom-left';
+    const attrPos = template.attributionPosition || (scalePos === 'bottom-left' ? 'bottom-right' : 'bottom-left');
 
-    if (hasFooterContent) {
-        const footerBottom = template.titlePosition === 'bottom-left' ? 60 : 10;
+    // Only show if not 'none'
+    if (showScale && scalePos !== 'none') {
+        const scaleEl = document.createElement('div');
+        const scaleFont = template.scaleFont === 'monospace'
+            ? "'Courier Prime', 'Courier New', monospace"
+            : template.scaleFont === 'serif'
+            ? "'Times New Roman', serif"
+            : "'Inter', system-ui, sans-serif";
 
-        const footerArea = document.createElement('div');
-        footerArea.style.cssText = `
+        let scaleCSS = `
             position: absolute;
-            bottom: ${footerBottom}px;
-            left: 12px;
-            right: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+            background: rgba(255,255,255,0.88);
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: #2d3436;
+            font-family: ${scaleFont};
+            font-size: 11px;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             pointer-events: none;
         `;
 
-        // Scale (left side)
-        if (showScale) {
-            const scaleEl = document.createElement('div');
-            scaleEl.style.cssText = `
-                background: rgba(255,255,255,0.88);
-                padding: 5px 10px;
-                border-radius: 3px;
-                color: #2d3436;
-                font-family: 'Inter', system-ui, sans-serif;
-                font-size: 11px;
-                font-weight: 500;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            `;
-            scaleEl.textContent = calculateScale();
-            footerArea.appendChild(scaleEl);
-        } else {
-            // Empty spacer
-            footerArea.appendChild(document.createElement('div'));
+        // Position scale element
+        if (scalePos === 'bottom-left' || scalePos === 'bottom-center') {
+            const bottomOffset = (template.titlePosition === 'bottom-left' || template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center') ? 60 : 10;
+            scaleCSS += `bottom: ${bottomOffset}px;`;
+            if (scalePos === 'bottom-left') {
+                scaleCSS += `left: 12px;`;
+            } else {
+                scaleCSS += `left: 50%; transform: translateX(-50%);`;
+            }
+        } else if (scalePos === 'bottom-right') {
+            const bottomOffset = (template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center') ? 60 : 10;
+            scaleCSS += `bottom: ${bottomOffset}px; right: 12px;`;
+        } else if (scalePos === 'top-left') {
+            scaleCSS += `top: 12px; left: 12px;`;
+        } else if (scalePos === 'top-right') {
+            scaleCSS += `top: 12px; right: 12px;`;
         }
 
-        // Attribution (right side) - subtle styling
-        if (showAttribution && template.titlePosition !== 'bottom-left') {
-            const attrEl = document.createElement('div');
-            attrEl.style.cssText = `
-                padding: 4px 8px;
-                color: rgba(99, 110, 114, 0.6);
-                font-family: 'Inter', system-ui, sans-serif;
-                font-size: 9px;
-                max-width: 45%;
-                text-align: right;
-                letter-spacing: 0.2px;
-            `;
-            attrEl.textContent = 'OSM contributors';
-            footerArea.appendChild(attrEl);
+        scaleEl.style.cssText = scaleCSS;
+        scaleEl.textContent = calculateScale();
+        overlay.appendChild(scaleEl);
+    }
+
+    // Attribution
+    if (showAttribution && attrPos !== 'none') {
+        const attrEl = document.createElement('div');
+        const attrFont = template.scaleFont === 'monospace'
+            ? "'Courier Prime', 'Courier New', monospace"
+            : template.scaleFont === 'serif'
+            ? "'Times New Roman', serif"
+            : "'Inter', system-ui, sans-serif";
+
+        let attrCSS = `
+            position: absolute;
+            padding: 4px 8px;
+            color: rgba(99, 110, 114, 0.6);
+            font-family: ${attrFont};
+            font-size: 9px;
+            pointer-events: none;
+            letter-spacing: 0.2px;
+        `;
+
+        // Position attribution element (don't overlap with title)
+        if (attrPos === 'bottom-left' && template.titlePosition !== 'bottom-left') {
+            const bottomOffset = template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center' ? 60 : 10;
+            attrCSS += `bottom: ${bottomOffset}px; left: 12px; text-align: left;`;
+        } else if (attrPos === 'bottom-right' && template.titlePosition !== 'bottom-right') {
+            const bottomOffset = template.titlePosition === 'bottom-left' || template.titlePosition === 'bottom-center' ? 60 : 10;
+            attrCSS += `bottom: ${bottomOffset}px; right: 12px; text-align: right; max-width: 45%;`;
+        } else if (attrPos === 'bottom-center') {
+            const bottomOffset = template.titlePosition === 'bottom-center' ? 60 : 10;
+            attrCSS += `bottom: ${bottomOffset}px; left: 50%; transform: translateX(-50%); text-align: center;`;
+        } else if (attrPos === 'top-right') {
+            attrCSS += `top: 12px; right: 12px; text-align: right; max-width: 45%;`;
+        } else if (attrPos === 'top-left') {
+            attrCSS += `top: 12px; left: 12px; text-align: left;`;
         }
 
-        overlay.appendChild(footerArea);
+        attrEl.style.cssText = attrCSS;
+        attrEl.textContent = 'OSM contributors';
+        overlay.appendChild(attrEl);
     }
 
     // Paper info badge (only in preview mode)
@@ -1034,7 +1415,11 @@ async function exportMap() {
                 subtitle: elements.subtitleInput.value || '',
                 layers: layers,
                 // Phase 9.2: include export preset if selected
-                export_preset: selectedExportPreset || null
+                export_preset: selectedExportPreset || null,
+                // Layout template and composition settings
+                layout_template: currentLayoutTemplate || 'classic',
+                show_scale: elements.showScale?.checked ? true : false,
+                show_attribution: elements.showAttribution?.checked ? true : false
             };
 
             setProgress(40, 'Rendering...');

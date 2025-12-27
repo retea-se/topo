@@ -19,7 +19,7 @@ def test_options_preflight_render(client):
             'Access-Control-Request-Headers': 'content-type'
         }
     )
-    
+
     assert response.status_code == 204
     assert response.headers.get('Access-Control-Allow-Origin') == 'http://localhost:3000'
     assert 'POST' in response.headers.get('Access-Control-Allow-Methods', '')
@@ -36,7 +36,7 @@ def test_options_preflight_render_no_prefix(client):
             'Access-Control-Request-Headers': 'content-type'
         }
     )
-    
+
     assert response.status_code == 204
     assert response.headers.get('Access-Control-Allow-Origin') == 'http://localhost:3000'
     assert 'POST' in response.headers.get('Access-Control-Allow-Methods', '')
@@ -49,7 +49,7 @@ def test_post_render_cors_headers(client):
         json={'bbox_preset': 'stockholm_core', 'theme': 'paper', 'format': 'pdf'},
         headers={'Origin': 'http://localhost:3000'}
     )
-    
+
     # Response may fail (500) due to renderer service, but CORS headers should be present
     assert 'Access-Control-Allow-Origin' in response.headers
     assert response.headers.get('Access-Control-Allow-Origin') == 'http://localhost:3000'
@@ -63,14 +63,14 @@ def test_cors_origin_validation(client):
         headers={'Origin': 'http://localhost:3000'}
     )
     assert response.headers.get('Access-Control-Allow-Origin') == 'http://localhost:3000'
-    
+
     # Another allowed origin
     response = client.options(
         '/api/render',
         headers={'Origin': 'http://localhost:3001'}
     )
     assert response.headers.get('Access-Control-Allow-Origin') == 'http://localhost:3001'
-    
+
     # Disallowed origin (should default to first allowed)
     response = client.options(
         '/api/render',

@@ -47,3 +47,5 @@ if __name__ == '__main__':
     result = check_mbtiles(filepath)
     print(json.dumps(result, indent=2))
 
+
+

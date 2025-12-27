@@ -1,0 +1,50 @@
+{
+  "name": "Glitch",
+  "background": "#0a0a0a",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "digital_corruption"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 1.2,
+    "contrast": 1.0,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#00ffff",
+    "stroke": "#ff00ff",
+    "strokeWidth": 0.8
+  },
+  "parks": {
+    "fill": "#001a1a",
+    "stroke": "#00ff88",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#ffff00",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.4
+    }
+  },
+  "buildings": {
+    "fill": "#ff0066",
+    "stroke": "#00ffff",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#ff00ff",
+    "strokeWidth": {
+      "major": 0.6,
+      "minor": 0.3
+    },
+    "opacity": {
+      "major": 0.7,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

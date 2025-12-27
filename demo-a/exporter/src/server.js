@@ -122,6 +122,171 @@ const LAYOUT_TEMPLATES = {
     frameStyle: 'solid',
     frameColor: '#4a6fa5',
     frameWidth: 2
+  },
+  // New layouts - Phase 1: Simple
+  minimalist: {
+    name: 'Minimalist',
+    titlePosition: 'none',
+    titleFont: "'Helvetica Neue', -apple-system, sans-serif",
+    titleSize: 0,
+    subtitleSize: 0,
+    titleBackground: 'transparent',
+    titleColor: 'rgba(0,0,0,0.2)',
+    frameStyle: 'solid',
+    frameColor: 'rgba(200, 200, 200, 0.3)',
+    frameWidth: 0.5,
+    scalePosition: 'none',
+    attributionPosition: 'none'
+  },
+  scientific: {
+    name: 'Scientific',
+    titlePosition: 'top-left',
+    titleFont: "'Arial', 'Helvetica', sans-serif",
+    titleSize: 20,
+    subtitleSize: 12,
+    titleBackground: 'rgba(255, 255, 255, 0.95)',
+    titleColor: '#2d3436',
+    frameStyle: 'solid',
+    frameColor: '#636e72',
+    frameWidth: 1,
+    scalePosition: 'bottom-right',
+    attributionPosition: 'bottom-right',
+    scaleFont: 'sans-serif'
+  },
+  blueprint: {
+    name: 'Blueprint',
+    titlePosition: 'top-left',
+    titleFont: "'Courier Prime', 'Courier New', 'Monaco', monospace",
+    titleSize: 16,
+    subtitleSize: 12,
+    titleTransform: 'uppercase',
+    titleBackground: 'rgba(245, 245, 245, 0.95)',
+    titleBackgroundPattern: 'grid',
+    titleColor: '#1a5fb4',
+    frameStyle: 'solid',
+    framePattern: 'grid',
+    frameColor: '#4a90e2',
+    frameWidth: 2,
+    scalePosition: 'bottom-right',
+    attributionPosition: 'bottom-right',
+    scaleFont: 'monospace'
+  },
+  // New layouts - Phase 2: Medium complexity
+  'gallery-print': {
+    name: 'Gallery Print',
+    titlePosition: 'bottom-right',
+    titleFont: "'Inter', -apple-system, sans-serif",
+    titleSize: 18,
+    subtitleSize: 12,
+    titleBackground: 'transparent',
+    titleColor: 'rgba(45, 52, 54, 0.9)',
+    titleShadow: '0 1px 3px rgba(255,255,255,0.8)',
+    frameStyle: 'none',
+    frameColor: 'transparent',
+    frameWidth: 0,
+    scalePosition: 'bottom-left',
+    attributionPosition: 'bottom-left'
+  },
+  'vintage-map': {
+    name: 'Vintage Map',
+    titlePosition: 'top-center',
+    titleFont: "'Times New Roman', 'Georgia', serif",
+    titleSize: 28,
+    subtitleSize: 14,
+    titleStyle: 'italic',
+    titleBackground: 'rgba(212, 196, 168, 0.92)',
+    titleColor: '#5c4033',
+    titleUnderline: true,
+    frameStyle: 'double',
+    frameColor: '#8b7355',
+    frameWidth: 4,
+    scalePosition: 'bottom-center',
+    attributionPosition: 'bottom-center',
+    scaleFont: 'serif'
+  },
+  artistic: {
+    name: 'Artistic',
+    titlePosition: 'diagonal',
+    titleFont: "'Inter', sans-serif",
+    titleSize: 26,
+    subtitleSize: 14,
+    titleStyle: 'italic',
+    titleFontWeight: 'bold',
+    titleBackground: 'rgba(253, 252, 250, 0.75)',
+    titleColor: '#4a6fa5',
+    frameStyle: 'none',
+    frameColor: 'transparent',
+    frameWidth: 0,
+    scalePosition: 'top-right',
+    attributionPosition: 'top-right'
+  },
+  // New layouts - Phase 3: Advanced
+  'night-mode': {
+    name: 'Night Mode',
+    titlePosition: 'top-right',
+    titleFont: "'Inter', sans-serif",
+    titleSize: 22,
+    subtitleSize: 13,
+    titleFontWeight: 'bold',
+    titleBackground: 'rgba(18, 18, 18, 0.85)',
+    titleColor: '#00ffff',
+    titleShadow: '0 0 10px rgba(0, 255, 255, 0.5)',
+    frameStyle: 'solid',
+    frameColor: '#4a6580',
+    frameWidth: 2,
+    frameGlow: '0 0 10px rgba(0, 255, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3)',
+    scalePosition: 'bottom-left',
+    attributionPosition: 'bottom-left'
+  },
+  heritage: {
+    name: 'Heritage',
+    titlePosition: 'top-center',
+    titleFont: "'Garamond', 'Baskerville', serif",
+    titleSize: 24,
+    subtitleSize: 13,
+    titleBackground: 'rgba(253, 251, 248, 0.95)',
+    titleColor: '#5c4033',
+    frameStyle: 'double',
+    frameColor: '#8b7355',
+    frameWidth: 4,
+    scalePosition: 'bottom-center',
+    attributionPosition: 'bottom-center',
+    scaleFont: 'serif'
+  },
+  prestige: {
+    name: 'Prestige',
+    titlePosition: 'top-center',
+    titleFont: "'Playfair Display', serif",
+    titleSize: 32,
+    subtitleSize: 14,
+    titleFontWeight: 'bold',
+    titleBanner: true,
+    titleBackground: 'linear-gradient(135deg, #d4af37 0%, #f4d03f 100%)',
+    titleColor: '#1a1a1a',
+    frameStyle: 'double',
+    frameColor: '#d4af37',
+    frameWidth: 5,
+    scalePosition: 'bottom-center',
+    attributionPosition: 'bottom-center'
+  },
+  cyberpunk: {
+    name: 'Cyberpunk',
+    titlePosition: 'top-center',
+    titleFont: "'Orbitron', 'Rajdhani', sans-serif",
+    titleSize: 30,
+    subtitleSize: 14,
+    titleFontWeight: 'bold',
+    titleTransform: 'uppercase',
+    titleBackground: 'rgba(13, 2, 33, 0.9)',
+    titleColor: '#ff00ff',
+    titleShadow: '0 0 10px rgba(255, 0, 255, 0.8), 0 0 20px rgba(255, 0, 255, 0.6)',
+    frameStyle: 'solid',
+    frameColor: '#00ffff',
+    frameWidth: 3,
+    frameGlow: '0 0 5px rgba(255, 0, 255, 0.8), 0 0 10px rgba(255, 0, 255, 0.6), 0 0 15px rgba(0, 255, 255, 0.4)',
+    scalePosition: 'bottom-right',
+    attributionPosition: 'bottom-right',
+    scaleFont: 'monospace'
   }
 };
 
@@ -288,6 +453,10 @@ app.get('/render', async (req, res) => {
         const mapEl = document.getElementById('map');
         if (!mapEl) return;
 
+        // Remove existing wrapper if present
+        const existingWrapper = document.getElementById('export-wrapper');
+        if (existingWrapper) existingWrapper.remove();
+
         // Create wrapper to contain map + composition
         const wrapper = document.createElement('div');
         wrapper.id = 'export-wrapper';
@@ -305,6 +474,32 @@ app.get('/render', async (req, res) => {
         // Create composition overlay
         const overlay = document.createElement('div');
         overlay.id = 'print-composition';
+        
+        // Build frame CSS
+        let frameCSS = '';
+        if (template.frameStyle === 'none' || !template.frameWidth || template.frameWidth === 0) {
+          frameCSS = 'border: none;';
+        } else if (template.frameStyle === 'double') {
+          const outerWidth = template.frameWidth || 4;
+          const innerWidth = Math.max(1, Math.floor(outerWidth / 2));
+          frameCSS = `border: ${outerWidth}px solid ${template.frameColor || '#8b7355'}; box-sizing: border-box;`;
+          overlay.style.outline = `${innerWidth}px solid ${template.frameColor || '#8b7355'}`;
+          overlay.style.outlineOffset = `-${outerWidth + innerWidth}px`;
+        } else {
+          frameCSS = `border: ${template.frameWidth || 1}px ${template.frameStyle || 'solid'} ${template.frameColor || '#636e72'};`;
+        }
+
+        // Grid pattern for Blueprint
+        if (template.framePattern === 'grid') {
+          overlay.style.backgroundImage = 'linear-gradient(rgba(74, 144, 226, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(74, 144, 226, 0.15) 1px, transparent 1px)';
+          overlay.style.backgroundSize = '20px 20px';
+        }
+
+        // Glow effects
+        if (template.frameGlow) {
+          overlay.style.boxShadow = template.frameGlow;
+        }
+
         overlay.style.cssText = `
           position: absolute;
           top: 0;
@@ -314,67 +509,70 @@ app.get('/render', async (req, res) => {
           pointer-events: none;
           z-index: 100;
           box-sizing: border-box;
-          border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};
+          ${frameCSS}
         `;
+
+        // Helper for grid pattern
+        function getGridPattern() {
+          return 'background-image: linear-gradient(rgba(74, 144, 226, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(74, 144, 226, 0.15) 1px, transparent 1px); background-size: 20px 20px;';
+        }
 
         // Add title based on template position
         if (template.titlePosition !== 'none' && (title || subtitle)) {
           const titleContainer = document.createElement('div');
+          let containerCSS = '';
 
           if (template.titlePosition === 'top-center') {
-            titleContainer.style.cssText = `
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              padding: 14px 20px;
-              background: ${template.titleBackground};
-              text-align: center;
-            `;
+            containerCSS = `position: absolute; top: 0; left: 0; right: 0; padding: 14px 20px; background: ${template.titleBackground || 'transparent'}; text-align: center;`;
+          } else if (template.titlePosition === 'top-left') {
+            containerCSS = `position: absolute; top: 0; left: 0; padding: 14px 20px; background: ${template.titleBackground || 'transparent'}; text-align: left;${template.titleBackgroundPattern === 'grid' ? getGridPattern() : ''}`;
+          } else if (template.titlePosition === 'top-right') {
+            containerCSS = `position: absolute; top: 0; right: 0; padding: 14px 20px; background: ${template.titleBackground || 'transparent'}; text-align: right;`;
           } else if (template.titlePosition === 'bottom-left') {
-            titleContainer.style.cssText = `
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              padding: 24px 20px 16px;
-              background: ${template.titleBackground};
-            `;
+            containerCSS = `position: absolute; bottom: 0; left: 0; right: 0; padding: 24px 20px 16px; background: ${template.titleBackground || 'transparent'};`;
+          } else if (template.titlePosition === 'bottom-right') {
+            containerCSS = `position: absolute; bottom: 0; right: 0; padding: 20px; background: ${template.titleBackground || 'transparent'}; text-align: right;`;
+          } else if (template.titlePosition === 'bottom-center') {
+            containerCSS = `position: absolute; bottom: 0; left: 0; right: 0; padding: 14px 20px; background: ${template.titleBackground || 'transparent'}; text-align: center;`;
           } else if (template.titlePosition === 'center-overlay') {
-            titleContainer.style.cssText = `
-              position: absolute;
-              top: 50%;
-              left: 50%;
-              transform: translate(-50%, -50%);
-              text-align: center;
-              padding: 24px;
-            `;
+            containerCSS = `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; padding: 24px;`;
+          } else if (template.titlePosition === 'diagonal') {
+            containerCSS = `position: absolute; bottom: 20%; left: 5%; padding: 16px 24px; background: ${template.titleBackground || 'transparent'}; transform: rotate(-3deg); transform-origin: left bottom; border-radius: 4px;`;
           }
+
+          // Banner for Prestige
+          if (template.titleBanner) {
+            containerCSS += 'background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%); padding: 12px 24px; border-radius: 4px; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);';
+          }
+
+          titleContainer.style.cssText = containerCSS;
 
           if (title) {
             const titleEl = document.createElement('div');
-            titleEl.style.cssText = `
-              font-family: ${template.titleFont};
-              font-size: ${template.titleSize}px;
-              font-weight: 600;
-              color: ${template.titleColor || '#2d3436'};
-              ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
-              letter-spacing: 0.5px;
-            `;
+            let titleStyle = `font-family: ${template.titleFont || "'Inter', sans-serif"}; font-size: ${template.titleSize || 22}px; font-weight: ${template.titleFontWeight || '600'}; color: ${template.titleColor || '#2d3436'};${template.titleShadow ? ` text-shadow: ${template.titleShadow};` : ''} letter-spacing: 0.5px;`;
+            if (template.titleTransform) titleStyle += ` text-transform: ${template.titleTransform};`;
+            if (template.titleStyle === 'italic') titleStyle += ' font-style: italic;';
+            titleEl.style.cssText = titleStyle;
             titleEl.textContent = title;
+            if (template.titleUnderline) {
+              titleEl.style.borderBottom = '3px double #8b7355';
+              titleEl.style.paddingBottom = '8px';
+              titleEl.style.marginBottom = '8px';
+            }
             titleContainer.appendChild(titleEl);
           }
 
           if (subtitle) {
             const subtitleEl = document.createElement('div');
-            subtitleEl.style.cssText = `
-              font-family: ${template.titleFont};
-              font-size: ${template.subtitleSize}px;
-              color: ${template.titleColor ? 'rgba(255,255,255,0.75)' : '#636e72'};
-              ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
-              margin-top: 4px;
-              font-weight: 400;
-            `;
+            let subtitleColor = '#636e72';
+            if (template.titleColor) {
+              if (template.titleColor.indexOf('255') >= 0 || template.titleColor.indexOf('#fff') >= 0 || template.titleColor.indexOf('#00ffff') >= 0 || template.titleColor.indexOf('#ff00ff') >= 0) {
+                subtitleColor = template.titleColor.replace('1)', '0.75)').replace('ff)', 'c0)');
+              } else {
+                subtitleColor = template.titleColor.indexOf('rgba') >= 0 ? template.titleColor.replace(/,\s*[0-9.]+\)/, ', 0.7)') : '#636e72';
+              }
+            }
+            subtitleEl.style.cssText = `font-family: ${template.titleFont || "'Inter', sans-serif"}; font-size: ${template.subtitleSize || 13}px; color: ${subtitleColor};${template.titleShadow ? ` text-shadow: ${template.titleShadow};` : ''} margin-top: 4px; font-weight: 400;`;
             subtitleEl.textContent = subtitle;
             titleContainer.appendChild(subtitleEl);
           }
@@ -382,58 +580,56 @@ app.get('/render', async (req, res) => {
           overlay.appendChild(titleContainer);
         }
 
-        // Footer with scale and attribution
-        if (shouldShowScale || shouldShowAttribution) {
-          const footerBottom = template.titlePosition === 'bottom-left' ? 60 : 10;
+        // Scale and attribution - use template positions
+        const scalePos = template.scalePosition || (shouldShowScale ? 'bottom-left' : 'none');
+        const attrPos = template.attributionPosition || (shouldShowAttribution ? (scalePos === 'bottom-left' ? 'bottom-right' : 'bottom-left') : 'none');
 
-          const footerArea = document.createElement('div');
-          footerArea.style.cssText = `
-            position: absolute;
-            bottom: ${footerBottom}px;
-            left: 12px;
-            right: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            pointer-events: none;
-          `;
-
-          // Scale placeholder (left side)
-          if (shouldShowScale) {
-            const scaleEl = document.createElement('div');
-            scaleEl.style.cssText = `
-              background: rgba(255,255,255,0.88);
-              padding: 5px 10px;
-              border-radius: 3px;
-              color: #2d3436;
-              font-family: 'Inter', system-ui, sans-serif;
-              font-size: 11px;
-              font-weight: 500;
-              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            `;
-            scaleEl.textContent = scaleString;
-            footerArea.appendChild(scaleEl);
-          } else {
-            footerArea.appendChild(document.createElement('div'));
+        if (shouldShowScale && scalePos !== 'none') {
+          const scaleEl = document.createElement('div');
+          const scaleFont = template.scaleFont === 'monospace' ? "'Courier Prime', 'Courier New', monospace" : template.scaleFont === 'serif' ? "'Times New Roman', serif" : "'Inter', system-ui, sans-serif";
+          let scaleCSS = `position: absolute; background: rgba(255,255,255,0.88); padding: 5px 10px; border-radius: 3px; color: #2d3436; font-family: ${scaleFont}; font-size: 11px; font-weight: 500; box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none;`;
+          if (scalePos === 'bottom-left' || scalePos === 'bottom-center') {
+            const bottomOffset = (template.titlePosition === 'bottom-left' || template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center') ? 60 : 10;
+            scaleCSS += `bottom: ${bottomOffset}px;`;
+            if (scalePos === 'bottom-left') {
+              scaleCSS += 'left: 12px;';
+            } else {
+              scaleCSS += 'left: 50%; transform: translateX(-50%);';
+            }
+          } else if (scalePos === 'bottom-right') {
+            const bottomOffset = (template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center') ? 60 : 10;
+            scaleCSS += `bottom: ${bottomOffset}px; right: 12px;`;
+          } else if (scalePos === 'top-left') {
+            scaleCSS += 'top: 12px; left: 12px;';
+          } else if (scalePos === 'top-right') {
+            scaleCSS += 'top: 12px; right: 12px;';
           }
+          scaleEl.style.cssText = scaleCSS;
+          scaleEl.textContent = scaleString || '1:50K';
+          overlay.appendChild(scaleEl);
+        }
 
-          // Attribution (right side)
-          if (shouldShowAttribution && template.titlePosition !== 'bottom-left') {
-            const attrEl = document.createElement('div');
-            attrEl.style.cssText = `
-              padding: 4px 8px;
-              color: rgba(99, 110, 114, 0.6);
-              font-family: 'Inter', system-ui, sans-serif;
-              font-size: 9px;
-              max-width: 45%;
-              text-align: right;
-              letter-spacing: 0.2px;
-            `;
-            attrEl.textContent = attribution || 'OSM contributors';
-            footerArea.appendChild(attrEl);
+        if (shouldShowAttribution && attrPos !== 'none') {
+          const attrEl = document.createElement('div');
+          const attrFont = template.scaleFont === 'monospace' ? "'Courier Prime', 'Courier New', monospace" : template.scaleFont === 'serif' ? "'Times New Roman', serif" : "'Inter', system-ui, sans-serif";
+          let attrCSS = `position: absolute; padding: 4px 8px; color: rgba(99, 110, 114, 0.6); font-family: ${attrFont}; font-size: 9px; pointer-events: none; letter-spacing: 0.2px;`;
+          if (attrPos === 'bottom-left' && template.titlePosition !== 'bottom-left') {
+            const bottomOffset = template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center' ? 60 : 10;
+            attrCSS += `bottom: ${bottomOffset}px; left: 12px; text-align: left;`;
+          } else if (attrPos === 'bottom-right' && template.titlePosition !== 'bottom-right') {
+            const bottomOffset = template.titlePosition === 'bottom-left' || template.titlePosition === 'bottom-center' ? 60 : 10;
+            attrCSS += `bottom: ${bottomOffset}px; right: 12px; text-align: right; max-width: 45%;`;
+          } else if (attrPos === 'bottom-center') {
+            const bottomOffset = template.titlePosition === 'bottom-center' ? 60 : 10;
+            attrCSS += `bottom: ${bottomOffset}px; left: 50%; transform: translateX(-50%); text-align: center;`;
+          } else if (attrPos === 'top-right') {
+            attrCSS += 'top: 12px; right: 12px; text-align: right; max-width: 45%;';
+          } else if (attrPos === 'top-left') {
+            attrCSS += 'top: 12px; left: 12px; text-align: left;';
           }
-
-          overlay.appendChild(footerArea);
+          attrEl.style.cssText = attrCSS;
+          attrEl.textContent = attribution || 'OSM contributors';
+          overlay.appendChild(attrEl);
         }
 
         wrapper.appendChild(overlay);

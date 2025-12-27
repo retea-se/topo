@@ -1,0 +1,31 @@
+{
+  "test_id": "A2_Paper_v1_classic_B",
+  "preset": "A2_Paper_v1",
+  "bbox_preset": "stockholm_core",
+  "theme": "paper",
+  "template": "classic",
+  "variant": "B",
+  "width_mm": 594,
+  "height_mm": 420,
+  "dpi": 150,
+  "title": "Stockholm Paper",
+  "subtitle": "A2 Landscape",
+  "show_scale": false,
+  "show_attribution": false,
+  "timestamp": "2025-12-27T09:58:26.363Z",
+  "results": {
+    "editor_loaded": true,
+    "preset_selected": true,
+    "theme_selected": true,
+    "paper_configured": true,
+    "template_selected": true,
+    "title_set": true,
+    "toggles_set": true,
+    "preview_activated": true,
+    "preview_captured": true,
+    "export_captured": true
+  },
+  "preview_file": "preview.png",
+  "export_file": "export.png",
+  "export_size_bytes": 9823863
+}

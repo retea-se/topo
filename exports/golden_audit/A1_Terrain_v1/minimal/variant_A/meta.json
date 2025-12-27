@@ -1,0 +1,31 @@
+{
+  "test_id": "A1_Terrain_v1_minimal_A",
+  "preset": "A1_Terrain_v1",
+  "bbox_preset": "stockholm_wide",
+  "theme": "gallery",
+  "template": "minimal",
+  "variant": "A",
+  "width_mm": 594,
+  "height_mm": 841,
+  "dpi": 150,
+  "title": "Stockholm Terrain",
+  "subtitle": "Wide Coverage",
+  "show_scale": true,
+  "show_attribution": true,
+  "timestamp": "2025-12-27T10:03:21.519Z",
+  "results": {
+    "editor_loaded": true,
+    "preset_selected": true,
+    "theme_selected": true,
+    "paper_configured": true,
+    "template_selected": true,
+    "title_set": true,
+    "toggles_set": true,
+    "preview_activated": true,
+    "preview_captured": true,
+    "export_captured": true
+  },
+  "preview_file": "preview.png",
+  "export_file": "export.png",
+  "export_size_bytes": 5667928
+}
