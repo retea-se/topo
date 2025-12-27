@@ -67,17 +67,22 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Förbättringar:**
 - ✅ Test helpers: `waitForAppReady()`, `waitForPresetsLoaded()`, `selectPresetById()`
-- ✅ Console error gate: tester failar på JS errors/warnings
+- ✅ Console error gate: tester failar på JS errors/warnings (WebGL/GPU-warnings filtrerade bort)
 - ✅ Automatiska screenshots + HTML-dumps vid testfel
 - ✅ Testrapport: `exports/TEST_RUN_REPORT.md` genereras efter körning
 - ✅ Stabilare selectors: använder ID-selectors (redan stabila)
 - ✅ Tydliga test.step() blocks för bättre läsbarhet
+- ✅ **Locale-agnostic expectations**: Tester accepterar svenska UI-texter (t.ex. "papperskarta", "terrangkarta")
+- ✅ **Flexibla format-matching**: Pappersstorlekar accepteras med eller utan "(210 x 297 mm)"-suffix
+- ✅ **Stabilare assertions**: Tester använder regex/flexibla matcher för UI-texter
 
 **Kör tester:**
 ```bash
 npx playwright test scripts/test_print_editor.spec.js
 npx playwright test scripts/test_export_presets_editor.spec.js
 ```
+
+**Testresultat:** ✅ **29/29 PASS** (25 print editor + 4 export presets)
 
 **Testrapport:** `exports/TEST_RUN_REPORT.md` innehåller:
 - Testresultat (pass/fail/skipped)

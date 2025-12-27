@@ -185,8 +185,32 @@ npm install @playwright/test --save-dev
 | Preset API | ✅ Verified |
 
 **Known Issues:**
-- Preset E2E tests (2/4 fail) expect English names but UI uses Swedish locale. Functionality verified working via API.
+- ~~Preset E2E tests (2/4 fail) expect English names but UI uses Swedish locale. Functionality verified working via API.~~ ✅ **FIXED (2025-12-27)**: Test expectations aligned with Swedish UI locale.
 - Large exports at high DPI may timeout. Documented as known limitation.
+
+---
+
+## Test Expectation Alignment (2025-12-27) ✅ COMPLETE
+
+**Issue:** Playwright E2E tests were failing due to expectation mismatches with actual UI behavior:
+- UI uses Swedish locale (e.g., "papperskarta", "terrangkarta", "snabbutskrift")
+- Paper size labels format differences
+- Console warnings (WebGL/GPU) treated as errors
+- Minor test logic issues (attribution input, preview mode export)
+
+**Fixes Applied:**
+1. **Console warning filter**: Excluded WebGL/GPU driver warnings (not actual errors)
+2. **Locale-agnostic preset names**: Tests accept Swedish names via regex patterns (e.g., `/a2.*(paper|papperskarta)/i`)
+3. **Flexible paper size matching**: Accepts formats with or without "(210 x 297 mm)" suffix
+4. **Scale text assertion**: Changed from literal "Scale:" to regex pattern matching scale value format
+5. **Attribution input**: Fixed to check for checkbox (`#show-attribution`) instead of text input
+6. **Preview mode export test**: Fixed to exit preview mode before clicking export button
+
+**Result:** ✅ **29/29 tests PASS** (25 print editor + 4 export presets)
+
+**Files Changed:**
+- `scripts/test_print_editor.spec.js`
+- `scripts/test_export_presets_editor.spec.js`
 
 ---
 
