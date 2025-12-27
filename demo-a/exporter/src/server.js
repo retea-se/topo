@@ -9,6 +9,38 @@ const PORT = process.env.PORT || 8082;
 const WEB_URL = process.env.WEB_URL || 'http://demo-a-web:3000';
 const EXPORTS_DIR = process.env.EXPORTS_DIR || '/exports/demo-a';
 
+// Preset bboxes (must match editor.js PRESET_BBOXES)
+const PRESET_BBOXES = {
+  stockholm_core: { west: 17.90, south: 59.32, east: 18.08, north: 59.35 },
+  stockholm_wide: { west: 17.75, south: 59.28, east: 18.25, north: 59.40 },
+  svealand: { west: 14.5, south: 58.5, east: 19.0, north: 61.0 }
+};
+
+/**
+ * Calculate map scale string based on bbox and paper dimensions
+ * Matches the calculateScale() function in editor.js
+ */
+function calculateScale(bboxPreset, widthMm) {
+  const bbox = PRESET_BBOXES[bboxPreset];
+  if (!bbox) return 'N/A';
+
+  const bboxWidth = bbox.east - bbox.west;
+  const lat = (bbox.north + bbox.south) / 2;
+  const metersPerDegree = 111320 * Math.cos(lat * Math.PI / 180);
+  const bboxWidthMeters = bboxWidth * metersPerDegree;
+
+  const paperWidthMeters = widthMm / 1000;
+  const scale = Math.round(bboxWidthMeters / paperWidthMeters);
+
+  if (scale >= 1000000) {
+    return `1:${(scale / 1000000).toFixed(1)}M`;
+  } else if (scale >= 1000) {
+    return `1:${Math.round(scale / 1000)}K`;
+  } else {
+    return `1:${scale}`;
+  }
+}
+
 // Layout templates (must match editor.js LAYOUT_TEMPLATES)
 const LAYOUT_TEMPLATES = {
   classic: {
@@ -226,10 +258,13 @@ app.get('/render', async (req, res) => {
     // Inject print composition overlay for export
     const hasComposition = title || subtitle || template.frameWidth > 0 || shouldShowScale || shouldShowAttribution;
 
+    // Calculate scale before page.evaluate (can't call Node functions from browser context)
+    const scaleString = calculateScale(bbox_preset || 'stockholm_core', parseFloat(width_mm));
+
     if (hasComposition) {
       console.log('[Exporter] Injecting print composition overlay...');
 
-      await page.evaluate(({ template, title, subtitle, shouldShowScale, shouldShowAttribution, attribution, width_px, height_px }) => {
+      await page.evaluate(({ template, title, subtitle, shouldShowScale, shouldShowAttribution, attribution, width_px, height_px, scaleString }) => {
         const mapEl = document.getElementById('map');
         if (!mapEl) return;
 
@@ -356,7 +391,7 @@ app.get('/render', async (req, res) => {
               font-weight: 500;
               box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             `;
-            scaleEl.textContent = '1:50 000'; // Placeholder scale
+            scaleEl.textContent = scaleString;
             footerArea.appendChild(scaleEl);
           } else {
             footerArea.appendChild(document.createElement('div'));
@@ -390,7 +425,8 @@ app.get('/render', async (req, res) => {
         shouldShowAttribution,
         attribution: attribution || 'OSM contributors',
         width_px,
-        height_px
+        height_px,
+        scaleString
       });
 
       // Wait for composition to render
