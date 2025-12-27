@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-01-27 19:00 CET
+**Senast uppdaterad**: 2025-12-27 (Fas 3b - Effect Pipeline / Risograph)
 
 ## Sammanfattning
 
@@ -58,6 +58,32 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 ---
 
+### Fas 3b: Effect Pipeline / Risograph ✅ IMPLEMENTED (2025-12-27)
+
+Post-render Effect Pipeline för visuella effekter som appliceras efter kartrendering.
+
+**Implementation:**
+| Komponent | Status |
+|-----------|--------|
+| Effect Pipeline architecture | ✅ DONE |
+| Demo A integration (MapLibre/Canvas) | ✅ DONE |
+| Demo B integration (Mapnik/PIL) | ✅ DONE |
+| Risograph effect (JavaScript + Python) | ✅ DONE |
+| Determinism testing | ✅ DONE (Python: 6/6, Browser: 5/5) |
+| Theme: riso-red-cyan.json | ✅ DONE |
+| Preset: A2_Riso_RedCyan_v1 | ✅ DONE |
+
+**Risograph Effect Features:**
+- Color channel separation (ITU-R BT.601 luminance)
+- Registration offset per channel (simulates misregistration)
+- Multiply blend mode (ink-on-paper effect)
+- Seeded grain texture (Mulberry32 PRNG)
+- Debounced application for smooth interactivity
+
+**Dokumentation:** [EFFECT_PIPELINE_ARCHITECTURE.md](EFFECT_PIPELINE_ARCHITECTURE.md)
+
+---
+
 ### Fas 3a: Advanced Themes & Presets ✅ IMPLEMENTED (2025-12-27)
 
 3 nya avancerade teman med distinkt visuell karaktär och 3 matchande presets.
@@ -78,7 +104,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
 
-**Total themes i systemet:** 32
+**Total themes i systemet:** 33
 
 ---
 
@@ -480,7 +506,7 @@ Stockholm Wide och Svealand DEM-data laddades ned från **Copernicus DEM GLO-30*
 
 ## Tillgängliga teman
 
-**29 teman** är tillgängliga i Print Editor:
+**33 teman** är tillgängliga i Print Editor:
 
 **Grundteman (9 st):**
 paper, ink, mono, dark, gallery, charcoal, warm-paper, blueprint-muted, muted-pastel
@@ -490,6 +516,9 @@ art-deco, bauhaus, chalk, copper, cyberpunk, forest, gold-foil, high-contrast, n
 
 **Fas 1 teman (5 st) - NYA 2025-12-27:**
 japandi, scandi-minimal, duotone, sepia, mint
+
+**Fas 3b teman (1 st) - NYA 2025-12-27:**
+riso-red-cyan (risograph effect-enabled)
 
 ## Kända begränsningar
 
@@ -602,6 +631,29 @@ Screenshots sparade i: `exports/screenshots/`
 6. **Coverage Audit** - Dokumenterad datatäckning per preset
 7. **Entry-script** - `build_full_coverage.ps1/.sh` för enkel databyggning
 8. **Stockholm Wide Terrain** - Full DEM/hillshade/contour coverage via Copernicus GLO-30
+
+## Utvecklingsverktyg
+
+### Theme Recipe Tool ✅ IMPLEMENTED (2025-12-27)
+
+Ett verktyg för att validera och dokumentera themes.
+
+**Funktioner:**
+- Schema-validering (required fields, färgformat, layer-strukturer)
+- Effect pipeline-validering (risograph och andra effekter)
+- Färg-validering (kontrast-kontroll WCAG 2.1, färgkonflikter)
+- Dokumentation-generering (README-snippets, preset-rekommendationer)
+
+**Användning:**
+```bash
+python scripts/theme_tool/theme_recipe_tool.py themes/paper.json
+```
+
+**Output:** Genererar `<theme>_README.md`, `<theme>_presets.md`, och `<theme>_report.md` i `scripts/theme_tool/outputs/`
+
+**Dokumentation:** Se [scripts/theme_tool/README.md](../scripts/theme_tool/README.md)
+
+---
 
 ## Nästa steg
 
