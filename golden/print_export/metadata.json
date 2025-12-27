@@ -1,0 +1,81 @@
+{
+  "version": "1.0.0",
+  "created": "2025-12-27T10:11:00Z",
+  "description": "Golden baseline exports for print composition regression testing",
+  "generator": {
+    "service": "demo-a-exporter",
+    "docker_image": "topo-demo-a-exporter:latest"
+  },
+  "goldens": [
+    {
+      "id": "A3_Blueprint_v1_Classic",
+      "file": "A3_Blueprint_v1_Classic_golden.png",
+      "sha256": "48e4bbd0f787b9000d4daf980f3592ad82888870c2b203251d60f34c84975fb2",
+      "dimensions": {
+        "width_px": 2480,
+        "height_px": 1754,
+        "width_mm": 420,
+        "height_mm": 297,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_core",
+        "theme": "blueprint-muted",
+        "layout_template": "classic",
+        "title": "Stockholm Blueprint",
+        "subtitle": "Technical Map",
+        "show_scale": false,
+        "show_attribution": true
+      },
+      "purpose": "Text + frame strict validation"
+    },
+    {
+      "id": "A2_Paper_v1_Minimal",
+      "file": "A2_Paper_v1_Minimal_golden.png",
+      "sha256": "ef0c5bb30a2bb8ba0e20f4561470974dd9a41c560375b4ce1b00e8609fdd8a8c",
+      "dimensions": {
+        "width_px": 3508,
+        "height_px": 2480,
+        "width_mm": 594,
+        "height_mm": 420,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_core",
+        "theme": "paper",
+        "layout_template": "minimal",
+        "title": "",
+        "subtitle": "",
+        "show_scale": false,
+        "show_attribution": false
+      },
+      "purpose": "Frame + whitespace validation"
+    },
+    {
+      "id": "A1_Terrain_v1_Bold",
+      "file": "A1_Terrain_v1_Bold_golden.png",
+      "sha256": "4df10114b61b3dd1caa073234c2e16890e789075e1d8f89a361ff6d4799b9eff",
+      "dimensions": {
+        "width_px": 3508,
+        "height_px": 4967,
+        "width_mm": 594,
+        "height_mm": 841,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_wide",
+        "theme": "gallery",
+        "layout_template": "bold",
+        "title": "Stockholm Terrain",
+        "subtitle": "Wide Coverage",
+        "show_scale": true,
+        "show_attribution": true
+      },
+      "purpose": "Terrain + heavy composition validation"
+    }
+  ],
+  "acceptance_threshold": {
+    "pixel_diff_percent_max": 0.1,
+    "note": "Anti-aliasing tolerance. Exact dimensions required."
+  }
+}

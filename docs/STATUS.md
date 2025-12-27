@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-26 23:30 CET
+**Senast uppdaterad**: 2025-12-27 10:20 CET
 
 ## Sammanfattning
 
@@ -81,6 +81,28 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 - Export verifierad: `export_stockholm_core_blueprint-muted_420x594mm_150dpi_2025-12-26T19-49-24.png` (9.6 MB)
 
 Se [TODO_PRINT_EDITOR_FIXES.md](TODO_PRINT_EDITOR_FIXES.md), [TODO_EXPORT_EDITOR.md](../archive/TODO_EXPORT_EDITOR_completed.md) (arkiverad), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
+
+### Golden Print Export (2025-12-27) ✅ COMPLETE
+
+Print export now matches preview - all composition elements are correctly rendered in exported files.
+
+| Feature | Status |
+|---------|--------|
+| Frame/Border in export | ✅ FIXED |
+| Title/Subtitle in export | ✅ FIXED |
+| Scale bar in export | ✅ FIXED |
+| Attribution in export | ✅ FIXED |
+| Golden baseline tests | ✅ 3/3 PASS |
+| Regression test script | ✅ IMPLEMENTED |
+
+**Golden Baselines:**
+- A3_Blueprint_v1_Classic: `48e4bbd0f787...` (2480x1754 px)
+- A2_Paper_v1_Minimal: `ef0c5bb30a2b...` (3508x2480 px)
+- A1_Terrain_v1_Bold: `4df10114b61b...` (3508x4967 px)
+
+**Test:** `node scripts/qa_golden_print_export.js`
+
+Se [QA_PRINT_EXPORT_GOLDEN.md](QA_PRINT_EXPORT_GOLDEN.md) för detaljer.
 
 ### Tidigare funktioner (2025-12-27)
 

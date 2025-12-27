@@ -12,6 +12,7 @@ venv/
 data/
 *.png
 !exports/*.png
+!golden/print_export/*.png
 *.pdf
 *.tif
 *.geojson
