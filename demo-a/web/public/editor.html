@@ -13,6 +13,10 @@
     <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.4.3/mapbox-gl-draw.js"></script>
     <script src="/themeToStyle.js"></script>
+    <!-- Effect Pipeline -->
+    <script src="/effects/utils.js"></script>
+    <script src="/effects/risograph.js"></script>
+    <script src="/effects/index.js"></script>
     <style>
         /* Nordic/Scandinavian Design System */
         :root {
@@ -153,6 +157,21 @@
             resize: vertical;
             min-height: 52px;
             font-size: 12px;
+        }
+
+        .lang-btn {
+            transition: all 0.15s;
+        }
+
+        .lang-btn:hover {
+            background: var(--accent-light) !important;
+            border-color: var(--accent) !important;
+        }
+
+        .lang-btn.active {
+            background: var(--accent) !important;
+            border-color: var(--accent) !important;
+            color: #fff !important;
         }
 
         .form-row {
@@ -729,14 +748,22 @@
     <!-- Sidebar -->
     <div id="sidebar">
         <div id="sidebar-header">
-            <h1>Print Editor</h1>
-            <p>Configure and export your map</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 id="header-title">Print Editor</h1>
+                    <p id="header-subtitle">Configure and export your map</p>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button id="lang-btn-sv" class="lang-btn" data-lang="sv" style="padding: 6px 12px; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-primary);">SV</button>
+                    <button id="lang-btn-en" class="lang-btn active" data-lang="en" style="padding: 6px 12px; border: 1px solid var(--accent); background: var(--accent); border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: 500; color: #fff;">EN</button>
+                </div>
+            </div>
         </div>
 
         <div class="sidebar-content">
             <!-- Export Preset Selection (Phase 9.2) -->
             <div class="panel-section" id="export-preset-section">
-                <h3>Export Preset</h3>
+                <h3 data-i18n="exportPreset">Export Preset</h3>
                 <div class="form-group">
                     <div class="preset-select-wrapper">
                         <select id="export-preset-select">
@@ -751,9 +778,9 @@
 
             <!-- Area Selection -->
             <div class="panel-section">
-                <h3>Area</h3>
+                <h3 data-i18n="area">Area</h3>
                 <div class="form-group" id="bbox-preset-group">
-                    <label class="field-label" id="preset-label">Preset <span class="lock-indicator"></span></label>
+                    <label class="field-label" id="preset-label"><span data-i18n="preset">Preset</span> <span class="lock-indicator"></span></label>
                     <select id="preset-select">
                         <option value="stockholm_core">Stockholm Core</option>
                         <option value="stockholm_wide">Stockholm Wide</option>
@@ -763,43 +790,43 @@
                 </div>
                 <div class="bbox-display" id="bbox-display">
                     <div class="coord-row">
-                        <span>West:</span>
+                        <span data-i18n="west">West:</span>
                         <span class="coord-value" id="bbox-west">-</span>
                     </div>
                     <div class="coord-row">
-                        <span>South:</span>
+                        <span data-i18n="south">South:</span>
                         <span class="coord-value" id="bbox-south">-</span>
                     </div>
                     <div class="coord-row">
-                        <span>East:</span>
+                        <span data-i18n="east">East:</span>
                         <span class="coord-value" id="bbox-east">-</span>
                     </div>
                     <div class="coord-row">
-                        <span>North:</span>
+                        <span data-i18n="north">North:</span>
                         <span class="coord-value" id="bbox-north">-</span>
                     </div>
                 </div>
                 <div class="btn-group" style="margin-top: 12px;">
-                    <button class="btn btn-secondary" id="draw-bbox-btn">Draw Bbox</button>
-                    <button class="btn btn-secondary" id="reset-bbox-btn">Reset</button>
+                    <button class="btn btn-secondary" id="draw-bbox-btn" data-i18n="drawBbox">Draw Bbox</button>
+                    <button class="btn btn-secondary" id="reset-bbox-btn" data-i18n="reset">Reset</button>
                 </div>
             </div>
 
             <!-- Composition -->
             <div class="panel-section">
-                <h3>Composition</h3>
+                <h3 data-i18n="composition">Composition</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" id="title-input" placeholder="e.g. Stockholm">
+                        <label data-i18n="title">Title</label>
+                        <input type="text" id="title-input" data-i18n-placeholder="titlePlaceholder">
                     </div>
                     <div class="form-group">
-                        <label>Subtitle</label>
-                        <input type="text" id="subtitle-input" placeholder="e.g. Sweden">
+                        <label data-i18n="subtitle">Subtitle</label>
+                        <input type="text" id="subtitle-input" data-i18n-placeholder="subtitlePlaceholder">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Layout</label>
+                    <label data-i18n="layout">Layout</label>
                     <select id="layout-select">
                         <!-- Original layouts -->
                         <option value="classic">Classic</option>
@@ -825,50 +852,50 @@
                 <div class="form-row" style="margin-top: 12px;">
                     <label class="checkbox-inline">
                         <input type="checkbox" id="show-scale" checked>
-                        <span>Show scale</span>
+                        <span data-i18n="showScale">Show scale</span>
                     </label>
                     <label class="checkbox-inline">
                         <input type="checkbox" id="show-attribution" checked>
-                        <span>Show attribution</span>
+                        <span data-i18n="showAttribution">Show attribution</span>
                     </label>
                 </div>
             </div>
 
             <!-- Style -->
             <div class="panel-section">
-                <h3>Style</h3>
+                <h3 data-i18n="style">Style</h3>
                 <div class="form-group" id="theme-group">
-                    <label class="field-label" id="theme-label">Theme <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <label class="field-label" id="theme-label"><span data-i18n="theme">Theme</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
                     <select id="theme-select">
                         <option value="paper">Loading...</option>
                     </select>
                 </div>
                 <div class="form-group" id="layers-group">
-                    <label class="field-label" id="layers-label">Layers <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <label class="field-label" id="layers-label"><span data-i18n="layers">Layers</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
                     <div class="checkbox-group">
                         <label class="checkbox-item">
                             <input type="checkbox" id="layer-hillshade" checked>
-                            <span>Hillshade</span>
+                            <span data-i18n="hillshade">Hillshade</span>
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="layer-water" checked>
-                            <span>Water</span>
+                            <span data-i18n="water">Water</span>
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="layer-parks" checked>
-                            <span>Parks</span>
+                            <span data-i18n="parks">Parks</span>
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="layer-roads" checked>
-                            <span>Roads</span>
+                            <span data-i18n="roads">Roads</span>
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="layer-buildings" checked>
-                            <span>Buildings</span>
+                            <span data-i18n="buildings">Buildings</span>
                         </label>
                         <label class="checkbox-item">
                             <input type="checkbox" id="layer-contours" checked>
-                            <span>Contours</span>
+                            <span data-i18n="contours">Contours</span>
                         </label>
                     </div>
                 </div>
@@ -876,10 +903,10 @@
 
             <!-- Export Settings -->
             <div class="panel-section">
-                <h3>Export</h3>
+                <h3 data-i18n="export">Export</h3>
                 <div class="form-row">
                     <div class="form-group" id="paper-size-group">
-                        <label class="field-label" id="paper-size-label">Paper Size <span class="lock-indicator" title="Locked by preset"></span></label>
+                        <label class="field-label" id="paper-size-label"><span data-i18n="paperSize">Paper Size</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
                         <select id="paper-size-select">
                             <option value="A4">A4</option>
                             <option value="A3">A3</option>
@@ -890,7 +917,7 @@
                         </select>
                     </div>
                     <div class="form-group" id="dpi-group">
-                        <label class="field-label" id="dpi-label">DPI <span class="lock-indicator" title="Locked by preset"></span></label>
+                        <label class="field-label" id="dpi-label"><span data-i18n="dpi">DPI</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
                         <select id="dpi-select">
                             <option value="72">72</option>
                             <option value="150" selected>150</option>
@@ -901,23 +928,23 @@
                 </div>
                 <div class="form-row" id="custom-size-row" style="display: none;">
                     <div class="form-group">
-                        <label>Width (mm)</label>
+                        <label data-i18n="width">Width (mm)</label>
                         <input type="number" id="width-input" value="420" min="100" max="2000">
                     </div>
                     <div class="form-group">
-                        <label>Height (mm)</label>
+                        <label data-i18n="height">Height (mm)</label>
                         <input type="number" id="height-input" value="594" min="100" max="2000">
                     </div>
                 </div>
                 <div class="form-group" id="orientation-group">
-                    <label class="field-label" id="orientation-label">Orientation <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <label class="field-label" id="orientation-label"><span data-i18n="orientation">Orientation</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
                     <div class="toggle-group">
-                        <button class="toggle-btn active" data-value="portrait" id="orientation-portrait">Portrait</button>
-                        <button class="toggle-btn" data-value="landscape" id="orientation-landscape">Landscape</button>
+                        <button class="toggle-btn active" data-value="portrait" id="orientation-portrait" data-i18n="portrait">Portrait</button>
+                        <button class="toggle-btn" data-value="landscape" id="orientation-landscape" data-i18n="landscape">Landscape</button>
                     </div>
                 </div>
                 <div class="form-group" id="format-group">
-                    <label class="field-label" id="format-label">Format <span class="lock-indicator" title="Locked by preset"></span></label>
+                    <label class="field-label" id="format-label"><span data-i18n="format">Format</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
                     <div class="toggle-group">
                         <button class="toggle-btn active" data-value="png" id="format-png">PNG</button>
                         <button class="toggle-btn" data-value="pdf" id="format-pdf">PDF</button>
@@ -927,15 +954,15 @@
 
                 <div class="preview-info" id="preview-info">
                     <div class="preview-info-row">
-                        <span class="preview-info-label">Output</span>
+                        <span class="preview-info-label" data-i18n="output">Output</span>
                         <span class="preview-info-value" id="output-size">2480 x 3508 px</span>
                     </div>
                     <div class="preview-info-row">
-                        <span class="preview-info-label">Scale</span>
+                        <span class="preview-info-label" data-i18n="scale">Scale</span>
                         <span class="preview-info-value" id="scale-display">1:25,000</span>
                     </div>
                     <div class="preview-info-row">
-                        <span class="preview-info-label">Est. Size</span>
+                        <span class="preview-info-label" data-i18n="estSize">Est. Size</span>
                         <span class="preview-info-value" id="file-size">~4 MB</span>
                     </div>
                 </div>
@@ -945,8 +972,8 @@
         <!-- Actions (sticky) -->
         <div class="actions-panel">
             <div class="btn-group">
-                <button class="btn btn-secondary" id="preview-btn">Preview</button>
-                <button class="btn btn-primary" id="export-btn">Export</button>
+                <button class="btn btn-secondary" id="preview-btn" data-i18n="preview">Preview</button>
+                <button class="btn btn-primary" id="export-btn" data-i18n="exportBtn">Export</button>
             </div>
         </div>
     </div>
@@ -957,7 +984,7 @@
 
         <!-- Close Preview Button (hidden by default) -->
         <button class="close-preview-btn" id="close-preview-btn">
-            Close Preview
+            <span data-i18n="closePreview">Close Preview</span>
             <span class="key-hint">ESC</span>
         </button>
 
@@ -972,10 +999,10 @@
         <div class="status-bar">
             <div class="status-item">
                 <span class="status-dot" id="status-dot"></span>
-                <span id="status-text">Ready</span>
+                <span id="status-text" data-i18n="ready">Ready</span>
             </div>
             <div class="status-item">
-                <span>Zoom: <span id="zoom-level">13</span></span>
+                <span data-i18n="zoom">Zoom</span>: <span id="zoom-level">13</span>
             </div>
         </div>
     </div>
@@ -983,11 +1010,11 @@
     <!-- Export Modal -->
     <div class="modal-overlay" id="export-modal">
         <div class="modal">
-            <h2>Exporting Map</h2>
+            <h2 data-i18n="exportingMap">Exporting Map</h2>
             <div class="progress-bar">
                 <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
             </div>
-            <div class="modal-status" id="modal-status">Initializing...</div>
+            <div class="modal-status" id="modal-status" data-i18n="initializing">Initializing...</div>
         </div>
     </div>
 

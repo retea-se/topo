@@ -16,12 +16,263 @@ let styleChangeInProgress = false;
 let pendingStyleChange = false;
 let isPreviewMode = false;
 
+// Internationalization
+let currentLanguage = localStorage.getItem('editor_language') || 'en';
+
+const translations = {
+    sv: {
+        // Header
+        printEditor: 'Print Editor',
+        configureAndExport: 'Konfigurera och exportera din karta',
+        // Sections
+        exportPreset: 'Exportförinställning',
+        area: 'Område',
+        composition: 'Komposition',
+        style: 'Stil',
+        export: 'Export',
+        // Fields
+        preset: 'Förinställning',
+        title: 'Titel',
+        subtitle: 'Undertitel',
+        layout: 'Layout',
+        theme: 'Tema',
+        layers: 'Lager',
+        paperSize: 'Pappersstorlek',
+        dpi: 'DPI',
+        width: 'Bredd (mm)',
+        height: 'Höjd (mm)',
+        orientation: 'Orientering',
+        format: 'Format',
+        output: 'Utdata',
+        scale: 'Skala',
+        estSize: 'Uppskattad storlek',
+        zoom: 'Zoom',
+        ready: 'Redo',
+        // Values
+        portrait: 'Stående',
+        landscape: 'Liggande',
+        hillshade: 'Skuggning',
+        water: 'Vatten',
+        parks: 'Parker',
+        roads: 'Vägar',
+        buildings: 'Byggnader',
+        contours: 'Höjdkurvor',
+        showScale: 'Visa skala',
+        showAttribution: 'Visa attribuering',
+        // Buttons
+        drawBbox: 'Rita område',
+        reset: 'Återställ',
+        preview: 'Förhandsgranska',
+        exportBtn: 'Exportera',
+        closePreview: 'Stäng förhandsgranskning',
+        // Status messages
+        initializing: 'Initierar...',
+        exportingMap: 'Exporterar karta',
+        customBboxSelected: 'Anpassat område valt',
+        drawingBboxInstructions: 'Klicka för att rita områdets hörn, dubbelklicka för att avsluta',
+        // Placeholders
+        titlePlaceholder: 't.ex. Stockholm',
+        subtitlePlaceholder: 't.ex. Sverige',
+        // Locked field tooltip
+        lockedByPreset: 'Låst av förinställning',
+        // Preset options
+        stockholmCore: 'Stockholm Centrum',
+        stockholmWide: 'Stockholm Område',
+        svealand: 'Svealand',
+        customDraw: 'Anpassat (Rita på kartan)',
+        noneCustom: 'Ingen (Anpassat)'
+    },
+    en: {
+        // Header
+        printEditor: 'Print Editor',
+        configureAndExport: 'Configure and export your map',
+        // Sections
+        exportPreset: 'Export Preset',
+        area: 'Area',
+        composition: 'Composition',
+        style: 'Style',
+        export: 'Export',
+        // Fields
+        preset: 'Preset',
+        title: 'Title',
+        subtitle: 'Subtitle',
+        layout: 'Layout',
+        theme: 'Theme',
+        layers: 'Layers',
+        paperSize: 'Paper Size',
+        dpi: 'DPI',
+        width: 'Width (mm)',
+        height: 'Height (mm)',
+        orientation: 'Orientation',
+        format: 'Format',
+        output: 'Output',
+        scale: 'Scale',
+        estSize: 'Est. Size',
+        zoom: 'Zoom',
+        ready: 'Ready',
+        // Values
+        portrait: 'Portrait',
+        landscape: 'Landscape',
+        hillshade: 'Hillshade',
+        water: 'Water',
+        parks: 'Parks',
+        roads: 'Roads',
+        buildings: 'Buildings',
+        contours: 'Contours',
+        showScale: 'Show scale',
+        showAttribution: 'Show attribution',
+        // Buttons
+        drawBbox: 'Draw Bbox',
+        reset: 'Reset',
+        preview: 'Preview',
+        exportBtn: 'Export',
+        closePreview: 'Close Preview',
+        // Status messages
+        initializing: 'Initializing...',
+        exportingMap: 'Exporting Map',
+        customBboxSelected: 'Custom bbox selected',
+        drawingBboxInstructions: 'Click to draw bbox corners, double-click to finish',
+        // Placeholders
+        titlePlaceholder: 'e.g. Stockholm',
+        subtitlePlaceholder: 'e.g. Sweden',
+        // Locked field tooltip
+        lockedByPreset: 'Locked by preset',
+        // Preset options
+        stockholmCore: 'Stockholm Core',
+        stockholmWide: 'Stockholm Wide',
+        svealand: 'Svealand',
+        customDraw: 'Custom (Draw on Map)',
+        noneCustom: 'None (Custom)'
+    }
+};
+
+// Coordinate labels (used in bbox display)
+const coordLabels = {
+    sv: { west: 'Väst:', south: 'Syd:', east: 'Öst:', north: 'Nord:' },
+    en: { west: 'West:', south: 'South:', east: 'East:', north: 'North:' }
+};
+
+/**
+ * Get translation for a key
+ */
+function t(key) {
+    return translations[currentLanguage][key] || translations.en[key] || key;
+}
+
+/**
+ * Update all text elements with translations
+ */
+function updateTranslations() {
+    // Update elements with data-i18n attribute
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLanguage] && translations[currentLanguage][key]) {
+            el.textContent = translations[currentLanguage][key];
+        }
+    });
+
+    // Update placeholder attributes
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[currentLanguage] && translations[currentLanguage][key]) {
+            el.placeholder = translations[currentLanguage][key];
+        }
+    });
+
+    // Update title attributes
+    document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        const key = el.getAttribute('data-i18n-title');
+        if (translations[currentLanguage] && translations[currentLanguage][key]) {
+            el.title = translations[currentLanguage][key];
+        }
+    });
+
+    // Update header title and subtitle
+    const headerTitle = document.getElementById('header-title');
+    const headerSubtitle = document.getElementById('header-subtitle');
+    if (headerTitle) headerTitle.textContent = t('printEditor');
+    if (headerSubtitle) headerSubtitle.textContent = t('configureAndExport');
+
+    // Update preset select options
+    const presetSelect = document.getElementById('preset-select');
+    if (presetSelect) {
+        const options = presetSelect.options;
+        // Update existing options (assuming they exist)
+        for (let i = 0; i < options.length; i++) {
+            const value = options[i].value;
+            if (value === 'stockholm_core') {
+                options[i].textContent = t('stockholmCore');
+            } else if (value === 'stockholm_wide') {
+                options[i].textContent = t('stockholmWide');
+            } else if (value === 'svealand') {
+                options[i].textContent = t('svealand');
+            } else if (value === 'custom') {
+                options[i].textContent = t('customDraw');
+            }
+        }
+    }
+
+    // Update export preset select
+    const exportPresetSelect = document.getElementById('export-preset-select');
+    if (exportPresetSelect && exportPresetSelect.options.length > 0) {
+        if (exportPresetSelect.options[0].value === '') {
+            exportPresetSelect.options[0].textContent = t('noneCustom');
+        }
+    }
+
+    // Update bbox coordinate labels
+    const coordElements = {
+        west: document.querySelector('#bbox-display .coord-row:first-child span:first-child'),
+        south: document.querySelector('#bbox-display .coord-row:nth-child(2) span:first-child'),
+        east: document.querySelector('#bbox-display .coord-row:nth-child(3) span:first-child'),
+        north: document.querySelector('#bbox-display .coord-row:last-child span:first-child')
+    };
+    if (coordElements.west) coordElements.west.textContent = coordLabels[currentLanguage].west;
+    if (coordElements.south) coordElements.south.textContent = coordLabels[currentLanguage].south;
+    if (coordElements.east) coordElements.east.textContent = coordLabels[currentLanguage].east;
+    if (coordElements.north) coordElements.north.textContent = coordLabels[currentLanguage].north;
+
+    // Update status text if it says "Ready"
+    const statusText = document.getElementById('status-text');
+    if (statusText && statusText.textContent === (currentLanguage === 'sv' ? 'Redo' : 'Ready')) {
+        statusText.textContent = t('ready');
+    }
+}
+
+/**
+ * Set language and update UI
+ */
+function setLanguage(lang) {
+    if (!translations[lang]) return;
+    currentLanguage = lang;
+    localStorage.setItem('editor_language', lang);
+    updateTranslations();
+
+    // Update language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-lang') === lang) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Update status messages that might be displayed
+    const statusTextEl = document.getElementById('status-text');
+    if (!isDrawingMode && statusTextEl && (statusTextEl.textContent === 'Ready' || statusTextEl.textContent === 'Redo')) {
+        setStatus(t('ready'), 'success');
+    }
+}
+
 // Export Preset State (Phase 9.2)
 let exportPresets = [];
 let selectedExportPreset = null;
 let selectedExportPresetData = null;
 let presetModified = false;
 let presetOriginalValues = null;
+
+// Effect Pipeline State
+let debouncedEffectApply = null;
+let currentPresetId = null; // For deterministic effect seeding
 
 // Debug logging
 const DEBUG = false;
@@ -810,25 +1061,25 @@ function updateBboxFromCoords(coords) {
     updatePreviewInfo();
 
     elements.presetSelect.value = 'custom';
-    setStatus('Custom bbox selected', 'success');
+    setStatus(t('customBboxSelected'), 'success');
 }
 
 function enterDrawMode() {
     isDrawingMode = true;
     elements.drawBboxBtn.classList.add('active');
-    elements.drawBboxBtn.textContent = 'Drawing...';
+    elements.drawBboxBtn.textContent = currentLanguage === 'sv' ? 'Ritar...' : 'Drawing...';
 
     draw.deleteAll();
     draw.changeMode('draw_polygon');
 
-    setStatus('Click to draw bbox corners, double-click to finish', 'warning');
+    setStatus(t('drawingBboxInstructions'), 'warning');
 }
 
 function exitDrawMode() {
     isDrawingMode = false;
     elements.drawBboxBtn.classList.remove('active');
-    elements.drawBboxBtn.textContent = 'Draw Bbox';
-    setStatus('Ready', 'success');
+    elements.drawBboxBtn.textContent = t('drawBbox');
+    setStatus(t('ready'), 'success');
 }
 
 function resetBbox() {
@@ -863,6 +1114,12 @@ function setStatus(message, type = 'success') {
     } else if (type === 'error') {
         elements.statusDot.classList.add('error');
     }
+
+    // Update translation attribute if it exists
+    const statusTextEl = document.getElementById('status-text');
+    if (statusTextEl && message === t('ready')) {
+        statusTextEl.setAttribute('data-i18n', 'ready');
+    }
 }
 
 function getLayerSettings() {
@@ -890,7 +1147,10 @@ function enterPreviewMode() {
         updatePrintComposition();
     }, 100);
 
-    setStatus('Preview mode - Press ESC to exit', 'success');
+    const previewMsg = currentLanguage === 'sv'
+        ? 'Förhandsgranskningsläge - Tryck ESC för att avsluta'
+        : 'Preview mode - Press ESC to exit';
+    setStatus(previewMsg, 'success');
 }
 
 /**
@@ -906,7 +1166,7 @@ function exitPreviewMode() {
         map.resize();
     }, 100);
 
-    setStatus('Ready', 'success');
+    setStatus(t('ready'), 'success');
 }
 
 /**
@@ -1319,7 +1579,10 @@ function setLayoutTemplate(templateId) {
  */
 async function exportMap() {
     if (!currentBbox) {
-        setStatus('Please select a bbox first', 'error');
+        const msg = currentLanguage === 'sv'
+            ? 'Välj ett område först'
+            : 'Please select a bbox first';
+        setStatus(msg, 'error');
         return;
     }
 
@@ -1332,7 +1595,8 @@ async function exportMap() {
 
     elements.exportModal.classList.add('active');
     elements.progressFill.style.width = '0%';
-    elements.modalStatus.textContent = 'Preparing export...';
+    const preparingMsg = currentLanguage === 'sv' ? 'Förbereder export...' : 'Preparing export...';
+    elements.modalStatus.textContent = preparingMsg;
 
     const output = calculateOutputSize();
     const theme = elements.themeSelect.value;
@@ -1343,7 +1607,8 @@ async function exportMap() {
 
     try {
         if (currentFormat === 'png') {
-            setProgress(20, 'Connecting to exporter...');
+            const connectingMsg = currentLanguage === 'sv' ? 'Ansluter till exporttjänst...' : 'Connecting to exporter...';
+            setProgress(20, connectingMsg);
 
             const params = new URLSearchParams({
                 bbox_preset: currentPreset === 'custom' ? 'stockholm_core' : currentPreset,
@@ -1367,7 +1632,8 @@ async function exportMap() {
             const exportUrl = `http://localhost:8082/render?${params}`;
             debug('PNG export URL:', exportUrl);
 
-            setProgress(40, 'Rendering map...');
+            const renderingMsg = currentLanguage === 'sv' ? 'Renderar karta...' : 'Rendering map...';
+            setProgress(40, renderingMsg);
 
             const response = await fetch(exportUrl, {
                 method: 'GET',
@@ -1379,7 +1645,8 @@ async function exportMap() {
                 throw new Error(`Export failed: ${response.status} - ${errorText}`);
             }
 
-            setProgress(80, 'Processing...');
+            const processingMsg = currentLanguage === 'sv' ? 'Bearbetar...' : 'Processing...';
+            setProgress(80, processingMsg);
 
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
@@ -1392,15 +1659,20 @@ async function exportMap() {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            setProgress(100, 'Complete');
-            setStatus(`Exported: ${filename}`, 'success');
+            const completeMsg = currentLanguage === 'sv' ? 'Klar' : 'Complete';
+            setProgress(100, completeMsg);
+            const exportedMsg = currentLanguage === 'sv' ? `Exporterad: ${filename}` : `Exported: ${filename}`;
+            setStatus(exportedMsg, 'success');
 
             setTimeout(() => {
                 elements.exportModal.classList.remove('active');
             }, 1500);
 
         } else if (currentFormat === 'pdf' || currentFormat === 'svg') {
-            setProgress(20, `Preparing ${currentFormat.toUpperCase()}...`);
+            const preparingFormatMsg = currentLanguage === 'sv'
+                ? `Förbereder ${currentFormat.toUpperCase()}...`
+                : `Preparing ${currentFormat.toUpperCase()}...`;
+            setProgress(20, preparingFormatMsg);
 
             const requestBody = {
                 bbox_preset: currentPreset === 'custom' ? null : currentPreset,
@@ -1422,7 +1694,8 @@ async function exportMap() {
                 show_attribution: elements.showAttribution?.checked ? true : false
             };
 
-            setProgress(40, 'Rendering...');
+            const renderingMsg2 = currentLanguage === 'sv' ? 'Renderar...' : 'Rendering...';
+            setProgress(40, renderingMsg2);
 
             const response = await fetch('http://localhost:5000/api/render', {
                 method: 'POST',
@@ -1441,7 +1714,8 @@ async function exportMap() {
                 throw new Error(errorMsg);
             }
 
-            setProgress(80, 'Downloading...');
+            const downloadingMsg = currentLanguage === 'sv' ? 'Laddar ner...' : 'Downloading...';
+            setProgress(80, downloadingMsg);
 
             const blob = await response.blob();
             const url = URL.createObjectURL(blob);
@@ -1454,8 +1728,10 @@ async function exportMap() {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            setProgress(100, 'Complete');
-            setStatus(`Exported: ${filename}`, 'success');
+            const completeMsg2 = currentLanguage === 'sv' ? 'Klar' : 'Complete';
+            setProgress(100, completeMsg2);
+            const exportedMsg2 = currentLanguage === 'sv' ? `Exporterad: ${filename}` : `Exported: ${filename}`;
+            setStatus(exportedMsg2, 'success');
 
             setTimeout(() => {
                 elements.exportModal.classList.remove('active');
@@ -1471,7 +1747,8 @@ async function exportMap() {
         setTimeout(() => {
             elements.exportModal.classList.remove('active');
             elements.progressFill.style.background = '';
-            setStatus(`Export failed`, 'error');
+            const failedMsg = currentLanguage === 'sv' ? 'Export misslyckades' : 'Export failed';
+            setStatus(failedMsg, 'error');
         }, 3000);
     }
 }
@@ -2000,6 +2277,9 @@ function handleFieldChange() {
  */
 async function init() {
     try {
+        // Initialize translations first
+        updateTranslations();
+
         const [config, themes] = await Promise.all([
             fetch('/api/config').then(r => r.json()),
             fetch('/api/themes').then(r => r.json())
@@ -2045,8 +2325,56 @@ async function init() {
             setupDraw();
             await updateMapStyle();
             updatePreviewInfo();
-            setStatus('Ready', 'success');
+            setStatus(t('ready'), 'success');
+
+            // Initialize effect pipeline
+            setupEffectPipeline();
         });
+
+        // Setup effect pipeline for post-render effects
+        function setupEffectPipeline() {
+            if (!window.EffectPipeline) {
+                console.log('Effect pipeline not loaded');
+                return;
+            }
+
+            // Create debounced effect applier (100ms delay for smooth interaction)
+            debouncedEffectApply = window.EffectPipeline.createDebounced(100);
+
+            // Apply effects after map finishes rendering
+            map.on('idle', () => {
+                applyEffectsToCanvas();
+            });
+
+            console.log('Effect pipeline initialized');
+        }
+
+        // Apply effects to the map canvas
+        function applyEffectsToCanvas() {
+            if (!currentTheme || !currentTheme.effects) {
+                return;
+            }
+
+            if (!window.EffectPipeline || !window.EffectPipeline.hasEnabledEffects(currentTheme)) {
+                return;
+            }
+
+            const canvas = map.getCanvas();
+            if (!canvas) {
+                return;
+            }
+
+            // Generate deterministic seed from preset/theme/export preset
+            const seed = currentPresetId || selectedExportPreset || `${currentPreset}_${currentTheme.name || 'default'}`;
+
+            // Apply effects (debounced)
+            if (debouncedEffectApply) {
+                debouncedEffectApply(canvas, currentTheme.effects, seed);
+            }
+        }
+
+        // Expose for external use
+        window.applyMapEffects = applyEffectsToCanvas;
 
         map.on('zoom', () => {
             elements.zoomLevel.textContent = map.getZoom().toFixed(1);
@@ -2056,7 +2384,10 @@ async function init() {
 
     } catch (error) {
         console.error('Initialization error:', error);
-        setStatus('Error initializing editor', 'error');
+        const initErrorMsg = currentLanguage === 'sv'
+            ? 'Fel vid initiering av editorn'
+            : 'Error initializing editor';
+        setStatus(initErrorMsg, 'error');
     }
 }
 
@@ -2064,6 +2395,10 @@ async function init() {
  * Set up event listeners
  */
 function setupEventListeners() {
+    // Language switcher buttons
+    document.getElementById('lang-btn-sv')?.addEventListener('click', () => setLanguage('sv'));
+    document.getElementById('lang-btn-en')?.addEventListener('click', () => setLanguage('en'));
+
     // Export Preset select (Phase 9.2)
     if (elements.exportPresetSelect) {
         elements.exportPresetSelect.addEventListener('change', async (e) => {
@@ -2074,7 +2409,7 @@ function setupEventListeners() {
     // Preset select (bbox area)
     elements.presetSelect.addEventListener('change', async (e) => {
         currentPreset = e.target.value;
-        if (currentPreset !== 'custom') {
+            if (currentPreset !== 'custom') {
             currentBbox = PRESET_BBOXES[currentPreset];
             updateBboxDisplay(currentBbox);
             fitMapToBbox();
@@ -2083,7 +2418,10 @@ function setupEventListeners() {
 
             await updateMapStyle();
         } else {
-            setStatus('Draw a custom bbox on the map', 'warning');
+            const drawBboxMsg = currentLanguage === 'sv'
+                ? 'Rita ett anpassat område på kartan'
+                : 'Draw a custom bbox on the map';
+            setStatus(drawBboxMsg, 'warning');
         }
         updatePreviewInfo();
         handleFieldChange(); // Phase 9.2: modification detection
@@ -2098,7 +2436,10 @@ function setupEventListeners() {
 
         if (!currentTheme) {
             console.error(`Failed to load theme: ${themeName}`);
-            setStatus(`Error loading theme: ${themeName}`, 'error');
+            const themeErrorMsg = currentLanguage === 'sv'
+                ? `Fel vid laddning av tema: ${themeName}`
+                : `Error loading theme: ${themeName}`;
+            setStatus(themeErrorMsg, 'error');
             return;
         }
 

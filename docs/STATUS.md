@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-01-27 18:00 CET
+**Senast uppdaterad**: 2025-01-27 19:00 CET
 
 ## Sammanfattning
 
@@ -179,8 +179,34 @@ node scripts/qa_golden_demo_b.js
 | **Viewport stabilitet vid theme-byte** | ✅ **FIXAD** |
 | **Print composition overlay** | ✅ **NY** (15 layout templates: 5 original + 10 nya) |
 | **PNG export via fetch+blob** | ✅ **FIXAD** |
+| **Tvåspråkighet (Svenska/Engelska)** | ✅ **NY** (2025-01-27) |
 
 **Åtkomst**: http://localhost:3000/editor
+
+#### Tvåspråkighet (2025-01-27) ✅ IMPLEMENTED
+
+**Ny funktionalitet**: Print Editor stödjer nu svenska och engelska.
+
+| Feature | Status |
+|---------|--------|
+| Språkväxling (SV/EN knappar) | ✅ Implementerat |
+| Översättningar (alla UI-texter) | ✅ Implementerat |
+| Språkval sparas i localStorage | ✅ Implementerat |
+| Dynamiska meddelanden översatta | ✅ Implementerat |
+| Preset-optioner översatta | ✅ Implementerat |
+
+**Översatta element:**
+- Alla sektioner och labels (Area, Composition, Style, Export, etc.)
+- Knappar och statusmeddelanden
+- Preset-namn (Stockholm Core/Centrum, etc.)
+- Koordinatlabels (West/Väst, South/Syd, etc.)
+- Placeholders för input-fält
+
+**Tekniskt:**
+- Översättningssystem med `translations`-objekt
+- `data-i18n` attribut i HTML för automatisk översättning
+- `t()`-funktion för programmatisk översättning
+- Språkval sparas automatiskt i localStorage
 
 #### Playwright Test Hardening (2025-12-27) ✅ COMPLETE
 
