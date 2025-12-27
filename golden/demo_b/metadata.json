@@ -1,23 +1,41 @@
 {
   "version": "1.0.0",
-  "created": "2025-12-27T13:00:00Z",
+  "created": "2025-12-27T14:00:00Z",
   "description": "Golden baselines for Demo B (Mapnik) deterministic export verification",
   "generator": {
     "service": "demo-b-renderer",
     "docker_image": "topo-demo-b-renderer:latest"
   },
   "reproducibility_contract": {
+    "version": "1.0",
     "guarantee": "SHA256 byte-identical across invocations",
     "conditions": [
       "Same Docker image SHA",
       "Same font packages (DejaVu Sans)",
       "Same data files (OSM tiles, DEM, hillshade)",
       "Single-threaded rendering"
+    ],
+    "exclusions": [
+      "Demo A exports (GPU-dependent)",
+      "Svealand region (too large)",
+      "Custom bbox exports (untested coverage)",
+      "Modified preset exports (infinite variations)"
     ]
+  },
+  "tiers": {
+    "tier1": {
+      "description": "Required for every PR touching render code",
+      "presets": ["A4_Quick_v1", "A2_Paper_v1"]
+    },
+    "tier2": {
+      "description": "Recommended for nightly/pre-release",
+      "presets": ["A3_Blueprint_v1", "A1_Terrain_v1"]
+    }
   },
   "goldens": [
     {
       "id": "A4_Quick_v1",
+      "tier": "tier1",
       "file": "A4_Quick_v1_golden.png",
       "sha256": "PENDING",
       "dimensions": {
@@ -42,12 +60,99 @@
           "contours": true
         }
       },
-      "purpose": "Fast CI smoke test, reproducibility verification"
+      "purpose": "Fast CI smoke test (Tier 1 - smallest, fastest render)"
+    },
+    {
+      "id": "A2_Paper_v1",
+      "tier": "tier1",
+      "file": "A2_Paper_v1_golden.png",
+      "sha256": "PENDING",
+      "dimensions": {
+        "width_px": 2480,
+        "height_px": 3508,
+        "width_mm": 420,
+        "height_mm": 594,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_core",
+        "theme": "paper",
+        "format": "png",
+        "title": "",
+        "subtitle": "",
+        "layers": {
+          "hillshade": true,
+          "water": true,
+          "parks": true,
+          "roads": true,
+          "buildings": true,
+          "contours": true
+        }
+      },
+      "purpose": "Primary wall map format (Tier 1 - most common use case)"
+    },
+    {
+      "id": "A3_Blueprint_v1",
+      "tier": "tier2",
+      "file": "A3_Blueprint_v1_golden.png",
+      "sha256": "PENDING",
+      "dimensions": {
+        "width_px": 2480,
+        "height_px": 1754,
+        "width_mm": 420,
+        "height_mm": 297,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_core",
+        "theme": "blueprint-muted",
+        "format": "png",
+        "title": "",
+        "subtitle": "",
+        "layers": {
+          "hillshade": true,
+          "water": true,
+          "parks": true,
+          "roads": true,
+          "buildings": true,
+          "contours": true
+        }
+      },
+      "purpose": "Technical drawing format (Tier 2 - locked preset, must be invariant)"
+    },
+    {
+      "id": "A1_Terrain_v1",
+      "tier": "tier2",
+      "file": "A1_Terrain_v1_golden.png",
+      "sha256": "PENDING",
+      "dimensions": {
+        "width_px": 3508,
+        "height_px": 4967,
+        "width_mm": 594,
+        "height_mm": 841,
+        "dpi": 150
+      },
+      "params": {
+        "bbox_preset": "stockholm_wide",
+        "theme": "gallery",
+        "format": "png",
+        "title": "",
+        "subtitle": "",
+        "layers": {
+          "hillshade": true,
+          "water": true,
+          "parks": true,
+          "roads": true,
+          "buildings": true,
+          "contours": true
+        }
+      },
+      "purpose": "Large terrain map (Tier 2 - stockholm_wide, different render path)"
     }
   ],
   "acceptance_threshold": {
     "pixel_diff_percent_max": 0.0,
-    "note": "Demo B requires exact byte-identity. Any diff is a failure."
+    "note": "Demo B requires exact byte-identity. ANY diff is a failure."
   },
   "regeneration_policy": {
     "allowed_reasons": [
@@ -58,9 +163,14 @@
     "process": [
       "Open PR with [BASELINE] in title",
       "Attach before/after visual comparison",
-      "Update golden hashes",
+      "Update golden hashes in metadata.json",
       "Update BASELINE.md with date, reason, author",
       "Require explicit approval from maintainer"
+    ],
+    "not_allowed": [
+      "It's slightly different but looks fine",
+      "The old baseline was probably wrong",
+      "Nobody will notice"
     ]
   }
 }
