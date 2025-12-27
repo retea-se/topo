@@ -10,8 +10,12 @@ venv/
 .DS_Store
 *.log
 data/
+# PNG files - ignore by default, but include specific directories
 *.png
+# Include exports directory (for manual exports and test artifacts)
 !exports/*.png
+# Include golden print export baselines (required for regression testing)
+# These are reference images that must be version-controlled
 !golden/print_export/*.png
 *.pdf
 *.tif
@@ -21,6 +25,9 @@ data/
 nul
 
 # Test artifacts
-test-results/
+# Screenshots from test runs (temporary, not version-controlled)
 exports/screenshots/
+# Test reports (generated, not version-controlled)
 exports/*_REPORT.md
+# Playwright test results
+test-results/
