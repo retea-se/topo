@@ -2,16 +2,17 @@
 
 **Datum**: 2025-01-27  
 **Branch**: `feature/layout-designs`  
-**Status**: ⚠️ **PÅGÅENDE** - Exporter-servern behöver uppdateras
+**Status**: ✅ **COMPLETE** - Alla layouts fungerar i export
 
 ---
 
-## Problem
+## ✅ Complete
 
-Layout-overlayen renderas korrekt i **preview mode** i editorn, men exporter-servern (`demo-a/exporter/src/server.js`) behöver uppdateras för att:
+Layout-overlayen renderas nu korrekt både i **preview mode** och i **export**. Exporter-servern har uppdaterats:
 
 1. ✅ **LAYOUT_TEMPLATES uppdaterad** - Alla 10 nya layouts är tillagda
-2. ⏳ **Rendering-logiken behöver uppdateras** - `page.evaluate()` blocket (rad 287-450) hanterar bara 3 title-positions (top-center, bottom-left, center-overlay) men behöver stöd för alla 8 positioner + nya features
+2. ✅ **Rendering-logiken uppdaterad** - `page.evaluate()` blocket hanterar nu alla 8 title-positions + alla nya features
+3. ✅ **Testning klar** - Alla tester passerar (se LAYOUT_EXPORT_TESTING_REPORT.md)
 
 ---
 
@@ -108,11 +109,11 @@ if (template.titlePosition === 'top-center') {
 
 ---
 
-## Nästa Steg
+## ✅ Completed
 
-1. **Uppdatera rendering-logiken** i `demo-a/exporter/src/server.js` page.evaluate()-blocket
-2. **Testa export** med olika layouts för att verifiera att overlay renderas korrekt
-3. **Verifiera** att exporterade PNG-filer innehåller layout-overlay
+1. ✅ **Rendering-logiken uppdaterad** i `demo-a/exporter/src/server.js` page.evaluate()-blocket
+2. ✅ **Export testad** med 5 olika layouts - alla fungerar korrekt
+3. ✅ **Verifierad** - Alla exporterade PNG-filer innehåller layout-overlay (9-10 MB filstorlek, korrekt rendering)
 
 ---
 
@@ -136,6 +137,8 @@ curl "http://localhost:8082/render?bbox_preset=stockholm_core&theme=gold-foil&la
 ## Referenser
 
 - **Editor implementation**: `demo-a/web/public/editor.js` - `updatePrintComposition()` funktion (rad 915-1291)
-- **Exporter implementation**: `demo-a/exporter/src/server.js` - `page.evaluate()` block (rad 287-450)
+- **Exporter implementation**: `demo-a/exporter/src/server.js` - `page.evaluate()` block (rad 452-620)
 - **Layout templates**: `demo-a/exporter/src/server.js` - `LAYOUT_TEMPLATES` object (rad 65-290)
+- **Test Script**: `scripts/test_layout_export.js`
+- **Test Report**: `docs/LAYOUT_EXPORT_TESTING_REPORT.md`
 
