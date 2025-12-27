@@ -1,0 +1,50 @@
+{
+  "name": "Void",
+  "background": "#050505",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "none",
+    "mood": "stark"
+  },
+  "hillshade": {
+    "opacity": 0.08,
+    "gamma": 0.85,
+    "contrast": 1.4,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#0a0a0a",
+    "stroke": "#1a1a1a",
+    "strokeWidth": 0.3
+  },
+  "parks": {
+    "fill": "#080808",
+    "stroke": "#151515",
+    "strokeWidth": 0.2
+  },
+  "roads": {
+    "stroke": "#404040",
+    "strokeWidth": {
+      "major": 1.0,
+      "minor": 0.5
+    }
+  },
+  "buildings": {
+    "fill": "#0c0c0c",
+    "stroke": "#252525",
+    "strokeWidth": 0.3
+  },
+  "contours": {
+    "stroke": "#e8e0d4",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.5
+    },
+    "opacity": {
+      "major": 0.95,
+      "minor": 0.55
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

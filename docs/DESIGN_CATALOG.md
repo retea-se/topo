@@ -180,6 +180,32 @@ Technical drawing aesthetic with muted blue tones.
 
 Soft pastel colors, suitable for nursery/children decor.
 
+### 10. Void (Stark/Poster)
+
+**File**: `themes/void.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #050505 (near black) |
+| Mood | Stark, abstract |
+| Best for | Posters, art prints, vinyl aesthetics |
+| Layers | Contours only (optional subtle hillshade) |
+
+**Key characteristics**:
+- Near-black void background
+- Cream/warm white contours (#e8e0d4)
+- Very subtle hillshade (8% opacity, screen blend)
+- Maximum contrast for topographic lines
+- No water, parks, roads, or buildings
+
+**Recommended preset**: `A3_Contour_Night_v1`
+
+**Render pipeline**:
+```
+DEM -> Hillshade (8% opacity, screen blend) -> Subtle depth
+Contours -> Cream lines on black (major: 1.2px, minor: 0.5px)
+```
+
 ---
 
 ## Style Categories
@@ -200,6 +226,7 @@ Soft pastel colors, suitable for nursery/children decor.
 | Technical/Academic | Mono, Ink |
 | Modern interior | Dark, Charcoal |
 | Gift/Personal | Warm-Paper, Muted-Pastel |
+| Poster/Art print | Void, Dark |
 
 ### By Preset Compatibility
 
@@ -211,6 +238,7 @@ Soft pastel colors, suitable for nursery/children decor.
 | Dark | Excellent | Good | Fair |
 | Mono | Excellent | Excellent | Excellent |
 | Charcoal | Good | Good | Fair |
+| Void | Good | Excellent | Excellent |
 
 **Note**: "Fair" for svealand means reduced detail at lower zoom levels.
 
