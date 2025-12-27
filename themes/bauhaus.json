@@ -1,0 +1,50 @@
+{
+  "name": "Bauhaus",
+  "background": "#ffffff",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "none",
+    "mood": "modernist"
+  },
+  "hillshade": {
+    "opacity": 0.1,
+    "gamma": 1.0,
+    "contrast": 1.2,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#0000ff",
+    "stroke": "#000080",
+    "strokeWidth": 1.5
+  },
+  "parks": {
+    "fill": "#ffff00",
+    "stroke": "#cccc00",
+    "strokeWidth": 0.8
+  },
+  "roads": {
+    "stroke": "#000000",
+    "strokeWidth": {
+      "major": 3.0,
+      "minor": 1.5
+    }
+  },
+  "buildings": {
+    "fill": "#ff0000",
+    "stroke": "#cc0000",
+    "strokeWidth": 1.0
+  },
+  "contours": {
+    "stroke": "#000000",
+    "strokeWidth": {
+      "major": 1.5,
+      "minor": 0.7
+    },
+    "opacity": {
+      "major": 1.0,
+      "minor": 0.6
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

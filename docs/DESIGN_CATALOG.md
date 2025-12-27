@@ -323,27 +323,250 @@ Contours -> Gray lines (major: 0.9px, minor: 0.4px)
 
 ---
 
+### 15. Silver Foil (Premium)
+
+**File**: `themes/silver-foil.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #0a0a0a (near black) |
+| Mood | Elegant, premium |
+| Best for | High-end prints, modern interiors |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Pure black background
+- Silver contours and roads (#c0c0c0, #b0b0b0)
+- Bright silver building strokes (#e8e8e8)
+- Chrome/platinum metallic aesthetic
+
+**Recommended preset**: `A2_Silver_Foil_v1`
+
+---
+
+### 16. Copper (Warm Metallic)
+
+**File**: `themes/copper.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #1a1210 (warm dark brown) |
+| Mood | Warm, industrial |
+| Best for | Rustic decor, steampunk aesthetic |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Warm dark background
+- Copper/bronze roads (#b87333)
+- Bronze building strokes (#cd7f32)
+- Industrial warmth
+
+**Recommended preset**: `A3_Copper_v1`
+
+---
+
+### 17. Cyberpunk (Dystopian)
+
+**File**: `themes/cyberpunk.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #0a0a0a (black) |
+| Mood | Dystopian, futuristic |
+| Best for | Sci-fi themed prints, gaming rooms |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Pure black background
+- Neon green contours and water (#00ff00)
+- Hot pink roads (#ff0055)
+- Cyan building strokes (#00ffff)
+- Glitch/matrix aesthetic
+
+**Recommended preset**: `A2_Cyberpunk_v1`
+
+---
+
+### 18. Chalk (Educational)
+
+**File**: `themes/chalk.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #2d4a3e (dark green) |
+| Mood | Educational, nostalgic |
+| Best for | Schools, offices, retro decor |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Classic blackboard green
+- White chalk-like roads (#ffffff)
+- Off-white contours (#e0e0e0)
+- Educational aesthetic
+
+**Recommended preset**: `A3_Chalk_v1`
+
+---
+
+### 19. Thermal (Scientific)
+
+**File**: `themes/thermal.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #000000 (black) |
+| Mood | Scientific, dramatic |
+| Best for | Tech offices, science themes |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Pure black background
+- Yellow roads (#ffff00)
+- Orange contours (#ff6600)
+- Purple water (#4b0082)
+- Cyan buildings (#00ffff)
+- Infrared heat-camera palette
+
+**Recommended preset**: `A2_Thermal_v1`
+
+---
+
+### 20. Bauhaus (Modernist)
+
+**File**: `themes/bauhaus.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #ffffff (white) |
+| Mood | Bold, geometric |
+| Best for | Modern interiors, design studios |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Pure white background
+- Primary color scheme
+- Blue water (#0000ff)
+- Yellow parks (#ffff00)
+- Red buildings (#ff0000)
+- Bold black roads and contours
+
+**Recommended preset**: `A3_Bauhaus_v1`
+
+---
+
+### 21. Art Deco (1920s Elegance)
+
+**File**: `themes/art-deco.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #f5f5dc (cream) |
+| Mood | Elegant, classic |
+| Best for | Luxury interiors, gatsby-themed |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Cream/beige background
+- Gold buildings (#d4af37)
+- Black roads and strokes (#1a1a1a)
+- Bronze contours (#8b7355)
+- 1920s geometric elegance
+
+**Recommended preset**: `A2_Art_Deco_v1`
+
+---
+
+### 22. Forest (Autumn Nature)
+
+**File**: `themes/forest.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #f0fff0 (honeydew) |
+| Mood | Natural, organic |
+| Best for | Nature lovers, cabins, outdoor themes |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Light natural background
+- Deep green parks (#228b22)
+- Steel blue water (#4682b4)
+- Brown roads (#8b4513)
+- Golden buildings (#daa520)
+- Autumn forest palette
+
+**Recommended preset**: `A3_Forest_v1`
+
+---
+
+### 23. Ocean (Marine)
+
+**File**: `themes/ocean.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #f0f8ff (alice blue) |
+| Mood | Coastal, serene |
+| Best for | Coastal homes, nautical themes |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Light blue background
+- Deep blue water (#006994)
+- Teal contours (#20b2aa)
+- Cadet blue buildings (#5f9ea0)
+- Powder blue parks (#b0e0e6)
+- Nautical/marine aesthetic
+
+**Recommended preset**: `A2_Ocean_v1`
+
+---
+
+### 24. High Contrast (Accessible)
+
+**File**: `themes/high-contrast.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #ffffff (white) |
+| Mood | Clear, accessible |
+| Best for | Visually impaired, high readability |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Pure white background
+- Pure black elements
+- Extra thick lines (4px major roads)
+- Maximum contrast
+- WCAG accessibility compliant
+
+**Recommended preset**: `A4_High_Contrast_v1`
+
+---
+
 ## Style Categories
 
 ### By Data Source
 
 | Category | Styles | Primary Data |
 |----------|--------|--------------|
-| DEM-heavy | Gallery, Paper, Ink, Vintage | Hillshade, Contours |
-| OSM-heavy | Dark, Mono, Night | Roads, Buildings |
-| Hybrid | Charcoal, Warm-Paper, Neon, Gold Foil | Balanced |
+| DEM-heavy | Gallery, Paper, Ink, Vintage, Forest, Ocean | Hillshade, Contours |
+| OSM-heavy | Dark, Mono, Night, Bauhaus, High Contrast | Roads, Buildings |
+| Hybrid | Charcoal, Warm-Paper, Neon, Gold Foil, Silver Foil, Copper, Cyberpunk, Chalk, Thermal, Art Deco | Balanced |
 
 ### By Use Case
 
 | Use Case | Recommended Style |
 |----------|-------------------|
-| Wall print (framed) | Gallery, Paper, Vintage |
-| Technical/Academic | Mono, Ink |
-| Modern interior | Dark, Charcoal, Night |
-| Gift/Personal | Warm-Paper, Muted-Pastel, Gold Foil |
-| Poster/Art print | Void, Dark, Neon |
-| Premium/Luxury | Gold Foil |
-| Retro/Synthwave | Neon |
+| Wall print (framed) | Gallery, Paper, Vintage, Art Deco, Ocean |
+| Technical/Academic | Mono, Ink, Chalk, High Contrast |
+| Modern interior | Dark, Charcoal, Night, Bauhaus, Silver Foil |
+| Gift/Personal | Warm-Paper, Muted-Pastel, Gold Foil, Forest |
+| Poster/Art print | Void, Dark, Neon, Cyberpunk, Thermal |
+| Premium/Luxury | Gold Foil, Silver Foil, Copper, Art Deco |
+| Retro/Synthwave | Neon, Cyberpunk |
+| Nature/Outdoors | Forest, Ocean |
+| Accessibility | High Contrast |
 
 ### By Preset Compatibility
 
@@ -360,6 +583,16 @@ Contours -> Gray lines (major: 0.9px, minor: 0.4px)
 | Vintage | Excellent | Excellent | Good |
 | Gold Foil | Good | Excellent | Good |
 | Night | Excellent | Excellent | Good |
+| Silver Foil | Good | Excellent | Good |
+| Copper | Good | Excellent | Good |
+| Cyberpunk | Good | Excellent | Good |
+| Chalk | Excellent | Excellent | Good |
+| Thermal | Good | Excellent | Good |
+| Bauhaus | Excellent | Excellent | Good |
+| Art Deco | Excellent | Excellent | Good |
+| Forest | Excellent | Excellent | Excellent |
+| Ocean | Excellent | Excellent | Excellent |
+| High Contrast | Excellent | Excellent | Excellent |
 
 **Note**: "Fair" for svealand means reduced detail at lower zoom levels.
 
@@ -435,14 +668,25 @@ To add a new style:
 | Neon | Synthwave with glowing neon lines | ✅ DONE |
 | Gold Foil | Premium gold on black | ✅ DONE |
 | Night | Dark mode with muted contrast | ✅ DONE |
+| Silver Foil | Elegant silver on black | ✅ DONE |
+| Copper | Warm bronze metallic | ✅ DONE |
+| Cyberpunk | Dystopian neon aesthetic | ✅ DONE |
+| Chalk | Blackboard educational style | ✅ DONE |
+| Thermal | Infrared heat-camera | ✅ DONE |
+| Bauhaus | Modernist primary colors | ✅ DONE |
+| Art Deco | 1920s gold elegance | ✅ DONE |
+| Forest | Autumn nature palette | ✅ DONE |
+| Ocean | Marine blues and teals | ✅ DONE |
+| High Contrast | Accessibility-focused B&W | ✅ DONE |
 
 ### Planned Additions
 
 | Style | Description | Priority |
 |-------|-------------|----------|
 | Minimalist-Swiss | Swiss cartography style | Low |
-| Copper Foil | Warm metallic variant | Low |
 | Risograph | Grainy off-register aesthetic | Low |
+| Vaporwave | 90s pastel gradients | Low |
+| Glitch | RGB-split distorted | Low |
 
 ### Data Source Additions
 

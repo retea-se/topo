@@ -1,0 +1,50 @@
+{
+  "name": "Silver Foil",
+  "background": "#0a0a0a",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "premium"
+  },
+  "hillshade": {
+    "opacity": 0.1,
+    "gamma": 0.88,
+    "contrast": 1.35,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#0f0f0f",
+    "stroke": "#a0a0a0",
+    "strokeWidth": 1.0
+  },
+  "parks": {
+    "fill": "#0d0d0d",
+    "stroke": "#707070",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#c0c0c0",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 0.9
+    }
+  },
+  "buildings": {
+    "fill": "#121212",
+    "stroke": "#e8e8e8",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#b0b0b0",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.5
+    },
+    "opacity": {
+      "major": 0.95,
+      "minor": 0.55
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

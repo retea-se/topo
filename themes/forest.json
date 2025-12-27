@@ -1,0 +1,50 @@
+{
+  "name": "Forest",
+  "background": "#f0fff0",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "none",
+    "mood": "autumn"
+  },
+  "hillshade": {
+    "opacity": 0.2,
+    "gamma": 0.95,
+    "contrast": 1.1,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#4682b4",
+    "stroke": "#36648b",
+    "strokeWidth": 0.8
+  },
+  "parks": {
+    "fill": "#228b22",
+    "stroke": "#006400",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#8b4513",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 0.9
+    }
+  },
+  "buildings": {
+    "fill": "#daa520",
+    "stroke": "#b8860b",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#6b4423",
+    "strokeWidth": {
+      "major": 1.1,
+      "minor": 0.5
+    },
+    "opacity": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

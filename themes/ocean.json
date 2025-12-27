@@ -1,0 +1,50 @@
+{
+  "name": "Ocean",
+  "background": "#f0f8ff",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "marine"
+  },
+  "hillshade": {
+    "opacity": 0.18,
+    "gamma": 0.95,
+    "contrast": 1.1,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#006994",
+    "stroke": "#004466",
+    "strokeWidth": 1.0
+  },
+  "parks": {
+    "fill": "#b0e0e6",
+    "stroke": "#87ceeb",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#2f4f4f",
+    "strokeWidth": {
+      "major": 1.8,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#5f9ea0",
+    "stroke": "#3d7a7a",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#20b2aa",
+    "strokeWidth": {
+      "major": 1.1,
+      "minor": 0.5
+    },
+    "opacity": {
+      "major": 0.85,
+      "minor": 0.45
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

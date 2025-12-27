@@ -1,0 +1,50 @@
+{
+  "name": "High Contrast",
+  "background": "#ffffff",
+  "meta": {
+    "intended_scale": "A4",
+    "label_density": "none",
+    "mood": "accessible"
+  },
+  "hillshade": {
+    "opacity": 0.25,
+    "gamma": 1.0,
+    "contrast": 1.5,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#000000",
+    "stroke": "#000000",
+    "strokeWidth": 2.0
+  },
+  "parks": {
+    "fill": "#ffffff",
+    "stroke": "#000000",
+    "strokeWidth": 1.5
+  },
+  "roads": {
+    "stroke": "#000000",
+    "strokeWidth": {
+      "major": 4.0,
+      "minor": 2.0
+    }
+  },
+  "buildings": {
+    "fill": "#000000",
+    "stroke": "#000000",
+    "strokeWidth": 1.5
+  },
+  "contours": {
+    "stroke": "#000000",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 1.0
+    },
+    "opacity": {
+      "major": 1.0,
+      "minor": 0.7
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

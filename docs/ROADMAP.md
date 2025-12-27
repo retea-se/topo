@@ -141,6 +141,16 @@
 | A3_Vintage_USGS_v1 | A3 Portrait | vintage | ✅ DONE |
 | A2_Gold_Foil_v1 | A2 Portrait | gold-foil | ✅ DONE |
 | A4_Night_v1 | A4 Portrait | night | ✅ DONE |
+| A2_Silver_Foil_v1 | A2 Portrait | silver-foil | ✅ DONE |
+| A3_Copper_v1 | A3 Landscape | copper | ✅ DONE |
+| A2_Cyberpunk_v1 | A2 Landscape | cyberpunk | ✅ DONE |
+| A3_Chalk_v1 | A3 Portrait | chalk | ✅ DONE |
+| A2_Thermal_v1 | A2 Landscape | thermal | ✅ DONE |
+| A3_Bauhaus_v1 | A3 Portrait | bauhaus | ✅ DONE |
+| A2_Art_Deco_v1 | A2 Portrait | art-deco | ✅ DONE |
+| A3_Forest_v1 | A3 Landscape | forest | ✅ DONE |
+| A2_Ocean_v1 | A2 Landscape | ocean | ✅ DONE |
+| A4_High_Contrast_v1 | A4 Portrait | high-contrast | ✅ DONE |
 
 ### 9.3 UI Integration ✅ DONE
 
@@ -846,7 +856,28 @@ Design- och policydokument: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HAR
 
 ## Changelog
 
-### 2025-12-27 (New Themes & Presets)
+### 2025-12-27 (New Themes & Presets - Batch 2)
+
+- ✅ **10 new themes added** (24 total):
+  - Silver Foil - elegant silver metallic on black
+  - Copper - warm copper/bronze metallic tones
+  - Cyberpunk - neon green/pink dystopian aesthetic
+  - Chalk - chalk on blackboard educational style
+  - Thermal - infrared heat-camera palette
+  - Bauhaus - bold primary colors, modernist design
+  - Art Deco - 1920s gold/cream/black elegance
+  - Forest - autumn earth tones, nature palette
+  - Ocean - marine blues and teals
+  - High Contrast - accessibility-focused black/white
+- ✅ **10 new export presets added** (24 total):
+  - A2_Silver_Foil_v1, A3_Copper_v1, A2_Cyberpunk_v1
+  - A3_Chalk_v1, A2_Thermal_v1, A3_Bauhaus_v1
+  - A2_Art_Deco_v1, A3_Forest_v1, A2_Ocean_v1
+  - A4_High_Contrast_v1
+- ✅ All themes tested in Print Editor
+- ✅ All presets verified via API (24/24 loading)
+
+### 2025-12-27 (New Themes & Presets - Batch 1)
 
 - ✅ **4 new themes added**:
   - Neon (Synthwave) - vibrant neon lines on dark background
@@ -859,7 +890,7 @@ Design- och policydokument: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HAR
   - A3_Vintage_USGS_v1 - Classic topographic print
   - A2_Gold_Foil_v1 - Premium luxury poster
   - A4_Night_v1 - Compact dark mode print
-- ✅ Design catalog updated with new themes (14 total)
+- ✅ Design catalog updated with new themes
 - ✅ All themes tested in Print Editor
 
 ### 2025-12-27 (v1.1 Operational Hardening)

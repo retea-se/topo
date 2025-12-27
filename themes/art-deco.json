@@ -1,0 +1,50 @@
+{
+  "name": "Art Deco",
+  "background": "#f5f5dc",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "elegant"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 0.95,
+    "contrast": 1.15,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e8e0c8",
+    "stroke": "#1a1a1a",
+    "strokeWidth": 1.2
+  },
+  "parks": {
+    "fill": "#e5ddc5",
+    "stroke": "#8b7355",
+    "strokeWidth": 0.6
+  },
+  "roads": {
+    "stroke": "#1a1a1a",
+    "strokeWidth": {
+      "major": 2.5,
+      "minor": 1.2
+    }
+  },
+  "buildings": {
+    "fill": "#d4af37",
+    "stroke": "#1a1a1a",
+    "strokeWidth": 0.8
+  },
+  "contours": {
+    "stroke": "#8b7355",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.5
+    },
+    "opacity": {
+      "major": 0.85,
+      "minor": 0.45
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Chalk",
+  "background": "#2d4a3e",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "none",
+    "mood": "educational"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 0.95,
+    "contrast": 1.2,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#243d33",
+    "stroke": "#e8e8e8",
+    "strokeWidth": 1.0
+  },
+  "parks": {
+    "fill": "#2a4538",
+    "stroke": "#d0d0d0",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#ffffff",
+    "strokeWidth": {
+      "major": 2.2,
+      "minor": 1.0
+    }
+  },
+  "buildings": {
+    "fill": "#344f42",
+    "stroke": "#f0f0f0",
+    "strokeWidth": 0.7
+  },
+  "contours": {
+    "stroke": "#e0e0e0",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.6
+    },
+    "opacity": {
+      "major": 0.9,
+      "minor": 0.5
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}
