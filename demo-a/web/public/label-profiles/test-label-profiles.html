@@ -207,29 +207,35 @@
                     map.setStyle(style);
 
                     map.once('style.load', () => {
-                        updateStatus('Karta laddad. Kontrollerar label-layers...');
-                        
-                        // Debug: List all layers
-                        const style = map.getStyle();
-                        console.log('All layers in style:', style.layers.map(l => ({ id: l.id, type: l.type, sourceLayer: l['source-layer'] })));
-                        
-                        // Check if label layers exist
-                        if (window.LabelProfiles) {
-                            const labelLayers = window.LabelProfiles.identifyLabelLayers(map);
-                            console.log('Identified label layers:', labelLayers);
+                        // Wait a bit for all layers to be fully loaded
+                        setTimeout(() => {
+                            updateStatus('Karta laddad. Kontrollerar label-layers...');
                             
-                            if (labelLayers.streetNames.length === 0 && 
-                                labelLayers.placeNames.length === 0 &&
-                                labelLayers.poiNames.length === 0) {
-                                updateStatus('Inga label-layers hittades. Kontrollera att themeToStyle.js innehåller label-layers.', true);
+                            // Debug: List all layers
+                            const style = map.getStyle();
+                            console.log('All layers in style:', style.layers.map(l => ({ id: l.id, type: l.type, sourceLayer: l['source-layer'] })));
+                            
+                            // Check if label layers exist
+                            if (window.LabelProfiles) {
+                                const labelLayers = window.LabelProfiles.identifyLabelLayers(map);
+                                console.log('Identified label layers:', labelLayers);
+                                
+                                if (labelLayers.streetNames.length === 0 && 
+                                    labelLayers.placeNames.length === 0 &&
+                                    labelLayers.poiNames.length === 0 &&
+                                    labelLayers.waterNames.length === 0 &&
+                                    labelLayers.parkNames.length === 0) {
+                                    updateStatus('Inga label-layers hittades. Kontrollera att themeToStyle.js innehåller label-layers.', true);
+                                    console.error('No label layers found. Available layers:', style.layers.map(l => l.id));
+                                } else {
+                                    updateStatus('Karta laddad. Växla profil för att se labels.');
+                                    // Apply initial profile
+                                    window.LabelProfiles.applyLabelProfile(map, currentProfile);
+                                }
                             } else {
-                                updateStatus('Karta laddad. Växla profil för att se labels.');
-                                // Apply initial profile
-                                window.LabelProfiles.applyLabelProfile(map, currentProfile);
+                                updateStatus('LabelProfiles inte tillgänglig. Kontrollera att labelProfiles.js är laddad.', true);
                             }
-                        } else {
-                            updateStatus('LabelProfiles inte tillgänglig. Kontrollera att labelProfiles.js är laddad.', true);
-                        }
+                        }, 200);
                     });
                 } else {
                     updateStatus('themeToMapLibreStyle inte tillgänglig. Kontrollera att themeToStyle.js är laddad.', true);
