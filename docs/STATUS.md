@@ -235,6 +235,8 @@ Se [USAGE.md](USAGE.md#testning-med-playwright) för detaljer.
 | Frame styles (solid, double, none, glow) | ✅ Implementerat |
 | Scale/attribution positioning | ✅ Flexibel positioning |
 | Browser testing (preview mode) | ✅ Alla layouts testade och fungerar |
+| Export testing | ✅ Alla layouts fungerar i export (5/5 tester PASS) |
+| Exporter server updates | ✅ Fullständig rendering-logik implementerad |
 
 **Nya layouts**:
 1. Minimalist - Extremt minimal, nästan ingen ram
@@ -258,8 +260,12 @@ Se [USAGE.md](USAGE.md#testning-med-playwright) för detaljer.
 - [LAYOUT_DESIGN_PROPOSAL.md](LAYOUT_DESIGN_PROPOSAL.md) - Design proposal
 - [LAYOUT_IMPLEMENTATION_PLAN.md](LAYOUT_IMPLEMENTATION_PLAN.md) - Implementation plan
 - [LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md](../exports/LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md) - Implementation rapport
+- [LAYOUT_EXPORT_TESTING_REPORT.md](LAYOUT_EXPORT_TESTING_REPORT.md) - Export testing rapport
+- [LAYOUT_DESIGNS_STATUS.md](LAYOUT_DESIGNS_STATUS.md) - Status sammanfattning
 
-**Branch**: `feature/layout-designs` (redo för merge till main efter export-testing)
+**Test Script**: `scripts/test_layout_export.js` - Kör för att testa alla layout exports
+
+**Branch**: `feature/layout-designs` (✅ Redo för merge till main)
 3. **Export Fix**: Ändrat från `window.location.href` till `fetch()` + blob download. CORS-headers tillagda i exporter.
 
 **QA Verifiering:**
