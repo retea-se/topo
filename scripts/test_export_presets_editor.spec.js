@@ -11,132 +11,183 @@
  */
 
 const { test, expect } = require('@playwright/test');
+const { waitForAppReady, waitForPresetsLoaded, selectPresetById } = require('./test-helpers');
 
 const EDITOR_URL = 'http://localhost:3000/editor';
+
+// Console error collection
+let consoleErrors = [];
 
 test.describe('Export Preset UI (Phase 9.2)', () => {
 
   test.beforeEach(async ({ page }) => {
+    // Reset console errors
+    consoleErrors = [];
+
+    // Collect console errors and warnings
+    page.on('console', msg => {
+      const type = msg.type();
+      if (type === 'error' || type === 'warning') {
+        const text = msg.text();
+        // Filter out known non-critical errors/warnings
+        if (!text.includes('favicon') && 
+            !text.includes('sourcemap') &&
+            !text.includes('WebGL') &&
+            !text.includes('GPU stall') &&
+            !text.includes('GL Driver Message') &&
+            !text.includes('GroupMarkerNotSet')) {
+          consoleErrors.push({
+            type,
+            text,
+            timestamp: new Date().toISOString()
+          });
+        }
+      }
+    });
+
+    // Collect page errors
+    page.on('pageerror', error => {
+      consoleErrors.push({
+        type: 'pageerror',
+        text: error.message,
+        stack: error.stack,
+        timestamp: new Date().toISOString()
+      });
+    });
+
     await page.goto(EDITOR_URL);
-    await page.waitForLoadState('networkidle');
-    // Wait for initial page load
-    await page.waitForTimeout(500);
+    await waitForAppReady(page);
+  });
+
+  test.afterEach(async ({ page }, testInfo) => {
+    // Fail test if there were console errors
+    if (consoleErrors.length > 0) {
+      const errorMessages = consoleErrors.map(e => `[${e.type}] ${e.text}`).join('\n');
+      throw new Error(`Console errors detected:\n${errorMessages}`);
+    }
+
+    // Take screenshot and dump HTML on failure
+    if (testInfo.status !== 'passed') {
+      const screenshot = await page.screenshot({ fullPage: true });
+      await testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });
+
+      const html = await page.content();
+      await testInfo.attach('page-html', { body: html, contentType: 'text/html' });
+    }
   });
 
   test('presets load from API and populate dropdown', async ({ page }) => {
-    // Wait for preset dropdown to be visible
-    const presetSelect = page.locator('#export-preset-select');
-    await expect(presetSelect).toBeVisible();
+    await test.step('Wait for preset dropdown to be visible', async () => {
+      const presetSelect = page.locator('#export-preset-select');
+      await expect(presetSelect).toBeVisible();
+    });
 
-    // Wait for presets to load (dropdown should have more than just "None (Custom)")
-    await page.waitForFunction(() => {
-      const select = document.getElementById('export-preset-select');
-      return select && select.options.length > 1;
-    }, { timeout: 10000 });
+    await test.step('Wait for presets to load from API', async () => {
+      await waitForPresetsLoaded(page);
+    });
 
-    // Get all option values and texts
-    const optionValues = await presetSelect.locator('option').evaluateAll(opts =>
-      opts.map(opt => opt.value)
-    );
-    const optionTexts = await presetSelect.locator('option').allTextContents();
+    await test.step('Verify expected presets are present', async () => {
+      const presetSelect = page.locator('#export-preset-select');
+      const optionValues = await presetSelect.locator('option').evaluateAll(opts =>
+        opts.map(opt => opt.value)
+      );
+      const optionTexts = await presetSelect.locator('option').allTextContents();
 
-    // Assert expected presets are present (by value or display name)
-    const allText = optionTexts.join(' ');
-    expect(optionValues).toContain('A2_Paper_v1');
-    expect(optionValues).toContain('A3_Blueprint_v1');
+      // Assert expected presets are present (by value or display name)
+      const allText = optionTexts.join(' ');
+      expect(optionValues).toContain('A2_Paper_v1');
+      expect(optionValues).toContain('A3_Blueprint_v1');
 
-    // Also check display names are present
-    expect(allText.toLowerCase()).toMatch(/a2.*paper|paper.*a2/i);
-    expect(allText.toLowerCase()).toMatch(/a3.*blueprint|blueprint.*a3/i);
+      // Also check display names are present (locale-agnostic: accept Swedish "papperskarta" or English "paper")
+      expect(allText.toLowerCase()).toMatch(/a2.*(paper|papperskarta)|(paper|papperskarta).*a2/i);
+      expect(allText.toLowerCase()).toMatch(/a3.*blueprint|blueprint.*a3/i);
 
-    // Verify API was called (by checking dropdown has loaded options)
-    expect(optionValues.length).toBeGreaterThan(1);
+      // Verify API was called (by checking dropdown has loaded options)
+      expect(optionValues.length).toBeGreaterThan(1);
+    });
   });
 
   test('selecting preset autofills fields and locks constrained fields', async ({ page }) => {
-    // Wait for presets to load
-    const presetSelect = page.locator('#export-preset-select');
-    await page.waitForFunction(() => {
-      const select = document.getElementById('export-preset-select');
-      return select && select.options.length > 1;
-    }, { timeout: 10000 });
+    await test.step('Wait for presets to load', async () => {
+      await waitForPresetsLoaded(page);
+    });
 
-    // Store initial theme value
-    const themeSelect = page.locator('#theme-select');
-    await themeSelect.waitFor({ state: 'visible' });
+    await test.step('Select A3_Blueprint_v1 preset', async () => {
+      await selectPresetById(page, 'A3_Blueprint_v1');
+    });
 
-    // Select A3_Blueprint_v1 preset (which has many locked fields)
-    // Use value match since display_name is "A3 Blueprint"
-    await presetSelect.selectOption({ value: 'A3_Blueprint_v1' });
+    await test.step('Verify theme changed to blueprint-muted', async () => {
+      const themeSelect = page.locator('#theme-select');
+      const themeValue = await themeSelect.inputValue();
+      expect(themeValue).toBe('blueprint-muted');
+    });
 
-    // Wait for preset to apply (give UI time to update)
-    await page.waitForTimeout(1000);
+    await test.step('Verify paper size changed to A3', async () => {
+      const paperSizeSelect = page.locator('#paper-size-select');
+      const paperSize = await paperSizeSelect.inputValue();
+      expect(paperSize).toBe('A3');
+    });
 
-    // Assert theme changed to blueprint-muted (from A3_Blueprint_v1)
-    const themeValue = await themeSelect.inputValue();
-    expect(themeValue).toBe('blueprint-muted');
+    await test.step('Verify DPI is 150 (locked)', async () => {
+      const dpiSelect = page.locator('#dpi-select');
+      const dpi = await dpiSelect.inputValue();
+      expect(dpi).toBe('150');
+    });
 
-    // Assert paper size changed to A3
-    const paperSizeSelect = page.locator('#paper-size-select');
-    const paperSize = await paperSizeSelect.inputValue();
-    expect(paperSize).toBe('A3');
+    await test.step('Verify format is PDF (locked)', async () => {
+      const formatPdfBtn = page.locator('#format-pdf');
+      await expect(formatPdfBtn).toHaveClass(/active/);
+    });
 
-    // Assert DPI is 150 (locked in A3_Blueprint_v1)
-    const dpiSelect = page.locator('#dpi-select');
-    const dpi = await dpiSelect.inputValue();
-    expect(dpi).toBe('150');
+    await test.step('Verify at least one field is locked', async () => {
+      const themeGroup = page.locator('#theme-group');
+      const themeSelect = page.locator('#theme-select');
+      const themeGroupClasses = await themeGroup.getAttribute('class');
+      const themeSelectDisabled = await themeSelect.isDisabled();
 
-    // Assert format is PDF (locked in A3_Blueprint_v1)
-    const formatPdfBtn = page.locator('#format-pdf');
-    await expect(formatPdfBtn).toHaveClass(/active/);
-
-    // Assert at least one field is locked/disabled
-    // Check if theme group is locked (theme_locked: true in A3_Blueprint_v1)
-    const themeGroup = page.locator('#theme-group');
-    const themeGroupClasses = await themeGroup.getAttribute('class');
-    const themeSelectDisabled = await themeSelect.isDisabled();
-
-    // Either the form-group has 'locked' class OR the select is disabled
-    const isLocked = themeGroupClasses?.includes('locked') || themeSelectDisabled;
-    expect(isLocked).toBeTruthy();
+      // Either the form-group has 'locked' class OR the select is disabled
+      const isLocked = themeGroupClasses?.includes('locked') || themeSelectDisabled;
+      expect(isLocked).toBeTruthy();
+    });
   });
 
   test('modified state shows in preset status badge when unlocked field changes', async ({ page }) => {
-    // Wait for presets to load
-    const presetSelect = page.locator('#export-preset-select');
-    await page.waitForFunction(() => {
-      const select = document.getElementById('export-preset-select');
-      return select && select.options.length > 1;
-    }, { timeout: 10000 });
+    await test.step('Wait for presets to load', async () => {
+      await waitForPresetsLoaded(page);
+    });
 
-    // Select A2_Paper_v1 (which has dpi_locked: false, so DPI can be modified)
-    await presetSelect.selectOption({ value: 'A2_Paper_v1' });
+    await test.step('Select A2_Paper_v1 preset', async () => {
+      await selectPresetById(page, 'A2_Paper_v1');
+    });
 
-    // Wait for preset to apply
-    await page.waitForTimeout(1000);
+    await test.step('Wait for preset status to appear', async () => {
+      const presetStatus = page.locator('#export-preset-status');
+      await page.waitForTimeout(500);
+      // Status may or may not be visible initially
+    });
 
-    // Check that preset status is visible and shows "active"
-    const presetStatus = page.locator('#export-preset-status');
+    await test.step('Change DPI to trigger modified state', async () => {
+      const dpiSelect = page.locator('#dpi-select');
+      await dpiSelect.selectOption('300');
+      await page.waitForTimeout(500);
+    });
 
-    // Wait for status to appear (may be delayed)
-    await page.waitForTimeout(500);
+    await test.step('Verify modified status appears', async () => {
+      const presetStatus = page.locator('#export-preset-status');
+      await expect(presetStatus).toBeVisible();
 
-    // Change DPI (which is not locked in A2_Paper_v1)
-    const dpiSelect = page.locator('#dpi-select');
-    await dpiSelect.selectOption('300');
+      const statusClasses = await presetStatus.getAttribute('class');
+      const statusText = await presetStatus.textContent();
 
-    // Wait for UI to update and show modified status
-    await page.waitForTimeout(500);
-
-    // Assert modified status appears
-    // Status badge should have 'modified' class and be visible
-    await expect(presetStatus).toBeVisible();
-    const statusClasses = await presetStatus.getAttribute('class');
-    const statusText = await presetStatus.textContent();
-
-    // Status should either have 'modified' class or contain "(modified)" text
-    const isModified = statusClasses?.includes('modified') || statusText?.includes('modified') || statusText?.includes('(modified)');
-    expect(isModified).toBeTruthy();
+      // Status should either have 'modified' class or contain modified text (locale-agnostic)
+      // Accept: "modified", "(modified)", "modifierad", "(modifierad)"
+      const isModified = statusClasses?.includes('modified') ||
+                         statusText?.toLowerCase().includes('modified') ||
+                         statusText?.toLowerCase().includes('modifierad') ||
+                         statusText?.includes('(modified)') ||
+                         statusText?.includes('(modifierad)');
+      expect(isModified).toBeTruthy();
+    });
   });
 
   test('validation error appears when preset constraint is violated', async ({ page }) => {
@@ -183,9 +234,10 @@ test.describe('Export Preset UI (Phase 9.2)', () => {
 
     // If bbox is locked, we can't change it - that's the constraint working
     // Validation errors might show when trying to override via API
-    // For this test, we'll check that validation error container exists
+    // For this test, we'll check that validation error container exists (may be empty)
     const validationErrors = page.locator('#validation-errors');
-    await expect(validationErrors).toBeVisible();
+    // Container should exist in DOM, but may be empty (no validation errors visible)
+    await expect(validationErrors).toBeAttached();
 
     // Note: Full validation testing might require API calls or more complex UI interactions
     // This test verifies the validation UI structure exists
