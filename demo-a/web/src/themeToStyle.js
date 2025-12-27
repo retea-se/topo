@@ -265,11 +265,12 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
   // These layers are controlled by label profiles (off/minimal/landmarks)
   // Default visibility is 'none' - profiles will control visibility
   
-  console.log('[themeToStyle] Adding label layers, current layer count:', style.layers.length);
-  
-  // Street names (transportation_name source-layer)
-  // Filter for higher road classes only (primary, secondary, tertiary, trunk, motorway)
-  style.layers.push({
+  try {
+    console.log('[themeToStyle] Adding label layers, current layer count:', style.layers.length);
+    
+    // Street names (transportation_name source-layer)
+    // Filter for higher road classes only (primary, secondary, tertiary, trunk, motorway)
+    style.layers.push({
     id: 'transportation-name',
     type: 'symbol',
     source: 'osm',
@@ -399,9 +400,12 @@ function themeToMapLibreStyle(theme, tileserverUrl, hillshadeTilesUrl, preset, r
       'text-halo-blur': 1
     }
   });
-
-  console.log('[themeToStyle] Label layers added, final layer count:', style.layers.length);
-  console.log('[themeToStyle] Label layer IDs:', style.layers.filter(l => l.type === 'symbol').map(l => l.id));
+    
+    console.log('[themeToStyle] Label layers added, final layer count:', style.layers.length);
+    console.log('[themeToStyle] Label layer IDs:', style.layers.filter(l => l.type === 'symbol').map(l => l.id));
+  } catch (error) {
+    console.error('[themeToStyle] Error adding label layers:', error);
+  }
 
   return style;
 }
