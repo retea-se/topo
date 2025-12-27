@@ -6,7 +6,8 @@
 
 flask==3.0.0
 psycopg2-binary==2.9.9
-pycairo==1.26.0
 
-# Note: Mapnik is installed via apt (python3-mapnik) for compatibility
+# Note: Mapnik and pycairo are installed via apt for compatibility
+# - python3-mapnik provides Mapnik bindings
+# - python3-cairo provides pycairo (system version)
 # System packages pinned via Dockerfile apt versions

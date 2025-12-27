@@ -45,7 +45,7 @@ def load_preset_limits():
     if LIMITS_CONFIG is not None:
         return LIMITS_CONFIG
 
-    config_path = Path('/app/config/preset_limits.json')
+    config_path = Path('/app/prep-config/preset_limits.json')
     if not config_path.exists():
         config_path = Path(__file__).parent.parent.parent.parent / 'prep-service' / 'config' / 'preset_limits.json'
 
@@ -158,7 +158,7 @@ def validate_render_request(preset: str, dpi: int, width_mm: float, height_mm: f
 def load_bbox_preset(preset_name: str) -> tuple:
     """Load bbox preset and convert to EPSG:3857."""
     # Try to load from config file, fallback to hardcoded presets
-    config_path = Path('/app/config/bbox_presets.json')
+    config_path = Path('/app/prep-config/bbox_presets.json')
     presets = {}
 
     if config_path.exists():

@@ -17,6 +17,8 @@ data/
 # Include golden print export baselines (required for regression testing)
 # These are reference images that must be version-controlled
 !golden/print_export/*.png
+# Include Demo B golden baselines (v1.1 Operational Hardening)
+!golden/demo_b/*.png
 *.pdf
 *.tif
 *.geojson

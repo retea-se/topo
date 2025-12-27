@@ -25,7 +25,7 @@ def load_preset(preset_id: Optional[str]) -> Optional[Dict[str, Any]]:
     # Try multiple possible paths
     possible_paths = [
         Path(__file__).parent.parent.parent.parent / 'config' / 'export_presets' / f'{preset_id}.json',
-        Path('/app/config/export_presets') / f'{preset_id}.json',
+        Path('/app/export_presets') / f'{preset_id}.json',
         Path(Path.cwd()) / 'config' / 'export_presets' / f'{preset_id}.json'
     ]
 
