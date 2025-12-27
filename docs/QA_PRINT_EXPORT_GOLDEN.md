@@ -1,222 +1,72 @@
-# QA: Print Export Golden Baseline
+# QA Print Export Golden Audit Report
 
-**Created:** 2025-12-27
-**Status:** COMPLETE
-**Phase:** All steps completed
+Generated: 2025-12-27 10:46:42
 
----
+## Summary
 
-## Executive Summary
+| Status | Count |
+|--------|-------|
+| N/A | 18 |
 
-This document tracks the process of making print export "golden" - ensuring correctness between preview and export, and establishing regression protection.
 
-### Final Status: SUCCESS
+**Note**: Preview and export images have different sizes by design:
+- Preview is scaled to fit the viewport (typically much smaller)
+- Export is the actual print resolution
 
-All issues have been fixed and verified:
+A "N/A" status means sizes don't match (expected behavior).
+Only same-size comparisons can produce PASS/WARN/FAIL results.
 
-| Element | Preview | Export | Status |
-|---------|---------|--------|--------|
-| Frame/Border | Yes | Yes | FIXED |
-| Title | Yes | Yes | FIXED |
-| Subtitle | Yes | Yes | FIXED |
-| Scale bar | Yes | Yes | FIXED |
-| Attribution | Yes | Yes | FIXED |
+## Thresholds
 
-### Golden Baseline Verification
+- **PASS**: < 0.1% pixel difference
+- **WARN**: 0.1% - 0.5% pixel difference
+- **FAIL**: > 0.5% pixel difference
 
-| Golden | Dimensions | SHA256 Match | Status |
-|--------|------------|--------------|--------|
-| A3_Blueprint_v1_Classic | 2480x1754 | IDENTICAL | PASS |
-| A2_Paper_v1_Minimal | 3508x2480 | IDENTICAL | PASS |
-| A1_Terrain_v1_Bold | 3508x4967 | IDENTICAL | PASS |
+## Detailed Results
 
----
+| Preset | Template | Variant | Status | Diff % | Preview Size | Export Size |
+|--------|----------|---------|--------|--------|--------------|-------------|
+| A1_Terrain_v1 | bold | A | N/A | 100.0000% | 1280x720 | 3508x4967 |
+| A1_Terrain_v1 | bold | B | N/A | 100.0000% | 1280x720 | 3508x4967 |
+| A1_Terrain_v1 | classic | A | N/A | 100.0000% | 1280x720 | 3508x4967 |
+| A1_Terrain_v1 | classic | B | N/A | 100.0000% | 1280x720 | 3508x4967 |
+| A1_Terrain_v1 | minimal | A | N/A | 100.0000% | 1280x720 | 3508x4967 |
+| A1_Terrain_v1 | minimal | B | N/A | 100.0000% | 1280x720 | 3508x4967 |
+| A2_Paper_v1 | bold | A | N/A | 100.0000% | 1280x720 | 3508x2480 |
+| A2_Paper_v1 | bold | B | N/A | 100.0000% | 1280x720 | 3508x2480 |
+| A2_Paper_v1 | classic | A | N/A | 100.0000% | 1280x720 | 3508x2480 |
+| A2_Paper_v1 | classic | B | N/A | 100.0000% | 1280x720 | 3508x2480 |
+| A2_Paper_v1 | minimal | A | N/A | 100.0000% | 1280x720 | 3508x2480 |
+| A2_Paper_v1 | minimal | B | N/A | 100.0000% | 1280x720 | 3508x2480 |
+| A3_Blueprint_v1 | bold | A | N/A | 100.0000% | 1280x720 | 2480x1754 |
+| A3_Blueprint_v1 | bold | B | N/A | 100.0000% | 1280x720 | 2480x1754 |
+| A3_Blueprint_v1 | classic | A | N/A | 100.0000% | 1280x720 | 2480x1754 |
+| A3_Blueprint_v1 | classic | B | N/A | 100.0000% | 1280x720 | 2480x1754 |
+| A3_Blueprint_v1 | minimal | A | N/A | 100.0000% | 1280x720 | 2480x1754 |
+| A3_Blueprint_v1 | minimal | B | N/A | 100.0000% | 1280x720 | 2480x1754 |
 
-## Problem Summary (RESOLVED)
 
-### Root Cause Identified
+## Artifact Locations
 
-**Critical Bug:** Export did NOT include print composition elements
+All audit artifacts are stored in:
+```
+exports/golden_audit/<preset>/<template>/variant_<A|B>/
+```
 
-**Technical Details:**
-- `editor.js:updatePrintComposition()` creates overlay elements dynamically
-- `server.js` screenshotted only `#map` element, missing all composition
-- Exporter accepted `title`, `subtitle`, `attribution` params but did NOT render them
+Each case folder contains:
+- `preview.png` - Screenshot of the editor with composition overlay
+- `export.png` - PNG export from the exporter service
+- `diff.png` - Visual diff highlighting differences (if comparable)
+- `diff.json` - Pixel comparison metrics
+- `meta.json` - Test metadata and settings
+- `console.json` - Browser console logs
 
-### Fix Applied
-
-Commit: `94e87bd` - "fix(exporter): add print composition overlay to exports"
-
-Changes:
-1. Added `LAYOUT_TEMPLATES` to exporter (matching editor.js templates)
-2. Added new parameters: `layout_template`, `show_scale`, `show_attribution`
-3. Implemented composition overlay injection via Playwright before screenshot
-4. Screenshot now captures wrapper element with full composition
-5. Updated editor.js to pass composition params to exporter
-
----
-
-## Test Matrix
-
-### Full Test Matrix (3x3 = 9 combinations)
-
-| # | Preset | Template | Expected Composition | Status |
-|---|--------|----------|----------------------|--------|
-| 1 | A2_Paper_v1 | Classic | Frame + Title (top) + Attribution | PASS |
-| 2 | A2_Paper_v1 | Minimal | Frame only | PASS |
-| 3 | A2_Paper_v1 | Bold | Frame + Title (center) | PASS |
-| 4 | A3_Blueprint_v1 | Classic | Frame + Title (top) + Attribution | PASS |
-| 5 | A3_Blueprint_v1 | Minimal | Frame only | PASS |
-| 6 | A3_Blueprint_v1 | Bold | Frame + Title (center) | PASS |
-| 7 | A1_Terrain_v1 | Classic | Frame + Title (top) + Attribution | PASS |
-| 8 | A1_Terrain_v1 | Minimal | Frame only | PASS |
-| 9 | A1_Terrain_v1 | Bold | Frame + Title (center) | PASS |
-
----
-
-## Golden Baselines
-
-### Location
-
-`golden/print_export/`
-
-### Files
-
-| File | SHA256 | Size |
-|------|--------|------|
-| A3_Blueprint_v1_Classic_golden.png | `48e4bbd0f787...` | 5.1 MB |
-| A2_Paper_v1_Minimal_golden.png | `ef0c5bb30a2b...` | 9.9 MB |
-| A1_Terrain_v1_Bold_golden.png | `4df10114b61b...` | 5.7 MB |
-| metadata.json | - | - |
-| README.md | - | - |
-
-### Acceptance Criteria
-
-- Pixel diff: < 0.1% (anti-aliasing tolerance)
-- Dimensions: MUST match exactly
-- Composition elements: MUST be present
-
----
-
-## Regression Test Script
-
-### Location
-
-`scripts/qa_golden_print_export.js`
-
-### Usage
+## How to Run
 
 ```bash
-node scripts/qa_golden_print_export.js
+# Run the audit (creates artifacts)
+npx playwright test scripts/qa_print_export_golden_audit.spec.js --workers=1
+
+# Run the comparison (generates this report)
+python scripts/compare_preview_export.py
 ```
-
-### Output
-
-```
-========================================
-Golden Print Export Regression Test
-========================================
-Exporter: http://localhost:8082
-Golden dir: golden/print_export
-Output dir: exports/golden_test
-
-Loaded 3 golden baselines
-
-  Testing: A3_Blueprint_v1_Classic
-  Dimensions: 2480x1754
-  Hash match: identical to golden
-
-  Testing: A2_Paper_v1_Minimal
-  Dimensions: 3508x2480
-  Hash match: identical to golden
-
-  Testing: A1_Terrain_v1_Bold
-  Dimensions: 3508x4967
-  Hash match: identical to golden
-
-========================================
-Summary
-========================================
- A3_Blueprint_v1_Classic: PASSED
- A2_Paper_v1_Minimal: PASSED
- A1_Terrain_v1_Bold: PASSED
-
-Total: 3 passed, 0 failed
-========================================
-```
-
----
-
-## Progress Log
-
-### 2025-12-27 10:00 CET
-- Started QA analysis
-- Identified root cause: exporter missing composition rendering
-- Created test matrix
-- Documented DEF-001
-
-### 2025-12-27 10:07 CET
-- Implemented fix in demo-a/exporter/src/server.js
-- Added LAYOUT_TEMPLATES
-- Added composition overlay injection
-- Rebuilt Docker container
-
-### 2025-12-27 10:10 CET
-- Generated 3 golden baseline exports
-- Created metadata.json
-- Created README.md for golden directory
-
-### 2025-12-27 10:15 CET
-- Created regression test script
-- Verified all 3 goldens pass with identical SHA256
-- All tests PASS
-
----
-
-## Files Changed
-
-1. `demo-a/exporter/src/server.js` - Added composition overlay injection
-2. `demo-a/web/public/editor.js` - Pass composition params to exporter
-3. `docs/QA_PRINT_EXPORT_GOLDEN.md` - This document
-4. `golden/print_export/` - Golden baseline exports
-5. `scripts/qa_golden_print_export.js` - Regression test script
-
----
-
-## Known Limitations (Deferred)
-
-1. **PDF exports** - Go through Demo B (port 5000), not yet verified for composition
-2. **Scale calculation** - Currently uses placeholder "1:50 000", not calculated from actual map scale
-
----
-
-## How to Run Golden Check
-
-```bash
-# Ensure services are running
-docker-compose up -d demo-a-exporter demo-a-web demo-a-tileserver demo-a-hillshade-server
-
-# Run golden regression test
-node scripts/qa_golden_print_export.js
-
-# Check exit code (0 = pass, 1 = fail)
-echo $?
-```
-
----
-
-## Definition of Done (COMPLETE)
-
-Correctness:
-- [x] Preview/export parity verified for the 3x3 matrix
-- [x] Frame/template geometry correct (no cropping, no drift)
-
-Golden baseline:
-- [x] 3 golden exports defined and stored
-- [x] Regression script/test runs locally and in CI-ready form
-- [x] Clear baseline metadata documented (versions, docker digest)
-
-Process:
-- [x] Small commits, pushed
-- [x] TODO/STATUS updated
-- [x] Closure report written in this document
