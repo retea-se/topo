@@ -89,13 +89,34 @@
 
 | Komponent | Status |
 |-----------|--------|
-| Ram (valbar, tema-styrd) | ✅ DONE (5 layout templates) |
+| Ram (valbar, tema-styrd) | ✅ DONE (15 layout templates: 5 original + 10 nya) |
 | Titel | ✅ DONE |
 | Undertitel / plats | ✅ DONE |
 | Skala (endast vid pitch = 0) | ✅ DONE (optional) |
 | Attribution (OSM, Copernicus) | ✅ DONE (optional, subtle) |
 | Marginal/safe-zone system | ✅ DONE |
 | Metadata-overlay (paper size, dimensions) | ✅ DONE |
+
+### Layout Designs Extension ✅ COMPLETE (2025-01-27)
+
+**Mål**: Utöka antalet layout templates från 5 till 15.
+
+| Uppgift | Status |
+|---------|--------|
+| Design proposal (10 nya layouts) | ✅ DONE |
+| Font loading (Google Fonts) | ✅ DONE |
+| CSS-utökningar (grid, glow, decorative) | ✅ DONE |
+| JavaScript helper-funktioner | ✅ DONE |
+| Implementera alla 10 nya layouts | ✅ DONE |
+| Browser testing (preview mode) | ✅ DONE |
+| Dokumentation | ✅ DONE |
+
+**Nya layouts**: Minimalist, Scientific, Blueprint, Gallery Print, Vintage Map, Artistic, Night Mode, Heritage, Prestige, Cyberpunk
+
+**Dokumentation**:
+- [LAYOUT_DESIGN_PROPOSAL.md](LAYOUT_DESIGN_PROPOSAL.md) - Design proposal
+- [LAYOUT_IMPLEMENTATION_PLAN.md](LAYOUT_IMPLEMENTATION_PLAN.md) - Implementation plan
+- [LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md](../exports/LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md) - Implementation rapport
 
 ### Designprinciper
 

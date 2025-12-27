@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 16:00 CET
+**Senast uppdaterad**: 2025-01-27 18:00 CET
 
 ## Sammanfattning
 
@@ -101,7 +101,7 @@ node scripts/qa_golden_demo_b.js
 | Custom bbox support | ✅ Implementerat |
 | Playwright test suite | ✅ **25/25 PASS** |
 | **Viewport stabilitet vid theme-byte** | ✅ **FIXAD** |
-| **Print composition overlay** | ✅ **NY** |
+| **Print composition overlay** | ✅ **NY** (15 layout templates: 5 original + 10 nya) |
 | **PNG export via fetch+blob** | ✅ **FIXAD** |
 
 **Åtkomst**: http://localhost:3000/editor
@@ -145,6 +145,45 @@ Se [USAGE.md](USAGE.md#testning-med-playwright) för detaljer.
 **Utförda fixar:**
 1. **Viewport Stabilitet**: `updateMapStyle()` sparar nu `{center, zoom, bearing, pitch}` före `setStyle()` och återställer efter `style.load` event. Viewport-drift = 0.000000.
 2. **Print Composition Overlay**: Ny `updatePrintComposition()` funktion visar ram, titel, skala och attribution i preview.
+
+#### Layout Designs Extension (2025-01-27) ✅ COMPLETE
+
+**Ny funktionalitet**: 10 nya layout designs tillagda till print editor.
+
+| Feature | Status |
+|---------|--------|
+| Layout templates (total: 15) | ✅ 15 layouts (5 original + 10 nya) |
+| Font loading (Google Fonts) | ✅ Playfair Display, Orbitron, Rajdhani, Courier Prime |
+| CSS effects (grid, glow, decorative) | ✅ Implementerat |
+| Title positions (8 olika) | ✅ top-left, top-right, bottom-right, bottom-center, diagonal, etc. |
+| Frame styles (solid, double, none, glow) | ✅ Implementerat |
+| Scale/attribution positioning | ✅ Flexibel positioning |
+| Browser testing (preview mode) | ✅ Alla layouts testade och fungerar |
+
+**Nya layouts**:
+1. Minimalist - Extremt minimal, nästan ingen ram
+2. Scientific - Vetenskaplig, datavisualiserings-stil
+3. Blueprint - Teknisk, arkitektur-inspirerad med grid pattern
+4. Gallery Print - Ren, konstnärlig
+5. Vintage Map - Klassisk kartografisk stil med double frame
+6. Artistic - Expressiv, kreativ med diagonal placement
+7. Night Mode - Mörk med neon-accents och glow
+8. Heritage - Historisk, museum-stil
+9. Prestige - Premium, lyxig med guld-banner
+10. Cyberpunk - Futuristisk, tech-inspirerad med neon glow
+
+**Testresultat**:
+- ✅ Alla 15 layouts renderas korrekt i preview mode
+- ✅ Layout-byte fungerar utan fel
+- ✅ Theme-byte fungerar med alla layouts
+- ✅ Console: Inga kritiska fel
+
+**Dokumentation**:
+- [LAYOUT_DESIGN_PROPOSAL.md](LAYOUT_DESIGN_PROPOSAL.md) - Design proposal
+- [LAYOUT_IMPLEMENTATION_PLAN.md](LAYOUT_IMPLEMENTATION_PLAN.md) - Implementation plan
+- [LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md](../exports/LAYOUT_DESIGNS_IMPLEMENTATION_REPORT.md) - Implementation rapport
+
+**Branch**: `feature/layout-designs` (redo för merge till main efter export-testing)
 3. **Export Fix**: Ändrat från `window.location.href` till `fetch()` + blob download. CORS-headers tillagda i exporter.
 
 **QA Verifiering:**
