@@ -21,6 +21,16 @@
     <link rel="stylesheet" href="/gallery-standalone/gallery.css">
     <script src="/store.js"></script>
     <script src="/gallery-standalone/gallery.js"></script>
+    <!-- Editor 2.0 (Phase 2A) - Section Navigation -->
+    <link rel="stylesheet" href="/styles/section-nav.css">
+    <script src="/components/section-nav.js"></script>
+    <!-- Theme Collections (Phase 15) -->
+    <link rel="stylesheet" href="/styles/theme-selector.css">
+    <script src="/components/theme-gallery.js"></script>
+    <script src="/components/collection-tabs.js"></script>
+    <script src="/components/collection-header.js"></script>
+    <script src="/components/theme-grid.js"></script>
+    <script src="/components/theme-selector.js"></script>
     <style>
         /* Nordic/Scandinavian Design System */
         :root {
@@ -764,212 +774,240 @@
             </div>
         </div>
 
+        <!-- Section Navigation (Editor 2.0 - enabled via ?editor=2) -->
+        <div id="section-nav-container"></div>
+
         <div class="sidebar-content">
-            <!-- Export Preset Selection (Phase 9.2) -->
-            <div class="panel-section" id="export-preset-section">
-                <h3 data-i18n="exportPreset">Export Preset</h3>
-                <div class="form-group">
-                    <div class="preset-select-wrapper">
-                        <select id="export-preset-select">
-                            <option value="">None (Custom)</option>
+            <!-- SECTION: Map (Area/Bbox) -->
+            <div class="section-content" id="section-map" data-section="map" role="tabpanel" aria-labelledby="tab-map">
+                <!-- Export Preset Selection (Phase 9.2) -->
+                <div class="panel-section" id="export-preset-section">
+                    <h3 data-i18n="exportPreset">Export Preset</h3>
+                    <div class="form-group">
+                        <div class="preset-select-wrapper">
+                            <select id="export-preset-select">
+                                <option value="">None (Custom)</option>
+                            </select>
+                        </div>
+                        <div class="preset-description" id="export-preset-description"></div>
+                        <div class="preset-status" id="export-preset-status"></div>
+                    </div>
+                    <div class="validation-errors" id="validation-errors"></div>
+                </div>
+
+                <!-- Area Selection -->
+                <div class="panel-section">
+                    <h3 data-i18n="area">Area</h3>
+                    <div class="form-group" id="bbox-preset-group">
+                        <label class="field-label" id="preset-label"><span data-i18n="preset">Preset</span> <span class="lock-indicator"></span></label>
+                        <select id="preset-select">
+                            <option value="stockholm_core">Stockholm Core</option>
+                            <option value="stockholm_wide">Stockholm Wide</option>
+                            <option value="svealand">Svealand</option>
+                            <option value="custom">Custom (Draw on Map)</option>
                         </select>
                     </div>
-                    <div class="preset-description" id="export-preset-description"></div>
-                    <div class="preset-status" id="export-preset-status"></div>
-                </div>
-                <div class="validation-errors" id="validation-errors"></div>
-            </div>
-
-            <!-- Area Selection -->
-            <div class="panel-section">
-                <h3 data-i18n="area">Area</h3>
-                <div class="form-group" id="bbox-preset-group">
-                    <label class="field-label" id="preset-label"><span data-i18n="preset">Preset</span> <span class="lock-indicator"></span></label>
-                    <select id="preset-select">
-                        <option value="stockholm_core">Stockholm Core</option>
-                        <option value="stockholm_wide">Stockholm Wide</option>
-                        <option value="svealand">Svealand</option>
-                        <option value="custom">Custom (Draw on Map)</option>
-                    </select>
-                </div>
-                <div class="bbox-display" id="bbox-display">
-                    <div class="coord-row">
-                        <span data-i18n="west">West:</span>
-                        <span class="coord-value" id="bbox-west">-</span>
+                    <div class="bbox-display" id="bbox-display">
+                        <div class="coord-row">
+                            <span data-i18n="west">West:</span>
+                            <span class="coord-value" id="bbox-west">-</span>
+                        </div>
+                        <div class="coord-row">
+                            <span data-i18n="south">South:</span>
+                            <span class="coord-value" id="bbox-south">-</span>
+                        </div>
+                        <div class="coord-row">
+                            <span data-i18n="east">East:</span>
+                            <span class="coord-value" id="bbox-east">-</span>
+                        </div>
+                        <div class="coord-row">
+                            <span data-i18n="north">North:</span>
+                            <span class="coord-value" id="bbox-north">-</span>
+                        </div>
                     </div>
-                    <div class="coord-row">
-                        <span data-i18n="south">South:</span>
-                        <span class="coord-value" id="bbox-south">-</span>
+                    <div class="btn-group" style="margin-top: 12px;">
+                        <button class="btn btn-secondary" id="draw-bbox-btn" data-i18n="drawBbox">Draw Bbox</button>
+                        <button class="btn btn-secondary" id="reset-bbox-btn" data-i18n="reset">Reset</button>
                     </div>
-                    <div class="coord-row">
-                        <span data-i18n="east">East:</span>
-                        <span class="coord-value" id="bbox-east">-</span>
-                    </div>
-                    <div class="coord-row">
-                        <span data-i18n="north">North:</span>
-                        <span class="coord-value" id="bbox-north">-</span>
-                    </div>
-                </div>
-                <div class="btn-group" style="margin-top: 12px;">
-                    <button class="btn btn-secondary" id="draw-bbox-btn" data-i18n="drawBbox">Draw Bbox</button>
-                    <button class="btn btn-secondary" id="reset-bbox-btn" data-i18n="reset">Reset</button>
                 </div>
             </div>
 
-            <!-- Composition -->
-            <div class="panel-section">
-                <h3 data-i18n="composition">Composition</h3>
-                <div class="form-row">
+            <!-- SECTION: Labels (Title/Subtitle) -->
+            <div class="section-content" id="section-labels" data-section="labels" role="tabpanel" aria-labelledby="tab-labels">
+                <div class="panel-section">
+                    <h3 data-i18n="composition">Composition</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label data-i18n="title">Title</label>
+                            <input type="text" id="title-input" data-i18n-placeholder="titlePlaceholder">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="subtitle">Subtitle</label>
+                            <input type="text" id="subtitle-input" data-i18n-placeholder="subtitlePlaceholder">
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top: 12px;">
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="show-scale" checked>
+                            <span data-i18n="showScale">Show scale</span>
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="show-attribution" checked>
+                            <span data-i18n="showAttribution">Show attribution</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: Style (Theme + Layers) -->
+            <div class="section-content" id="section-style" data-section="style" role="tabpanel" aria-labelledby="tab-style">
+                <div class="panel-section">
+                    <h3 data-i18n="style">Style</h3>
+                    <div class="form-group" id="theme-group">
+                        <label class="field-label" id="theme-label"><span data-i18n="theme">Theme</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
+                        <select id="theme-select">
+                            <option value="paper">Loading...</option>
+                        </select>
+                        <!-- Theme Gallery (Phase 1 - enabled via ?gallery=1) -->
+                        <div id="theme-gallery-container" class="theme-gallery theme-gallery--hidden"></div>
+                    </div>
+                    <div class="form-group" id="layers-group">
+                        <label class="field-label" id="layers-label"><span data-i18n="layers">Layers</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="layer-hillshade" checked>
+                                <span data-i18n="hillshade">Hillshade</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="layer-water" checked>
+                                <span data-i18n="water">Water</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="layer-parks" checked>
+                                <span data-i18n="parks">Parks</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="layer-roads" checked>
+                                <span data-i18n="roads">Roads</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="layer-buildings" checked>
+                                <span data-i18n="buildings">Buildings</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="layer-contours" checked>
+                                <span data-i18n="contours">Contours</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: Frames (Layout) -->
+            <div class="section-content" id="section-frames" data-section="frames" role="tabpanel" aria-labelledby="tab-frames">
+                <div class="panel-section">
+                    <h3 data-i18n="layout">Layout</h3>
                     <div class="form-group">
-                        <label data-i18n="title">Title</label>
-                        <input type="text" id="title-input" data-i18n-placeholder="titlePlaceholder">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="subtitle">Subtitle</label>
-                        <input type="text" id="subtitle-input" data-i18n-placeholder="subtitlePlaceholder">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label data-i18n="layout">Layout</label>
-                    <select id="layout-select">
-                        <!-- Original layouts -->
-                        <option value="classic">Classic</option>
-                        <option value="modern">Modern</option>
-                        <option value="minimal">Minimal</option>
-                        <option value="elegant">Elegant</option>
-                        <option value="bold">Bold</option>
-                        <!-- New layouts - Simple -->
-                        <option value="minimalist">Minimalist</option>
-                        <option value="scientific">Scientific</option>
-                        <option value="blueprint">Blueprint</option>
-                        <!-- New layouts - Medium -->
-                        <option value="gallery-print">Gallery Print</option>
-                        <option value="vintage-map">Vintage Map</option>
-                        <option value="artistic">Artistic</option>
-                        <!-- New layouts - Advanced -->
-                        <option value="night-mode">Night Mode</option>
-                        <option value="heritage">Heritage</option>
-                        <option value="prestige">Prestige</option>
-                        <option value="cyberpunk">Cyberpunk</option>
-                    </select>
-                </div>
-                <div class="form-row" style="margin-top: 12px;">
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="show-scale" checked>
-                        <span data-i18n="showScale">Show scale</span>
-                    </label>
-                    <label class="checkbox-inline">
-                        <input type="checkbox" id="show-attribution" checked>
-                        <span data-i18n="showAttribution">Show attribution</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Style -->
-            <div class="panel-section">
-                <h3 data-i18n="style">Style</h3>
-                <div class="form-group" id="theme-group">
-                    <label class="field-label" id="theme-label"><span data-i18n="theme">Theme</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
-                    <select id="theme-select">
-                        <option value="paper">Loading...</option>
-                    </select>
-                    <!-- Theme Gallery (Phase 1 - enabled via ?gallery=1) -->
-                    <div id="theme-gallery-container" class="theme-gallery theme-gallery--hidden"></div>
-                </div>
-                <div class="form-group" id="layers-group">
-                    <label class="field-label" id="layers-label"><span data-i18n="layers">Layers</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
-                    <div class="checkbox-group">
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="layer-hillshade" checked>
-                            <span data-i18n="hillshade">Hillshade</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="layer-water" checked>
-                            <span data-i18n="water">Water</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="layer-parks" checked>
-                            <span data-i18n="parks">Parks</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="layer-roads" checked>
-                            <span data-i18n="roads">Roads</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="layer-buildings" checked>
-                            <span data-i18n="buildings">Buildings</span>
-                        </label>
-                        <label class="checkbox-item">
-                            <input type="checkbox" id="layer-contours" checked>
-                            <span data-i18n="contours">Contours</span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Export Settings -->
-            <div class="panel-section">
-                <h3 data-i18n="export">Export</h3>
-                <div class="form-row">
-                    <div class="form-group" id="paper-size-group">
-                        <label class="field-label" id="paper-size-label"><span data-i18n="paperSize">Paper Size</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
-                        <select id="paper-size-select">
-                            <option value="A4">A4</option>
-                            <option value="A3">A3</option>
-                            <option value="A2" selected>A2</option>
-                            <option value="A1">A1</option>
-                            <option value="A0">A0</option>
-                            <option value="custom">Custom</option>
+                        <label data-i18n="layout">Layout</label>
+                        <select id="layout-select">
+                            <!-- Original layouts -->
+                            <option value="classic">Classic</option>
+                            <option value="modern">Modern</option>
+                            <option value="minimal">Minimal</option>
+                            <option value="elegant">Elegant</option>
+                            <option value="bold">Bold</option>
+                            <!-- New layouts - Simple -->
+                            <option value="minimalist">Minimalist</option>
+                            <option value="scientific">Scientific</option>
+                            <option value="blueprint">Blueprint</option>
+                            <!-- New layouts - Medium -->
+                            <option value="gallery-print">Gallery Print</option>
+                            <option value="vintage-map">Vintage Map</option>
+                            <option value="artistic">Artistic</option>
+                            <!-- New layouts - Advanced -->
+                            <option value="night-mode">Night Mode</option>
+                            <option value="heritage">Heritage</option>
+                            <option value="prestige">Prestige</option>
+                            <option value="cyberpunk">Cyberpunk</option>
                         </select>
                     </div>
-                    <div class="form-group" id="dpi-group">
-                        <label class="field-label" id="dpi-label"><span data-i18n="dpi">DPI</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
-                        <select id="dpi-select">
-                            <option value="72">72</option>
-                            <option value="150" selected>150</option>
-                            <option value="300">300</option>
-                            <option value="600">600</option>
-                        </select>
-                    </div>
+                    <!-- Placeholder for future LayoutGallery (Phase 2B) -->
+                    <div id="layout-gallery-container" class="layout-gallery layout-gallery--hidden"></div>
                 </div>
-                <div class="form-row" id="custom-size-row" style="display: none;">
-                    <div class="form-group">
-                        <label data-i18n="width">Width (mm)</label>
-                        <input type="number" id="width-input" value="420" min="100" max="2000">
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="height">Height (mm)</label>
-                        <input type="number" id="height-input" value="594" min="100" max="2000">
-                    </div>
-                </div>
-                <div class="form-group" id="orientation-group">
-                    <label class="field-label" id="orientation-label"><span data-i18n="orientation">Orientation</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
-                    <div class="toggle-group">
-                        <button class="toggle-btn active" data-value="portrait" id="orientation-portrait" data-i18n="portrait">Portrait</button>
-                        <button class="toggle-btn" data-value="landscape" id="orientation-landscape" data-i18n="landscape">Landscape</button>
-                    </div>
-                </div>
-                <div class="form-group" id="format-group">
-                    <label class="field-label" id="format-label"><span data-i18n="format">Format</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
-                    <div class="toggle-group">
-                        <button class="toggle-btn active" data-value="png" id="format-png">PNG</button>
-                        <button class="toggle-btn" data-value="pdf" id="format-pdf">PDF</button>
-                        <button class="toggle-btn" data-value="svg" id="format-svg">SVG</button>
-                    </div>
-                </div>
+            </div>
 
-                <div class="preview-info" id="preview-info">
-                    <div class="preview-info-row">
-                        <span class="preview-info-label" data-i18n="output">Output</span>
-                        <span class="preview-info-value" id="output-size">2480 x 3508 px</span>
+            <!-- SECTION: Size (Paper, DPI, Orientation) -->
+            <div class="section-content" id="section-size" data-section="size" role="tabpanel" aria-labelledby="tab-size">
+                <div class="panel-section">
+                    <h3 data-i18n="paperSize">Paper Size</h3>
+                    <div class="form-row">
+                        <div class="form-group" id="paper-size-group">
+                            <label class="field-label" id="paper-size-label"><span data-i18n="paperSize">Paper Size</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
+                            <select id="paper-size-select">
+                                <option value="A4">A4</option>
+                                <option value="A3">A3</option>
+                                <option value="A2" selected>A2</option>
+                                <option value="A1">A1</option>
+                                <option value="A0">A0</option>
+                                <option value="custom">Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="dpi-group">
+                            <label class="field-label" id="dpi-label"><span data-i18n="dpi">DPI</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
+                            <select id="dpi-select">
+                                <option value="72">72</option>
+                                <option value="150" selected>150</option>
+                                <option value="300">300</option>
+                                <option value="600">600</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="preview-info-row">
-                        <span class="preview-info-label" data-i18n="scale">Scale</span>
-                        <span class="preview-info-value" id="scale-display">1:25,000</span>
+                    <div class="form-row" id="custom-size-row" style="display: none;">
+                        <div class="form-group">
+                            <label data-i18n="width">Width (mm)</label>
+                            <input type="number" id="width-input" value="420" min="100" max="2000">
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="height">Height (mm)</label>
+                            <input type="number" id="height-input" value="594" min="100" max="2000">
+                        </div>
                     </div>
-                    <div class="preview-info-row">
-                        <span class="preview-info-label" data-i18n="estSize">Est. Size</span>
-                        <span class="preview-info-value" id="file-size">~4 MB</span>
+                    <div class="form-group" id="orientation-group">
+                        <label class="field-label" id="orientation-label"><span data-i18n="orientation">Orientation</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-value="portrait" id="orientation-portrait" data-i18n="portrait">Portrait</button>
+                            <button class="toggle-btn" data-value="landscape" id="orientation-landscape" data-i18n="landscape">Landscape</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION: Export -->
+            <div class="section-content" id="section-export" data-section="export" role="tabpanel" aria-labelledby="tab-export">
+                <div class="panel-section">
+                    <h3 data-i18n="export">Export</h3>
+                    <div class="form-group" id="format-group">
+                        <label class="field-label" id="format-label"><span data-i18n="format">Format</span> <span class="lock-indicator" data-i18n-title="lockedByPreset"></span></label>
+                        <div class="toggle-group">
+                            <button class="toggle-btn active" data-value="png" id="format-png">PNG</button>
+                            <button class="toggle-btn" data-value="pdf" id="format-pdf">PDF</button>
+                            <button class="toggle-btn" data-value="svg" id="format-svg">SVG</button>
+                        </div>
+                    </div>
+
+                    <div class="preview-info" id="preview-info">
+                        <div class="preview-info-row">
+                            <span class="preview-info-label" data-i18n="output">Output</span>
+                            <span class="preview-info-value" id="output-size">2480 x 3508 px</span>
+                        </div>
+                        <div class="preview-info-row">
+                            <span class="preview-info-label" data-i18n="scale">Scale</span>
+                            <span class="preview-info-value" id="scale-display">1:25,000</span>
+                        </div>
+                        <div class="preview-info-row">
+                            <span class="preview-info-label" data-i18n="estSize">Est. Size</span>
+                            <span class="preview-info-value" id="file-size">~4 MB</span>
+                        </div>
                     </div>
                 </div>
             </div>

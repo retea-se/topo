@@ -39,8 +39,19 @@ async function updateMapStyle(theme, preset, renderMode) {
       window.currentCoverage
     );
 
-    // Set style and update layer visibility once style is loaded
-    map.once('style.load', () => {
+    // Debug: Log style layers before setting
+    console.log('Style layers before setStyle:', style.layers.map(l => ({ id: l.id, type: l.type })));
+
+    // Set style first, then register event handler
+    map.setStyle(style);
+
+    // Update layer visibility once style is loaded
+    // Use both 'once' and a timeout fallback to ensure it runs
+    const styleLoadHandler = () => {
+      // Debug: Log layers after style is loaded
+      const loadedStyle = map.getStyle();
+      console.log('Style layers after style.load:', loadedStyle.layers.map(l => ({ id: l.id, type: l.type })));
+      
       // Update toggle states based on coverage
       if (window.updateToggleStates) {
         window.updateToggleStates(window.currentCoverage);
@@ -52,9 +63,22 @@ async function updateMapStyle(theme, preset, renderMode) {
       if (window.updateLayerVisibility) {
         window.updateLayerVisibility();
       }
-    });
+    };
 
-    map.setStyle(style);
+    // Register event handler after setStyle
+    if (map.isStyleLoaded()) {
+      // Style already loaded, call handler immediately
+      setTimeout(styleLoadHandler, 100);
+    } else {
+      // Wait for style to load
+      map.once('style.load', styleLoadHandler);
+      // Fallback timeout in case event doesn't fire
+      setTimeout(() => {
+        if (map.isStyleLoaded() && window.updateLayerVisibility) {
+          styleLoadHandler();
+        }
+      }, 2000);
+    }
   } else {
     console.error('themeToMapLibreStyle not loaded');
     // Fallback: simple style with background and hillshade only
@@ -289,9 +313,16 @@ Promise.all([
 
     // Make updateLayerVisibility globally available for updateMapStyle
     window.updateLayerVisibility = function() {
-      if (!map || !map.isStyleLoaded()) return;
+      if (!map || !map.isStyleLoaded()) {
+        console.warn('updateLayerVisibility: map not ready');
+        return;
+      }
 
-      const visibility = layer => layerToggles[layer]?.checked ? 'visible' : 'none';
+      const visibility = layer => {
+        const checked = layerToggles[layer]?.checked;
+        console.log(`Layer ${layer}: checkbox checked = ${checked}, visibility = ${checked ? 'visible' : 'none'}`);
+        return checked ? 'visible' : 'none';
+      };
 
       // Toggle hillshade (only if layer exists)
       if (map.getLayer('hillshade')) {
