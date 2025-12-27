@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Label Profiles Simple Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.0/dist/maplibre-gl.js"></script>
+    <script src="/themeToStyle.js"></script>
+    <script src="/label-profiles/labelProfiles.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: monospace; }
+        #map { width: 100%; height: 600px; border: 1px solid #ccc; }
+        #log { margin-top: 20px; padding: 10px; background: #f5f5f5; max-height: 300px; overflow-y: auto; }
+        .log-entry { margin: 5px 0; padding: 5px; background: white; }
+        .log-error { background: #fee; }
+        button { margin: 5px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Label Profiles Simple Test</h1>
+    <div id="map"></div>
+    <div>
+        <button onclick="applyProfile('off')">Off</button>
+        <button onclick="applyProfile('minimal')">Minimal</button>
+        <button onclick="applyProfile('landmarks')">Landmarks</button>
+    </div>
+    <div id="log"></div>
+
+    <script>
+        let map;
+        const log = [];
+
+        function addLog(message, isError = false) {
+            const entry = { time: new Date().toLocaleTimeString(), message, isError };
+            log.push(entry);
+            const logEl = document.getElementById('log');
+            const div = document.createElement('div');
+            div.className = 'log-entry' + (isError ? ' log-error' : '');
+            div.textContent = `[${entry.time}] ${message}`;
+            logEl.appendChild(div);
+            console.log(message);
+        }
+
+        async function initMap() {
+            addLog('Initializing map...');
+
+            // Load theme
+            let theme;
+            try {
+                const response = await fetch('/themes/paper.json');
+                theme = await response.json();
+                addLog('Theme loaded: ' + theme.name);
+            } catch (e) {
+                addLog('Error loading theme: ' + e.message, true);
+                return;
+            }
+
+            // Get config
+            let config;
+            try {
+                const response = await fetch('/api/config');
+                config = await response.json();
+                addLog('Config loaded: ' + JSON.stringify(config));
+            } catch (e) {
+                addLog('Error loading config: ' + e.message, true);
+                config = { tileserverUrl: 'http://localhost:8080', hillshadeTilesUrl: 'http://localhost:8081' };
+            }
+
+            // Create map
+            map = new maplibregl.Map({
+                container: 'map',
+                style: {
+                    version: 8,
+                    sources: {},
+                    layers: [{
+                        id: 'background',
+                        type: 'background',
+                        paint: { 'background-color': theme.background || '#faf8f5' }
+                    }]
+                },
+                center: [18.04, 59.335],
+                zoom: 13
+            });
+
+            map.on('load', async () => {
+                addLog('Map loaded, creating style...');
+
+                // Get coverage
+                let coverage = { osm: true, contours: false, hillshade: false };
+                try {
+                    const response = await fetch('/api/coverage/stockholm_core');
+                    if (response.ok) {
+                        coverage = await response.json();
+                        addLog('Coverage: ' + JSON.stringify(coverage));
+                    }
+                } catch (e) {
+                    addLog('Error loading coverage: ' + e.message);
+                }
+
+                // Check if themeToMapLibreStyle is available
+                if (typeof window.themeToMapLibreStyle !== 'function') {
+                    addLog('ERROR: themeToMapLibreStyle not available!', true);
+                    return;
+                }
+
+                addLog('Creating style with themeToMapLibreStyle...');
+                const style = window.themeToMapLibreStyle(
+                    theme,
+                    config.tileserverUrl,
+                    config.hillshadeTilesUrl,
+                    'stockholm_core',
+                    'screen',
+                    coverage
+                );
+
+                addLog('Style created, layers: ' + style.layers.length);
+                addLog('Label layers in style: ' + style.layers.filter(l => 
+                    l.id.includes('name') || l.type === 'symbol'
+                ).map(l => l.id).join(', '));
+
+                map.setStyle(style);
+
+                map.once('style.load', () => {
+                    addLog('Style loaded!');
+                    
+                    setTimeout(() => {
+                        // List all layers
+                        const allLayers = map.getStyle().layers;
+                        addLog('Total layers in map: ' + allLayers.length);
+                        addLog('Layer IDs: ' + allLayers.map(l => l.id).join(', '));
+
+                        // Check label layers
+                        if (window.LabelProfiles) {
+                            const labelLayers = window.LabelProfiles.identifyLabelLayers(map);
+                            addLog('Identified label layers: ' + JSON.stringify(labelLayers));
+                            
+                            if (labelLayers.streetNames.length === 0 && 
+                                labelLayers.placeNames.length === 0 &&
+                                labelLayers.poiNames.length === 0) {
+                                addLog('WARNING: No label layers found!', true);
+                            } else {
+                                addLog('Label layers found, applying default profile (off)...');
+                                window.LabelProfiles.applyLabelProfile(map, 'off');
+                            }
+                        } else {
+                            addLog('ERROR: LabelProfiles not available!', true);
+                        }
+                    }, 500);
+                });
+            });
+        }
+
+        function applyProfile(profile) {
+            if (!map || !map.isStyleLoaded()) {
+                addLog('Map not ready yet', true);
+                return;
+            }
+
+            if (!window.LabelProfiles) {
+                addLog('LabelProfiles not available', true);
+                return;
+            }
+
+            addLog('Applying profile: ' + profile);
+            window.LabelProfiles.applyLabelProfile(map, profile);
+            addLog('Profile applied: ' + profile);
+        }
+
+        // Initialize
+        initMap();
+    </script>
+</body>
+</html>
+
