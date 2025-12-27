@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- **Demo A Parks toggle export-paritet** (2025-12-27): Lagt till stöd för `layers` URL-parameter i Demo A för att säkerställa att Parks-toggle state följer med i exporten. Export-knappen skickar nu med aktuella layer-states, och exporter respekterar layers-parametern när den sätter checkbox-states i Playwright.
+
 ## [1.0.0] - 2025-12-26
 
 ### Summary

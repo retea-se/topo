@@ -64,7 +64,7 @@
 | Layer toggle: Roads | ✅ DONE |
 | Layer toggle: Buildings | ✅ DONE |
 | Layer toggle: Contours | ✅ DONE |
-| Layer toggle: Parks | ✅ DONE |
+| Layer toggle: Parks | ✅ DONE (2025-12-27: export-paritet verifierad) |
 
 ### Demo B
 

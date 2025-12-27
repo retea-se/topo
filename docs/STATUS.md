@@ -188,6 +188,7 @@ Stockholm Wide och Svealand DEM-data laddades ned från **Copernicus DEM GLO-30*
 | Export A2 @ 150 DPI | Fungerar |
 | Export A2 @ 300 DPI | Fungerar |
 | Layer toggles (hillshade, water, parks, roads, buildings, contours) | Fungerar |
+| Parks toggle export-paritet (layers URL-parameter) | ✅ Fungerar (2025-12-27) |
 | **Stockholm Wide preset** | **Fungerar** |
 | **Preset-aware contours** | **Fungerar** |
 
