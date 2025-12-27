@@ -285,7 +285,7 @@ let currentLayoutTemplate = 'classic';
  */
 function getFrameStyleCSS(template) {
     let css = '';
-    
+
     // Handle double frame style specially (uses outline for inner border)
     if (template.frameStyle === 'double') {
         const outerWidth = template.frameWidth || 4;
@@ -297,7 +297,7 @@ function getFrameStyleCSS(template) {
     } else {
         css = `border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};`;
     }
-    
+
     return css;
 }
 
@@ -319,7 +319,7 @@ function getTitleContainerCSS(template) {
         position: 'absolute',
         padding: '14px 20px'
     };
-    
+
     switch(template.titlePosition) {
         case 'top-left':
             return { ...baseCSS, top: 0, left: 0, textAlign: 'left' };
@@ -969,22 +969,22 @@ function updatePrintComposition() {
     // Create overlay
     const overlay = document.createElement('div');
     overlay.id = 'print-composition';
-    
+
     // Build frame CSS with helper function
     let frameCSS = getFrameStyleCSS(template);
-    
+
     // Add double frame class if needed
     if (template.frameStyle === 'double') {
         overlay.classList.add('frame-double');
         // Set CSS variable for inner border color
         overlay.style.setProperty('--frame-inner-color', template.frameColor);
     }
-    
+
     // Add grid pattern class if specified
     if (template.framePattern === 'grid') {
         overlay.classList.add('frame-grid-pattern');
     }
-    
+
     // Add glow effect classes if specified
     if (template.frameGlow) {
         // Check if it's a neon/cyan glow
@@ -997,7 +997,7 @@ function updatePrintComposition() {
             frameCSS += ` box-shadow: ${template.frameGlow};`;
         }
     }
-    
+
     // Build overlay CSS
     let overlayCSS = `
         position: absolute;
@@ -1010,12 +1010,12 @@ function updatePrintComposition() {
         box-sizing: border-box;
         ${frameCSS}
     `;
-    
+
     // Add standard shadow (unless frame has custom glow)
     if (!template.frameGlow) {
         overlayCSS += `box-shadow: 0 4px 24px rgba(0,0,0,0.15);`;
     }
-    
+
     overlay.style.cssText = overlayCSS;
 
     const title = elements.titleInput.value;
@@ -1106,7 +1106,7 @@ function updatePrintComposition() {
                 border-radius: 4px;
             `;
         }
-        
+
         // Add banner class for Prestige layout
         if (template.titleBanner) {
             titleContainer.classList.add('title-banner');
@@ -1122,25 +1122,25 @@ function updatePrintComposition() {
                 ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
                 letter-spacing: 0.5px;
             `;
-            
+
             // Add text transform if specified
             if (template.titleTransform) {
                 titleStyle += `text-transform: ${template.titleTransform};`;
             }
-            
+
             // Add italic style if specified
             if (template.titleStyle === 'italic') {
                 titleStyle += `font-style: italic;`;
             }
-            
+
             titleEl.style.cssText = titleStyle;
             titleEl.textContent = title;
-            
+
             // Add underline wrapper if needed
             if (template.titleUnderline) {
                 titleEl.classList.add('title-underline');
             }
-            
+
             titleContainer.appendChild(titleEl);
         }
 
@@ -1154,12 +1154,12 @@ function updatePrintComposition() {
                     subtitleColor = template.titleColor.replace('1)', '0.75)').replace('ff)', 'c0)');
                 } else {
                     // For dark colors, use a slightly lighter/muted version
-                    subtitleColor = template.titleColor.includes('rgba') 
+                    subtitleColor = template.titleColor.includes('rgba')
                         ? template.titleColor.replace(/,\s*[0-9.]+\)/, ', 0.7)')
                         : '#636e72';
                 }
             }
-            
+
             subtitleEl.style.cssText = `
                 font-family: ${template.titleFont};
                 font-size: ${template.subtitleSize}px;
@@ -1179,16 +1179,16 @@ function updatePrintComposition() {
     // Handle different positions based on template
     const scalePos = template.scalePosition || 'bottom-left';
     const attrPos = template.attributionPosition || (scalePos === 'bottom-left' ? 'bottom-right' : 'bottom-left');
-    
+
     // Only show if not 'none'
     if (showScale && scalePos !== 'none') {
         const scaleEl = document.createElement('div');
-        const scaleFont = template.scaleFont === 'monospace' 
+        const scaleFont = template.scaleFont === 'monospace'
             ? "'Courier Prime', 'Courier New', monospace"
             : template.scaleFont === 'serif'
             ? "'Times New Roman', serif"
             : "'Inter', system-ui, sans-serif";
-            
+
         let scaleCSS = `
             position: absolute;
             background: rgba(255,255,255,0.88);
@@ -1201,7 +1201,7 @@ function updatePrintComposition() {
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             pointer-events: none;
         `;
-        
+
         // Position scale element
         if (scalePos === 'bottom-left' || scalePos === 'bottom-center') {
             const bottomOffset = (template.titlePosition === 'bottom-left' || template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center') ? 60 : 10;
@@ -1219,21 +1219,21 @@ function updatePrintComposition() {
         } else if (scalePos === 'top-right') {
             scaleCSS += `top: 12px; right: 12px;`;
         }
-        
+
         scaleEl.style.cssText = scaleCSS;
         scaleEl.textContent = calculateScale();
         overlay.appendChild(scaleEl);
     }
-    
+
     // Attribution
     if (showAttribution && attrPos !== 'none') {
         const attrEl = document.createElement('div');
-        const attrFont = template.scaleFont === 'monospace' 
+        const attrFont = template.scaleFont === 'monospace'
             ? "'Courier Prime', 'Courier New', monospace"
             : template.scaleFont === 'serif'
             ? "'Times New Roman', serif"
             : "'Inter', system-ui, sans-serif";
-            
+
         let attrCSS = `
             position: absolute;
             padding: 4px 8px;
@@ -1243,7 +1243,7 @@ function updatePrintComposition() {
             pointer-events: none;
             letter-spacing: 0.2px;
         `;
-        
+
         // Position attribution element (don't overlap with title)
         if (attrPos === 'bottom-left' && template.titlePosition !== 'bottom-left') {
             const bottomOffset = template.titlePosition === 'bottom-right' || template.titlePosition === 'bottom-center' ? 60 : 10;
@@ -1259,7 +1259,7 @@ function updatePrintComposition() {
         } else if (attrPos === 'top-left') {
             attrCSS += `top: 12px; left: 12px; text-align: left;`;
         }
-        
+
         attrEl.style.cssText = attrCSS;
         attrEl.textContent = 'OSM contributors';
         overlay.appendChild(attrEl);
@@ -1415,7 +1415,11 @@ async function exportMap() {
                 subtitle: elements.subtitleInput.value || '',
                 layers: layers,
                 // Phase 9.2: include export preset if selected
-                export_preset: selectedExportPreset || null
+                export_preset: selectedExportPreset || null,
+                // Layout template and composition settings
+                layout_template: currentLayoutTemplate || 'classic',
+                show_scale: elements.showScale?.checked ? true : false,
+                show_attribution: elements.showAttribution?.checked ? true : false
             };
 
             setProgress(40, 'Rendering...');
