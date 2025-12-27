@@ -1,0 +1,50 @@
+{
+  "name": "Gold Foil",
+  "background": "#0a0a0a",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "premium"
+  },
+  "hillshade": {
+    "opacity": 0.1,
+    "gamma": 0.88,
+    "contrast": 1.35,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#0f0f0f",
+    "stroke": "#b8860b",
+    "strokeWidth": 1.0
+  },
+  "parks": {
+    "fill": "#0d0d0d",
+    "stroke": "#8b7355",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#d4af37",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 0.9
+    }
+  },
+  "buildings": {
+    "fill": "#121212",
+    "stroke": "#ffd700",
+    "strokeWidth": 0.6
+  },
+  "contours": {
+    "stroke": "#d4af37",
+    "strokeWidth": {
+      "major": 1.2,
+      "minor": 0.5
+    },
+    "opacity": {
+      "major": 0.95,
+      "minor": 0.55
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

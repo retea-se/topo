@@ -136,6 +136,11 @@
 | A3_FigureGround_Black_v1 | A3 Portrait | dark | ✅ DONE |
 | A2_Blueprint_Technical_v2 | A2 Landscape | blueprint-muted | ✅ DONE |
 | A2_Scandi_Light_v1 | A2 Landscape | warm-paper | ✅ DONE |
+| A3_Contour_Night_v1 | A3 Portrait | void | ✅ DONE |
+| A2_Neon_Synthwave_v1 | A2 Landscape | neon | ✅ DONE |
+| A3_Vintage_USGS_v1 | A3 Portrait | vintage | ✅ DONE |
+| A2_Gold_Foil_v1 | A2 Portrait | gold-foil | ✅ DONE |
+| A4_Night_v1 | A4 Portrait | night | ✅ DONE |
 
 ### 9.3 UI Integration ✅ DONE
 
@@ -464,14 +469,22 @@ Vit på mörkblå bakgrund. Teknisk ritningskänsla.
 **Implementation:**
 Bakgrund: `#1e3a5f` eller liknande. Alla linjer: `#ffffff` eller `#a0c4e8`. Lägg till grid-overlay för extra effekt.
 
-#### Neon / Synthwave
+#### Neon / Synthwave ✅ IMPLEMENTED
+
 Mörk bakgrund, lysande linjer med glöd-effekt.
+
+**Theme file**: `themes/neon.json`
+**Preset**: `A2_Neon_Synthwave_v1`
 
 **Implementation:**
 Bakgrund: `#0d0221`. Linjer: `#ff00ff`, `#00ffff`, `#ffff00`. Glöd: duplicera linje-lager, blur (Gaussian), lägg under original. CSS: `filter: drop-shadow(0 0 10px #ff00ff)`.
 
-#### Vintage USGS
+#### Vintage USGS ✅ IMPLEMENTED
+
 Klassiska topografiska kartor. Sepia-toner, åldrad papperstruktur.
+
+**Theme file**: `themes/vintage.json`
+**Preset**: `A3_Vintage_USGS_v1`
 
 **Implementation:**
 Färgpalett: `#d4c4a8` (bakgrund), `#5c4033` (linjer). Paper texture overlay med multiply blend. Serif-font för labels (Liberation Serif, etc).
@@ -488,8 +501,12 @@ Inverterade färger.
 **Implementation:**
 PIL: `ImageOps.invert(image)`. Eller byt stroke/fill-färger i stylesheet.
 
-#### Gold Foil
+#### Gold Foil ✅ IMPLEMENTED
+
 Simulerad guldfolie på mörk bakgrund.
+
+**Theme file**: `themes/gold-foil.json`
+**Preset**: `A2_Gold_Foil_v1`
 
 **Implementation:**
 Linjer: linear-gradient `#d4af37` → `#ffd700` → `#b8860b`. Bakgrund: `#1a1a2e` eller `#0a0a0a`. Subtle noise texture overlay för metallkänsla.
@@ -632,8 +649,12 @@ Terräng representerad med tecken.
 **Implementation:**
 Quantize elevation till teckenuppsättning: `" .:-=+*#%@"`. Rendera till monospace text, spara som bild. Nördigt easter egg.
 
-#### Night Mode
+#### Night Mode ✅ IMPLEMENTED
+
 Mörk bakgrund, dämpad kontrast.
+
+**Theme file**: `themes/night.json`
+**Preset**: `A4_Night_v1`
 
 **Implementation:**
 Bakgrund: `#121212`. Linjer: `#888888` eller dämpad accent. Undvik rent vitt.
@@ -824,6 +845,22 @@ Design- och policydokument: [V1_1_OPERATIONAL_HARDENING.md](V1_1_OPERATIONAL_HAR
 ---
 
 ## Changelog
+
+### 2025-12-27 (New Themes & Presets)
+
+- ✅ **4 new themes added**:
+  - Neon (Synthwave) - vibrant neon lines on dark background
+  - Vintage (USGS Classic) - sepia-toned classic topographic style
+  - Gold Foil (Premium) - gold lines on black background
+  - Night (Dark Mode) - muted contrast dark theme
+- ✅ **5 new export presets added**:
+  - A3_Contour_Night_v1 - Stark contour-only poster
+  - A2_Neon_Synthwave_v1 - Synthwave poster aesthetic
+  - A3_Vintage_USGS_v1 - Classic topographic print
+  - A2_Gold_Foil_v1 - Premium luxury poster
+  - A4_Night_v1 - Compact dark mode print
+- ✅ Design catalog updated with new themes (14 total)
+- ✅ All themes tested in Print Editor
 
 ### 2025-12-27 (v1.1 Operational Hardening)
 

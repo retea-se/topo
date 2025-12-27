@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A2_Gold_Foil_v1",
+  "version": 1,
+  "display_name": "A2 Gold Foil",
+  "description": "Premium gold lines on black background. Luxury poster aesthetic.",
+
+  "bbox_preset": "stockholm_wide",
+  "theme": "gold-foil",
+
+  "paper": {
+    "format": "A2",
+    "orientation": "portrait",
+    "width_mm": 420,
+    "height_mm": 594
+  },
+
+  "render": {
+    "dpi": 150,
+    "format": "png",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": true,
+    "water": true,
+    "parks": false,
+    "roads": true,
+    "buildings": true,
+    "contours": true
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": false
+  },
+
+  "constraints": {
+    "dpi_locked": false,
+    "dpi_min": 72,
+    "dpi_max": 300,
+    "format_locked": false,
+    "allowed_formats": ["png", "pdf"],
+    "layers_locked": false,
+    "bbox_locked": false,
+    "theme_locked": true
+  },
+
+  "meta": {
+    "created": "2025-12-27",
+    "author": "system",
+    "use_case": "premium",
+    "tags": ["print", "gold", "foil", "premium", "a2", "poster", "luxury"]
+  }
+}

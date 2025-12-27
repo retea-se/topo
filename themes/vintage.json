@@ -1,0 +1,50 @@
+{
+  "name": "Vintage",
+  "background": "#d4c4a8",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "low",
+    "mood": "classic"
+  },
+  "hillshade": {
+    "opacity": 0.25,
+    "gamma": 0.92,
+    "contrast": 1.1,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#a8c4d4",
+    "stroke": "#5c7080",
+    "strokeWidth": 0.8
+  },
+  "parks": {
+    "fill": "#b8c4a0",
+    "stroke": "#6b7355",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#5c4033",
+    "strokeWidth": {
+      "major": 1.8,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#c4b8a0",
+    "stroke": "#5c4033",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#7a5c40",
+    "strokeWidth": {
+      "major": 1.0,
+      "minor": 0.4
+    },
+    "opacity": {
+      "major": 0.85,
+      "minor": 0.5
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

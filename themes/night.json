@@ -1,0 +1,50 @@
+{
+  "name": "Night",
+  "background": "#121212",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "none",
+    "mood": "dark"
+  },
+  "hillshade": {
+    "opacity": 0.18,
+    "gamma": 0.9,
+    "contrast": 1.15,
+    "blend": "screen"
+  },
+  "water": {
+    "fill": "#1a2530",
+    "stroke": "#4a6580",
+    "strokeWidth": 0.8
+  },
+  "parks": {
+    "fill": "#1a251a",
+    "stroke": "#3a5a40",
+    "strokeWidth": 0.5
+  },
+  "roads": {
+    "stroke": "#888888",
+    "strokeWidth": {
+      "major": 1.6,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#1a1a1a",
+    "stroke": "#606060",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#606060",
+    "strokeWidth": {
+      "major": 0.9,
+      "minor": 0.4
+    },
+    "opacity": {
+      "major": 0.8,
+      "minor": 0.45
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

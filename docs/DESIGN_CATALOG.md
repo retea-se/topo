@@ -208,25 +208,142 @@ Contours -> Cream lines on black (major: 1.2px, minor: 0.5px)
 
 ---
 
+### 11. Neon (Synthwave)
+
+**File**: `themes/neon.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #0d0221 (deep purple-black) |
+| Mood | Synthwave, vibrant |
+| Best for | Posters, modern wall art |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Dark synthwave background
+- Magenta roads (#ff00ff)
+- Cyan contours and water (#00ffff)
+- Yellow building strokes (#ffff00)
+- Glowing neon aesthetic
+
+**Recommended preset**: `A2_Neon_Synthwave_v1`
+
+**Render pipeline**:
+```
+DEM -> Hillshade (12% opacity, screen blend) -> Subtle depth
+OSM -> Neon-colored strokes on dark fills -> Overlay
+Contours -> Cyan lines (major: 1.2px, minor: 0.6px)
+```
+
+---
+
+### 12. Vintage (USGS Classic)
+
+**File**: `themes/vintage.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #d4c4a8 (aged paper) |
+| Mood | Classic, nostalgic |
+| Best for | Traditional prints, gifts |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Sepia-toned background
+- Brown contours and roads (#5c4033, #7a5c40)
+- Muted water and parks
+- Classic USGS topographic feel
+
+**Recommended preset**: `A3_Vintage_USGS_v1`
+
+**Render pipeline**:
+```
+DEM -> Hillshade (25% opacity, multiply blend) -> Base
+OSM -> Sepia-toned fills and strokes -> Overlay
+Contours -> Brown lines (major: 1.0px, minor: 0.4px)
+```
+
+---
+
+### 13. Gold Foil (Premium)
+
+**File**: `themes/gold-foil.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #0a0a0a (near black) |
+| Mood | Luxury, premium |
+| Best for | High-end prints, gifts |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- Pure black background
+- Gold contours and roads (#d4af37)
+- Bright gold building strokes (#ffd700)
+- Bronze water accents (#b8860b)
+- Metallic foil aesthetic
+
+**Recommended preset**: `A2_Gold_Foil_v1`
+
+**Render pipeline**:
+```
+DEM -> Hillshade (10% opacity, screen blend) -> Subtle depth
+OSM -> Gold-toned strokes on black -> Overlay
+Contours -> Gold lines (major: 1.2px, minor: 0.5px)
+```
+
+---
+
+### 14. Night (Dark Mode)
+
+**File**: `themes/night.json`
+
+| Property | Value |
+|----------|-------|
+| Background | #121212 (dark gray) |
+| Mood | Dark, muted |
+| Best for | Eye-friendly prints, modern interiors |
+| Layers | All (DEM + OSM) |
+
+**Key characteristics**:
+- True dark mode background
+- Medium gray roads (#888888)
+- Muted contours (#606060)
+- Subtle blue-tinted water
+- No pure white elements
+
+**Recommended preset**: `A4_Night_v1`
+
+**Render pipeline**:
+```
+DEM -> Hillshade (18% opacity, screen blend) -> Base
+OSM -> Muted gray tones on dark -> Overlay
+Contours -> Gray lines (major: 0.9px, minor: 0.4px)
+```
+
+---
+
 ## Style Categories
 
 ### By Data Source
 
 | Category | Styles | Primary Data |
 |----------|--------|--------------|
-| DEM-heavy | Gallery, Paper, Ink | Hillshade, Contours |
-| OSM-heavy | Dark, Mono | Roads, Buildings |
-| Hybrid | Charcoal, Warm-Paper | Balanced |
+| DEM-heavy | Gallery, Paper, Ink, Vintage | Hillshade, Contours |
+| OSM-heavy | Dark, Mono, Night | Roads, Buildings |
+| Hybrid | Charcoal, Warm-Paper, Neon, Gold Foil | Balanced |
 
 ### By Use Case
 
 | Use Case | Recommended Style |
 |----------|-------------------|
-| Wall print (framed) | Gallery, Paper |
+| Wall print (framed) | Gallery, Paper, Vintage |
 | Technical/Academic | Mono, Ink |
-| Modern interior | Dark, Charcoal |
-| Gift/Personal | Warm-Paper, Muted-Pastel |
-| Poster/Art print | Void, Dark |
+| Modern interior | Dark, Charcoal, Night |
+| Gift/Personal | Warm-Paper, Muted-Pastel, Gold Foil |
+| Poster/Art print | Void, Dark, Neon |
+| Premium/Luxury | Gold Foil |
+| Retro/Synthwave | Neon |
 
 ### By Preset Compatibility
 
@@ -239,6 +356,10 @@ Contours -> Cream lines on black (major: 1.2px, minor: 0.5px)
 | Mono | Excellent | Excellent | Excellent |
 | Charcoal | Good | Good | Fair |
 | Void | Good | Excellent | Excellent |
+| Neon | Good | Excellent | Good |
+| Vintage | Excellent | Excellent | Good |
+| Gold Foil | Good | Excellent | Good |
+| Night | Excellent | Excellent | Good |
 
 **Note**: "Fair" for svealand means reduced detail at lower zoom levels.
 
@@ -306,14 +427,22 @@ To add a new style:
 
 ## Future Styles (Roadmap)
 
+### Recently Implemented (2025-12-27)
+
+| Style | Description | Status |
+|-------|-------------|--------|
+| Vintage | USGS-style with sepia tones | ✅ DONE |
+| Neon | Synthwave with glowing neon lines | ✅ DONE |
+| Gold Foil | Premium gold on black | ✅ DONE |
+| Night | Dark mode with muted contrast | ✅ DONE |
+
 ### Planned Additions
 
 | Style | Description | Priority |
 |-------|-------------|----------|
-| Topographic-Classic | USGS-style with brown contours | High |
-| Night-Neon | Dark with neon accents | Medium |
-| Vintage | Aged paper aesthetic | Medium |
 | Minimalist-Swiss | Swiss cartography style | Low |
+| Copper Foil | Warm metallic variant | Low |
+| Risograph | Grainy off-register aesthetic | Low |
 
 ### Data Source Additions
 
