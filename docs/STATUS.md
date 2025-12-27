@@ -63,6 +63,30 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 **Åtkomst**: http://localhost:3000/editor
 
+#### Playwright Test Hardening (2025-12-27) ✅ COMPLETE
+
+**Förbättringar:**
+- ✅ Test helpers: `waitForAppReady()`, `waitForPresetsLoaded()`, `selectPresetById()`
+- ✅ Console error gate: tester failar på JS errors/warnings
+- ✅ Automatiska screenshots + HTML-dumps vid testfel
+- ✅ Testrapport: `exports/TEST_RUN_REPORT.md` genereras efter körning
+- ✅ Stabilare selectors: använder ID-selectors (redan stabila)
+- ✅ Tydliga test.step() blocks för bättre läsbarhet
+
+**Kör tester:**
+```bash
+npx playwright test scripts/test_print_editor.spec.js
+npx playwright test scripts/test_export_presets_editor.spec.js
+```
+
+**Testrapport:** `exports/TEST_RUN_REPORT.md` innehåller:
+- Testresultat (pass/fail/skipped)
+- Screenshots och HTML-dumps vid fel
+- Console errors och warnings
+- Exekveringstid och sammanfattning
+
+Se [USAGE.md](USAGE.md#testning-med-playwright) för detaljer.
+
 #### Print Editor Fixes (2025-12-26)
 
 **Rapporterade problem:**
@@ -102,7 +126,11 @@ Print export now matches preview - all composition elements are correctly render
 
 **Test:** `node scripts/qa_golden_print_export.js`
 
-Se [QA_PRINT_EXPORT_GOLDEN.md](QA_PRINT_EXPORT_GOLDEN.md) för detaljer.
+**Dokumentation:**
+- [QA_GOLDEN_EXPORTS.md](QA_GOLDEN_EXPORTS.md) - Användarguide för golden-systemet
+- [QA_PRINT_EXPORT_GOLDEN.md](QA_PRINT_EXPORT_GOLDEN.md) - Teknisk implementation-historik
+- [QA_CHECKLIST.md](QA_CHECKLIST.md) - Checklist för PRs som påverkar rendering/export
+- [golden/print_export/README.md](../golden/print_export/README.md) - Teknisk dokumentation
 
 ### Tidigare funktioner (2025-12-27)
 

@@ -349,6 +349,87 @@ curl http://localhost:8082/exports
 curl http://localhost:5000/health
 ```
 
+### Testning med Playwright
+
+Print Editor har automatiserade tester som verifierar funktionalitet och stabilitet.
+
+**Förutsättningar:**
+- Demo A körs på http://localhost:3000
+- Tileserver, hillshade server och web server måste vara igång
+
+**Kör alla tester:**
+```bash
+npx playwright test
+```
+
+**Kör specifik testfil:**
+```bash
+# Print Editor UI-tester
+npx playwright test scripts/test_print_editor.spec.js
+
+# Export Preset-tester
+npx playwright test scripts/test_export_presets_editor.spec.js
+```
+
+**Kör specifik test:**
+```bash
+npx playwright test scripts/test_print_editor.spec.js -g "should load editor page"
+```
+
+**Testrapport:**
+Efter körning genereras en testrapport i `exports/TEST_RUN_REPORT.md` som innehåller:
+- Testresultat (pass/fail)
+- Screenshots vid fel
+- HTML-dumps vid fel
+- Console errors och warnings
+- Exekveringstid och sammanfattning
+
+**Console Error Gate:**
+Tester failar automatiskt om JavaScript errors eller warnings detekteras (förutom kända icke-kritiska fel som favicon/sourcemap).
+
+**Screenshots och HTML-dumps:**
+Vid testfel sparas automatiskt:
+- Full-page screenshot
+- HTML-dump av sidan
+
+Dessa sparas som attachments i Playwright och länkas i testrapporten.
+
+---
+
+## Verifiera Golden Print Exports
+
+Golden exports är referensbilder som används för regressionstestning av print export-funktionaliteten. De verifierar att exporten matchar förhandsvisningen och att kompositionselement renderas korrekt.
+
+### Kör Golden Sanity Check
+
+```bash
+# Starta nödvändiga tjänster
+docker compose up -d demo-a-exporter demo-a-web demo-a-tileserver demo-a-hillshade-server
+
+# Kör regressionstest
+node scripts/qa_golden_print_export.js
+```
+
+### Exit Codes
+
+- **0** = Alla tester PASSADE (alla exports matchar golden baselines)
+- **1** = Minst ett test FAILADE (export skiljer sig från golden)
+
+### Vad testet gör
+
+1. Laddar 3 golden baseline-exports från `golden/print_export/`
+2. Genererar nya exports med exakt samma parametrar
+3. Jämför SHA256-hashar och dimensioner
+4. Verifierar att diff är inom acceptance threshold (0.1%)
+
+### Output
+
+- Test-exports sparas i `exports/golden_test/` för visuell jämförelse
+- Console-output visar detaljerad status per golden
+- Diff-info filer genereras om testet failar
+
+**Se [QA_GOLDEN_EXPORTS.md](QA_GOLDEN_EXPORTS.md) för detaljerad dokumentation.**
+
 ---
 
 ## Använda Demo A (MapLibre)
