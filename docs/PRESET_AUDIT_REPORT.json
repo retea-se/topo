@@ -1,0 +1,297 @@
+{
+  "timestamp": "2025-12-27T16:59:00.936413",
+  "summary": {
+    "total_presets": 38,
+    "total_errors": 0,
+    "total_warnings": 0,
+    "total_info": 4
+  },
+  "errors": [],
+  "warnings": [],
+  "info": [
+    {
+      "type": "summary",
+      "message": "Found 38 preset files"
+    },
+    {
+      "type": "summary",
+      "message": "Unique bbox_presets: ['stockholm_core', 'stockholm_wide']"
+    },
+    {
+      "type": "summary",
+      "message": "Unique themes: ['arctic', 'art-deco', 'bauhaus', 'blueprint-muted', 'chalk', 'copper', 'cyberpunk', 'dark', 'duotone', 'forest', 'gallery', 'glitch', 'gold-foil', 'high-contrast', 'ink', 'japandi', 'lavender', 'mint', 'neon', 'night', 'ocean', 'paper', 'pencil-sketch', 'riso-red-cyan', 'scandi-minimal', 'sepia', 'silver-foil', 'sunset', 'swiss', 'thermal', 'vaporwave', 'vintage', 'void', 'warm-paper', 'woodblock']"
+    },
+    {
+      "type": "summary",
+      "message": "Unique formats: ['A1', 'A2', 'A3', 'A4']"
+    }
+  ],
+  "presets": [
+    {
+      "id": "A1_Terrain_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "gallery",
+      "format": "A1",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Arctic_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "arctic",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Art_Deco_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "art-deco",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Blueprint_Technical_v2",
+      "bbox_preset": "stockholm_core",
+      "theme": "blueprint-muted",
+      "format": "A2",
+      "dpi": 200
+    },
+    {
+      "id": "A2_Contour_Minimal_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "ink",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Cyberpunk_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "cyberpunk",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Duotone_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "duotone",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Glitch_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "glitch",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Gold_Foil_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "gold-foil",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Japandi_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "japandi",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Neon_Synthwave_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "neon",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Ocean_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "ocean",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Paper_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "paper",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Riso_RedCyan_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "riso-red-cyan",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Scandi_Light_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "warm-paper",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Scandi_Minimal_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "scandi-minimal",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Silver_Foil_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "silver-foil",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Sunset_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "sunset",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Swiss_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "swiss",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Terrain_GallerySoft_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "gallery",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Thermal_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "thermal",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Vaporwave_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "vaporwave",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A2_Woodblock_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "woodblock",
+      "format": "A2",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Bauhaus_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "bauhaus",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Blueprint_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "blueprint-muted",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Chalk_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "chalk",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Contour_Night_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "void",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Copper_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "copper",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_FigureGround_Black_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "dark",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Forest_v1",
+      "bbox_preset": "stockholm_wide",
+      "theme": "forest",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Lavender_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "lavender",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Pencil_Sketch_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "pencil-sketch",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Sepia_Classic_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "sepia",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A3_Vintage_USGS_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "vintage",
+      "format": "A3",
+      "dpi": 150
+    },
+    {
+      "id": "A4_High_Contrast_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "high-contrast",
+      "format": "A4",
+      "dpi": 150
+    },
+    {
+      "id": "A4_Mint_Fresh_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "mint",
+      "format": "A4",
+      "dpi": 150
+    },
+    {
+      "id": "A4_Night_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "night",
+      "format": "A4",
+      "dpi": 150
+    },
+    {
+      "id": "A4_Quick_v1",
+      "bbox_preset": "stockholm_core",
+      "theme": "paper",
+      "format": "A4",
+      "dpi": 150
+    }
+  ]
+}

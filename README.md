@@ -115,5 +115,11 @@ Diagnose issues:
 ./scripts/diagnose_common_failures.sh
 ```
 
+Audit export presets:
+```bash
+python scripts/preset_audit.py
+# See docs/PRESET_AUDIT_REPORT.md for results
+```
+
 See `RUNBOOK.md` for detailed step-by-step instructions.
 
