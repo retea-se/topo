@@ -1,0 +1,50 @@
+{
+  "name": "Woodblock",
+  "background": "#f5f0e6",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "japanese_traditional"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 1.1,
+    "contrast": 0.9,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#2c4a6e",
+    "stroke": "#1a2d4a",
+    "strokeWidth": 1.2
+  },
+  "parks": {
+    "fill": "#8b9a6b",
+    "stroke": "#5a6b4a",
+    "strokeWidth": 0.8
+  },
+  "roads": {
+    "stroke": "#1a1a1a",
+    "strokeWidth": {
+      "major": 2.0,
+      "minor": 0.8
+    }
+  },
+  "buildings": {
+    "fill": "#c4573a",
+    "stroke": "#1a1a1a",
+    "strokeWidth": 0.8
+  },
+  "contours": {
+    "stroke": "#5a4a3a",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.4
+    },
+    "opacity": {
+      "major": 0.6,
+      "minor": 0.3
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

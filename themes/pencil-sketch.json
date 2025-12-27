@@ -1,0 +1,50 @@
+{
+  "name": "Pencil Sketch",
+  "background": "#faf9f7",
+  "meta": {
+    "intended_scale": "A3",
+    "label_density": "none",
+    "mood": "hand_drawn"
+  },
+  "hillshade": {
+    "opacity": 0.08,
+    "gamma": 1.0,
+    "contrast": 0.7,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e8e8e8",
+    "stroke": "#4a4a4a",
+    "strokeWidth": 0.6
+  },
+  "parks": {
+    "fill": "none",
+    "stroke": "#5a5a5a",
+    "strokeWidth": 0.4
+  },
+  "roads": {
+    "stroke": "#3a3a3a",
+    "strokeWidth": {
+      "major": 0.8,
+      "minor": 0.3
+    }
+  },
+  "buildings": {
+    "fill": "none",
+    "stroke": "#4a4a4a",
+    "strokeWidth": 0.5
+  },
+  "contours": {
+    "stroke": "#555555",
+    "strokeWidth": {
+      "major": 0.4,
+      "minor": 0.2
+    },
+    "opacity": {
+      "major": 0.5,
+      "minor": 0.25
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

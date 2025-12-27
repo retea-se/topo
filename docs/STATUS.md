@@ -58,6 +58,30 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 ---
 
+### Fas 3a: Advanced Themes & Presets ✅ IMPLEMENTED (2025-12-27)
+
+3 nya avancerade teman med distinkt visuell karaktär och 3 matchande presets.
+
+**Nya Themes:**
+| Theme | Beskrivning |
+|-------|-------------|
+| Woodblock | Japanese ukiyo-e inspired, bold graphic with traditional colors |
+| Pencil Sketch | Hand-drawn architectural illustration, grayscale linework |
+| Glitch | Digital corruption aesthetic, neon cyberpunk on black |
+
+**Nya Export Presets:**
+| Preset | Paper | Theme | Specialinställningar |
+|--------|-------|-------|---------------------|
+| A2 Woodblock | A2 Portrait | Woodblock 🔒 | Stockholm Wide |
+| A3 Pencil Sketch | A3 Portrait | Pencil Sketch 🔒 | Scale bar on |
+| A2 Glitch | A2 Landscape | Glitch 🔒 | Stockholm Wide |
+
+**Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
+
+**Total themes i systemet:** 32
+
+---
+
 ### v1.1 Operational Hardening ✅ IMPLEMENTED (2025-12-27)
 
 v1.1 fokuserar på att skydda reproducerbarhet och korrekthet över tid.
