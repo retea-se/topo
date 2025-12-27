@@ -12,7 +12,7 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 | Funktion | Status |
 |----------|--------|
-| Preset-filer (4 st) | ✅ DONE |
+| Preset-filer (9 st) | ✅ DONE |
 | GET /api/export-presets | ✅ DONE |
 | GET /api/export-presets/{id} | ✅ DONE |
 | POST /api/validate-preset | ✅ DONE |
@@ -20,11 +20,16 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 | Reproducerbarhet (SHA256) | ✅ VERIFIED |
 | UI-integration | ✅ DONE |
 
-**Presets:**
+**Presets (9 st):**
 - A2_Paper_v1 - Klassisk vaggkarta (A2, 150 DPI, paper-tema)
 - A3_Blueprint_v1 - Teknisk ritning (A3, 150 DPI, blueprint-muted, last)
 - A1_Terrain_v1 - Stor terrangkarta (A1, 150 DPI, gallery-tema)
 - A4_Quick_v1 - Snabbutskrift (A4, 150 DPI, paper-tema)
+- A2_Contour_Minimal_v1 - Minimalistisk konturkarta (A2 portrait, ink-tema, last)
+- A2_Terrain_GallerySoft_v1 - Mjuk terrangkarta for galleri (A2 landscape, gallery-tema, last)
+- A3_FigureGround_Black_v1 - Stadsdiagram med mork bakgrund (A3 portrait, dark-tema, last)
+- A2_Blueprint_Technical_v2 - Avancerad teknisk presentation (A2 landscape, 200 DPI, blueprint-muted, last)
+- A2_Scandi_Light_v1 - Ljus skandinavisk karta (A2 landscape, warm-paper-tema, last)
 
 **SHA256 Verification (2025-12-26):**
 - A2_Paper_v1 (stockholm_core): `14fb5a04ee0df6c87a5f2758649618966511c52213d812aa9d994bbb4affc8b7`

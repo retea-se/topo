@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A2_Blueprint_Technical_v2",
+  "version": 2,
+  "display_name": "A2 Blueprint Teknisk",
+  "description": "Avancerad teknisk presentation med hog detaljeringsniva",
+
+  "bbox_preset": "stockholm_core",
+  "theme": "blueprint-muted",
+
+  "paper": {
+    "format": "A2",
+    "orientation": "landscape",
+    "width_mm": 594,
+    "height_mm": 420
+  },
+
+  "render": {
+    "dpi": 200,
+    "format": "pdf",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": false,
+    "water": true,
+    "parks": true,
+    "roads": true,
+    "buildings": true,
+    "contours": true
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": true
+  },
+
+  "constraints": {
+    "dpi_locked": true,
+    "dpi_min": 200,
+    "dpi_max": 200,
+    "format_locked": true,
+    "allowed_formats": ["pdf"],
+    "layers_locked": true,
+    "bbox_locked": true,
+    "theme_locked": true
+  },
+
+  "meta": {
+    "created": "2025-12-27",
+    "author": "system",
+    "use_case": "technical_documentation",
+    "tags": ["print", "blueprint", "technical", "a2", "professional"]
+  }
+}

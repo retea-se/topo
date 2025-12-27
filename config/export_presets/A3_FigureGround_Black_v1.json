@@ -1,0 +1,57 @@
+{
+  "$schema": "export_preset_v1",
+  "id": "A3_FigureGround_Black_v1",
+  "version": 1,
+  "display_name": "A3 Figure-Ground Svart",
+  "description": "Stadsdiagram med fokus pa byggnadsstruktur mot mork bakgrund",
+
+  "bbox_preset": "stockholm_core",
+  "theme": "dark",
+
+  "paper": {
+    "format": "A3",
+    "orientation": "portrait",
+    "width_mm": 297,
+    "height_mm": 420
+  },
+
+  "render": {
+    "dpi": 150,
+    "format": "png",
+    "render_mode": "print"
+  },
+
+  "layers": {
+    "hillshade": false,
+    "water": true,
+    "parks": false,
+    "roads": false,
+    "buildings": true,
+    "contours": false
+  },
+
+  "composition": {
+    "title": null,
+    "subtitle": null,
+    "show_attribution": true,
+    "show_scale_bar": false
+  },
+
+  "constraints": {
+    "dpi_locked": true,
+    "dpi_min": 150,
+    "dpi_max": 150,
+    "format_locked": false,
+    "allowed_formats": ["png", "pdf"],
+    "layers_locked": true,
+    "bbox_locked": true,
+    "theme_locked": true
+  },
+
+  "meta": {
+    "created": "2025-12-27",
+    "author": "system",
+    "use_case": "urban_diagram",
+    "tags": ["print", "figure-ground", "dark", "a3", "urban"]
+  }
+}

@@ -131,6 +131,11 @@
 | A3_Blueprint_v1 | A3 Landscape | blueprint-muted | ✅ DONE |
 | A1_Terrain_v1 | A1 Portrait | gallery | ✅ DONE |
 | A4_Quick_v1 | A4 Portrait | paper | ✅ DONE |
+| A2_Contour_Minimal_v1 | A2 Portrait | ink | ✅ DONE |
+| A2_Terrain_GallerySoft_v1 | A2 Landscape | gallery | ✅ DONE |
+| A3_FigureGround_Black_v1 | A3 Portrait | dark | ✅ DONE |
+| A2_Blueprint_Technical_v2 | A2 Landscape | blueprint-muted | ✅ DONE |
+| A2_Scandi_Light_v1 | A2 Landscape | warm-paper | ✅ DONE |
 
 ### 9.3 UI Integration ✅ DONE
 
