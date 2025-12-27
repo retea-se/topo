@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Print Editor: Theme-ändringar uppdaterar nu kartan/preview i realtid** (2025-12-27): Fixat problem där theme-ändringar inte uppdaterade kartan eller preview när export preset var "None (Custom)". Förbättrad felhantering i theme-select event listener och säkerställt att preview-kompositionen uppdateras korrekt vid theme-byte.
 - **Demo A Parks toggle export-paritet** (2025-12-27): Lagt till stöd för `layers` URL-parameter i Demo A för att säkerställa att Parks-toggle state följer med i exporten. Export-knappen skickar nu med aktuella layer-states, och exporter respekterar layers-parametern när den sätter checkbox-states i Playwright.
 
 ## [1.0.0] - 2025-12-26

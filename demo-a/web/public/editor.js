@@ -231,8 +231,11 @@ async function updateMapStyle() {
                 styleChangeInProgress = false;
 
                 // Update print composition if in preview mode
+                // Use a small delay to ensure map has fully rendered
                 if (isPreviewMode) {
-                    updatePrintComposition();
+                    setTimeout(() => {
+                        updatePrintComposition();
+                    }, 50);
                 }
             });
 
@@ -1631,8 +1634,25 @@ function setupEventListeners() {
 
     // Theme select
     elements.themeSelect.addEventListener('change', async (e) => {
-        currentTheme = await loadTheme(e.target.value);
+        const themeName = e.target.value;
+        currentTheme = await loadTheme(themeName);
+
+        if (!currentTheme) {
+            console.error(`Failed to load theme: ${themeName}`);
+            setStatus(`Error loading theme: ${themeName}`, 'error');
+            return;
+        }
+
         await updateMapStyle();
+
+        // Update preview composition if in preview mode (even if map style update is pending)
+        if (isPreviewMode) {
+            // Small delay to ensure map style has started updating
+            setTimeout(() => {
+                updatePrintComposition();
+            }, 100);
+        }
+
         handleFieldChange(); // Phase 9.2: modification detection
     });
 

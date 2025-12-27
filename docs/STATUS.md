@@ -1,6 +1,6 @@
 # Systemstatus
 
-**Senast uppdaterad**: 2025-12-27 15:00 CET
+**Senast uppdaterad**: 2025-12-27 16:00 CET
 
 ## Sammanfattning
 
@@ -153,6 +153,25 @@ Se [USAGE.md](USAGE.md#testning-med-playwright) för detaljer.
 - Export verifierad: `export_stockholm_core_blueprint-muted_420x594mm_150dpi_2025-12-26T19-49-24.png` (9.6 MB)
 
 Se [TODO_PRINT_EDITOR_FIXES.md](TODO_PRINT_EDITOR_FIXES.md), [TODO_EXPORT_EDITOR.md](../archive/TODO_EXPORT_EDITOR_completed.md) (arkiverad), [EDITOR_TEST_INSTRUCTIONS.md](EDITOR_TEST_INSTRUCTIONS.md).
+
+#### Print Editor Theme Update Fix (2025-12-27) ✅ FIXED
+
+**Rapporterat problem:**
+- När export preset är "None (Custom)" och användaren ändrar "Style" → "Theme" uppdateras varken kartan eller preview i realtid.
+
+**Root cause:**
+- Saknad felhantering: om `loadTheme()` returnerade `null` fortsatte koden ändå, och `updateMapStyle()` returnerade tidigt.
+- Preview uppdaterades inte: även om kartan uppdaterades, uppdaterades inte preview-kompositionen när theme ändrades.
+
+**Utförda fixar:**
+1. **Förbättrad felhantering**: Theme-select event listener kontrollerar nu om `loadTheme()` lyckas och visar felmeddelande om theme inte kan laddas.
+2. **Preview-uppdatering**: Preview-kompositionen uppdateras nu direkt när theme ändras (om i preview mode), med liten delay för att säkerställa att kartan har renderats.
+3. **Förbättrad timing**: `style.load` event handler har nu delay innan `updatePrintComposition()` anropas för att säkerställa att kartan är helt renderad.
+
+**Verifiering:**
+- Testat i Chrome: Theme-ändringar fungerar nu korrekt även när preset är "None (Custom)".
+- Inga JavaScript-fel i konsolen.
+- Preview uppdateras korrekt när theme ändras.
 
 ### Golden Print Export (2025-12-27) ✅ COMPLETE
 
