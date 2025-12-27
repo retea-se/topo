@@ -1,0 +1,176 @@
+# Update Golden Baselines - v1.1 Operational Hardening
+#
+# MANUAL WORKFLOW ONLY - Regenerates golden baselines for Demo B.
+#
+# WARNING: This workflow changes the reproducibility contract!
+# Only run with documented approval per V1_1_OPERATIONAL_HARDENING.md
+#
+# Required inputs:
+# - reason: Why baselines are being updated
+# - presets: Which presets to regenerate (all, tier1, or specific preset ID)
+# - confirm: Must type "I understand" to proceed
+
+name: Update Golden Baselines
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Documented reason for updating baselines (required)'
+        required: true
+        type: string
+      presets:
+        description: 'Presets to regenerate'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - tier1
+          - A4_Quick_v1
+          - A2_Paper_v1
+          - A3_Blueprint_v1
+          - A1_Terrain_v1
+      confirm:
+        description: 'Type "I understand" to confirm baseline update'
+        required: true
+        type: string
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate confirmation
+        run: |
+          if [ "${{ inputs.confirm }}" != "I understand" ]; then
+            echo "::error::Confirmation required. You must type 'I understand' to proceed."
+            echo "This safeguard exists because updating baselines changes the reproducibility contract."
+            exit 1
+          fi
+
+      - name: Validate reason
+        run: |
+          if [ -z "${{ inputs.reason }}" ]; then
+            echo "::error::A documented reason is required for baseline updates."
+            exit 1
+          fi
+          echo "Reason: ${{ inputs.reason }}"
+
+  update-baselines:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Log baseline update
+        run: |
+          echo "=========================================="
+          echo "BASELINE UPDATE"
+          echo "=========================================="
+          echo "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Reason: ${{ inputs.reason }}"
+          echo "Presets: ${{ inputs.presets }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "=========================================="
+
+      - name: Start Demo B Docker stack
+        run: |
+          docker compose up -d demo-b-db demo-b-renderer demo-b-api
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+      - name: Wait for Demo B health
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:5000/health > /dev/null 2>&1 && \
+               curl -sf http://localhost:5001/health > /dev/null 2>&1; then
+              echo "Demo B services are ready"
+              exit 0
+            fi
+            echo "Waiting for services... ($i/30)"
+            sleep 5
+          done
+          echo "Services failed to start"
+          docker compose logs
+          exit 1
+
+      - name: Generate new baselines
+        run: |
+          if [ "${{ inputs.presets }}" = "all" ]; then
+            node scripts/qa_golden_demo_b.js --regenerate
+          elif [ "${{ inputs.presets }}" = "tier1" ]; then
+            node scripts/qa_golden_demo_b.js --regenerate --tier1
+          else
+            node scripts/qa_golden_demo_b.js --regenerate-only ${{ inputs.presets }}
+          fi
+
+      - name: Extract new hashes
+        id: hashes
+        run: |
+          echo "## New SHA256 Hashes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Update these in golden/demo_b/metadata.json:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```json' >> $GITHUB_STEP_SUMMARY
+
+          for file in golden/demo_b/*_golden.png; do
+            if [ -f "$file" ]; then
+              hash=$(sha256sum "$file" | cut -d' ' -f1)
+              name=$(basename "$file" _golden.png)
+              echo "\"$name\": \"$hash\"" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
+      - name: Update BASELINE.md
+        run: |
+          # Add entry to BASELINE.md regeneration history
+          DATE=$(date -u +%Y-%m-%d)
+          ENTRY="| $DATE | ${{ github.actor }} | ${{ inputs.reason }} | (update metadata.json) |"
+
+          # Append to regeneration history (before the last "## How to Regenerate" section)
+          sed -i "/## How to Regenerate Baselines/i $ENTRY" golden/demo_b/BASELINE.md || true
+
+      - name: Stop Docker stack
+        if: always()
+        run: docker compose down -v
+
+      - name: Upload new baselines
+        uses: actions/upload-artifact@v4
+        with:
+          name: new-baselines-${{ github.run_number }}
+          path: |
+            golden/demo_b/*_golden.png
+            exports/golden_test_demo_b/TEST_REPORT.md
+          retention-days: 30
+
+      - name: Create summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download the new-baselines artifact" >> $GITHUB_STEP_SUMMARY
+          echo "2. Update SHA256 hashes in \`golden/demo_b/metadata.json\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Update \`golden/demo_b/BASELINE.md\` with the new version" >> $GITHUB_STEP_SUMMARY
+          echo "4. Commit with \`[BASELINE]\` in the message:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "[BASELINE] ${{ inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Presets updated: ${{ inputs.presets }}" >> $GITHUB_STEP_SUMMARY
+          echo "Run ID: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

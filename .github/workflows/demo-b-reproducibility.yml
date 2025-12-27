@@ -1,0 +1,153 @@
+# Demo B Reproducibility Check - v1.1 Operational Hardening
+#
+# Verifies that Demo B (Mapnik) exports are byte-identical to stored golden baselines.
+# This is the AUTHORITATIVE reproducibility test per the v1.1 operational hardening contract.
+#
+# Triggers:
+# - Every push/PR to main (Tier 1 only - fast)
+# - Nightly at 03:00 UTC (Full Tier 1 + Tier 2)
+# - Manual dispatch (configurable tier)
+
+name: Demo B Reproducibility
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'demo-b/**'
+      - 'themes/**'
+      - 'golden/demo_b/**'
+      - 'scripts/qa_golden_demo_b.js'
+      - 'docker-compose.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'demo-b/**'
+      - 'themes/**'
+      - 'golden/demo_b/**'
+      - 'scripts/qa_golden_demo_b.js'
+      - 'docker-compose.yml'
+  schedule:
+    - cron: '0 3 * * *'  # 03:00 UTC daily
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: 'Test tier to run'
+        required: true
+        default: 'tier1'
+        type: choice
+        options:
+          - tier1
+          - full
+
+jobs:
+  reproducibility-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          lfs: true  # Golden PNGs may be in LFS
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Determine test tier
+        id: tier
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "tier=full" >> $GITHUB_OUTPUT
+            echo "Running full tier (scheduled)"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tier=${{ inputs.tier }}" >> $GITHUB_OUTPUT
+            echo "Running ${{ inputs.tier }} (manual dispatch)"
+          else
+            echo "tier=tier1" >> $GITHUB_OUTPUT
+            echo "Running tier1 (push/PR)"
+          fi
+
+      - name: Start Demo B Docker stack
+        run: |
+          docker compose up -d demo-b-db demo-b-renderer demo-b-api
+          echo "Waiting for services to be ready..."
+          sleep 30
+
+      - name: Wait for Demo B API health
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:5000/health > /dev/null 2>&1; then
+              echo "Demo B API is ready"
+              exit 0
+            fi
+            echo "Waiting for Demo B API... ($i/30)"
+            sleep 5
+          done
+          echo "Demo B API failed to start"
+          docker compose logs demo-b-api
+          exit 1
+
+      - name: Wait for Demo B Renderer health
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:5001/health > /dev/null 2>&1; then
+              echo "Demo B Renderer is ready"
+              exit 0
+            fi
+            echo "Waiting for Demo B Renderer... ($i/30)"
+            sleep 5
+          done
+          echo "Demo B Renderer failed to start"
+          docker compose logs demo-b-renderer
+          exit 1
+
+      - name: Run reproducibility check
+        id: test
+        run: |
+          if [ "${{ steps.tier.outputs.tier }}" = "tier1" ]; then
+            node scripts/qa_golden_demo_b.js --tier1
+          else
+            node scripts/qa_golden_demo_b.js
+          fi
+
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-b-reproducibility-${{ github.run_number }}
+          path: |
+            exports/golden_test_demo_b/
+          retention-days: 7
+
+      - name: Collect Docker logs on failure
+        if: failure()
+        run: |
+          docker compose logs demo-b-api > demo-b-api.log 2>&1
+          docker compose logs demo-b-renderer > demo-b-renderer.log 2>&1
+          docker compose logs demo-b-db > demo-b-db.log 2>&1
+
+      - name: Upload Docker logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-logs-${{ github.run_number }}
+          path: |
+            demo-b-api.log
+            demo-b-renderer.log
+            demo-b-db.log
+          retention-days: 7
+
+      - name: Stop Docker stack
+        if: always()
+        run: docker compose down -v
+
+      - name: Post failure summary
+        if: failure()
+        run: |
+          echo "::error::Demo B reproducibility check FAILED"
+          echo "::error::This indicates broken determinism - DO NOT RELEASE"
+          echo "See: docs/V1_1_OPERATIONAL_HARDENING.md for remediation steps"
