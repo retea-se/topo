@@ -9,144 +9,455 @@
     <script src="/themeToStyle.js"></script>
     <script src="/label-profiles/labelProfiles.js"></script>
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 13px;
         }
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
-            width: 100%;
+            left: 0;
+            right: 350px;
         }
-        .controls {
+        .sidebar {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 350px;
+            background: #f5f5f5;
+            overflow-y: auto;
+            border-left: 1px solid #ddd;
+        }
+        .section {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            min-width: 250px;
+            margin-bottom: 1px;
         }
-        .controls h3 {
-            margin: 0 0 15px 0;
-            font-size: 18px;
-            color: #333;
-        }
-        .controls label {
-            display: block;
-            margin: 10px 0 5px 0;
+        .section h3 {
+            margin: 0 0 10px 0;
             font-size: 14px;
-            font-weight: 500;
-            color: #555;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section h4 {
+            margin: 10px 0 5px 0;
+            font-size: 12px;
+            color: #666;
         }
         .controls select {
             width: 100%;
-            padding: 8px 12px;
+            padding: 8px 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            font-size: 14px;
+            font-size: 13px;
             background: white;
             cursor: pointer;
-        }
-        .controls select:hover {
-            border-color: #999;
         }
         .controls select:focus {
             outline: none;
             border-color: #4a90e2;
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
         }
-        .profile-description {
-            margin-top: 10px;
-            padding: 10px;
-            background: #f5f5f5;
+        .profile-desc {
+            margin-top: 8px;
+            padding: 8px;
+            background: #f0f7ff;
             border-radius: 4px;
             font-size: 12px;
-            color: #666;
-            line-height: 1.5;
+            color: #335;
         }
         .status {
-            margin-top: 15px;
-            padding: 10px;
-            background: #e8f4f8;
+            padding: 8px;
             border-radius: 4px;
             font-size: 12px;
-            color: #2c5f7d;
+            margin-bottom: 8px;
         }
-        .status.error {
-            background: #fee;
-            color: #c33;
+        .status.loading { background: #fff8e0; color: #856404; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #e8f4f8; color: #2c5f7d; }
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn:hover { background: #f0f0f0; }
+        .btn-primary {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+        .btn-primary:hover { background: #3a7bc8; }
+        .layer-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        .layer-item {
+            padding: 6px 8px;
+            border-bottom: 1px solid #eee;
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .layer-item:last-child { border-bottom: none; }
+        .layer-item .id { font-weight: bold; color: #333; }
+        .layer-item .meta { color: #666; font-size: 10px; }
+        .category-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        .cat-street { background: #e3f2fd; color: #1565c0; }
+        .cat-place { background: #fce4ec; color: #c2185b; }
+        .cat-poi { background: #fff3e0; color: #e65100; }
+        .cat-water { background: #e0f7fa; color: #00838f; }
+        .cat-park { background: #e8f5e9; color: #2e7d32; }
+        .cat-other { background: #f5f5f5; color: #666; }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .summary-item {
+            padding: 8px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .summary-item .count {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .summary-item .label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .changes-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .change-item {
+            padding: 4px 8px;
+            font-size: 11px;
+            border-bottom: 1px solid #eee;
+        }
+        .change-item:last-child { border-bottom: none; }
+        .change-item.show { background: #e8f5e9; }
+        .change-item.hide { background: #ffebee; }
+        .landmarks-diag {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .diag-item {
+            padding: 8px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .diag-item.found { background: #e8f5e9; }
+        .diag-item.notfound { background: #fff8e0; }
+        .diag-item .name { font-weight: bold; }
+        .diag-item .sample { font-size: 10px; color: #666; margin-top: 4px; }
+        .warning-box {
+            padding: 8px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #856404;
+            margin-top: 8px;
+        }
+        .cat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
         }
     </style>
 </head>
 <body>
     <div id="map"></div>
-    <div class="controls">
-        <h3>Label Profiles Test</h3>
-        <label for="profile-select">Label Profile:</label>
-        <select id="profile-select">
-            <option value="off">Off (default)</option>
-            <option value="minimal">Minimal Streets</option>
-            <option value="landmarks">Landmarks</option>
-        </select>
-        <div class="profile-description" id="profile-description">
-            <strong>Off:</strong> Inga labels eller gatunamn visas.
+    <div class="sidebar">
+        <div class="section">
+            <h3>Label Profiles Test</h3>
+            <div id="main-status" class="status loading">Initierar...</div>
         </div>
-        <div class="status" id="status">Laddar karta...</div>
+
+        <div class="section controls">
+            <h3>Profil</h3>
+            <select id="profile-select">
+                <option value="off">Off (inga labels)</option>
+                <option value="minimal">Minimal Streets</option>
+                <option value="landmarks">Landmarks</option>
+            </select>
+            <div class="profile-desc" id="profile-desc">
+                <strong>Off:</strong> Inga labels eller gatunamn visas.
+            </div>
+
+            <h3 style="margin-top: 15px;">Typografi</h3>
+            <select id="typography-select">
+                <option value="subtle">Subtle (diskret)</option>
+                <option value="crisp">Crisp (tydlig)</option>
+                <option value="classic">Classic (traditionell)</option>
+            </select>
+            <div class="profile-desc" id="typography-desc">
+                <strong>Subtle:</strong> Diskret, nara osynlig - for wall-art
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>
+                <span>Symbol Layers Inventory</span>
+                <button class="btn" id="btn-dump">Dump All</button>
+            </h3>
+            <div class="summary-grid" id="summary-grid"></div>
+            <h4>Per Kategori</h4>
+            <div id="category-summary" class="cat-row"></div>
+            <h4>Alla Label Layers</h4>
+            <div class="layer-list" id="layer-list">
+                <div class="layer-item">Laddar...</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Applicerade Andringar</h3>
+            <div class="changes-list" id="changes-list">
+                <div class="change-item">Valj en profil for att se andringar</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>
+                <span>Landmarks Diagnostik</span>
+                <button class="btn" id="btn-diag">Kolla Data</button>
+            </h3>
+            <div class="landmarks-diag" id="landmarks-diag"></div>
+            <div id="landmarks-warning" class="warning-box" style="display:none;"></div>
+        </div>
+
+        <div class="section">
+            <h3>Instruktioner</h3>
+            <ol style="margin:0;padding-left:20px;font-size:11px;color:#666;">
+                <li>Kartan laddar automatiskt med "Off" profil</li>
+                <li>Valj "Minimal Streets" for att se gatunamn</li>
+                <li>Valj "Landmarks" for platsnamn, vatten, parker</li>
+                <li>Klicka "Dump All" for att se alla layers i console</li>
+                <li>Klicka "Kolla Data" for att diagnostisera landmarks</li>
+            </ol>
+        </div>
     </div>
 
     <script>
         let map;
         let currentProfile = 'off';
+        let currentTypography = 'subtle';
         let tileserverUrl = 'http://localhost:8080';
         let hillshadeTilesUrl = 'http://localhost:8081';
 
-        // Profile descriptions
         const profileDescriptions = {
-            off: '<strong>Off:</strong> Inga labels eller gatunamn visas.',
-            minimal: '<strong>Minimal Streets:</strong> Visar endast högre vägklasser (primary, secondary, tertiary) med diskret typografi.',
-            landmarks: '<strong>Landmarks:</strong> Visar POI/områdesnamn (park, vatten, platser) men inte gatunamn.'
+            off: 'Off: Inga labels eller gatunamn visas pa kartan.',
+            minimal: 'Minimal Streets: Visar gatunamn for storre vagar (primary, secondary, tertiary) med diskret typografi.',
+            landmarks: 'Landmarks: Visar platsnamn (stadsdel, stad), vattennamn och parknamn. Inga gatunamn.'
         };
 
-        // Update profile description
-        function updateDescription(profile) {
-            const descEl = document.getElementById('profile-description');
-            descEl.innerHTML = profileDescriptions[profile] || '';
+        const typographyDescriptions = {
+            subtle: 'Subtle: Diskret, nara osynlig - for wall-art',
+            crisp: 'Crisp: Tydlig, hog kontrast - for lasbarhet',
+            classic: 'Classic: Traditionell kartestetik - balanserad'
+        };
+
+        // Helper to create element with text
+        function createEl(tag, className, textContent) {
+            const el = document.createElement(tag);
+            if (className) el.className = className;
+            if (textContent) el.textContent = textContent;
+            return el;
         }
 
-        // Update status
-        function updateStatus(message, isError = false) {
-            const statusEl = document.getElementById('status');
-            statusEl.textContent = message;
-            statusEl.className = isError ? 'status error' : 'status';
+        // UI update functions
+        function setStatus(message, type) {
+            const el = document.getElementById('main-status');
+            el.textContent = message;
+            el.className = 'status ' + (type || 'info');
         }
 
-        // Load theme
-        async function loadTheme(name) {
-            try {
-                const response = await fetch(`/themes/${name}.json`);
-                if (!response.ok) throw new Error(`Theme ${name} not found`);
-                return await response.json();
-            } catch (error) {
-                console.error('Error loading theme:', error);
-                return null;
+        function updateProfileDesc(profile) {
+            const el = document.getElementById('profile-desc');
+            el.textContent = profileDescriptions[profile] || '';
+        }
+
+        function updateTypographyDesc(typography) {
+            const el = document.getElementById('typography-desc');
+            el.textContent = typographyDescriptions[typography] || '';
+        }
+
+        function updateInventoryDisplay(inventory) {
+            // Summary grid
+            const summaryGrid = document.getElementById('summary-grid');
+            summaryGrid.replaceChildren();
+
+            const items = [
+                { count: inventory.summary.total, label: 'Symbol Layers' },
+                { count: inventory.summary.withTextField, label: 'Med Text' },
+                { count: Object.keys(inventory.summary.byCategory).filter(k => inventory.summary.byCategory[k] > 0).length, label: 'Kategorier' }
+            ];
+
+            items.forEach(item => {
+                const div = createEl('div', 'summary-item');
+                const countDiv = createEl('div', 'count', String(item.count));
+                const labelDiv = createEl('div', 'label', item.label);
+                div.appendChild(countDiv);
+                div.appendChild(labelDiv);
+                summaryGrid.appendChild(div);
+            });
+
+            // Category summary
+            const catSummary = document.getElementById('category-summary');
+            catSummary.replaceChildren();
+            const cats = ['street', 'place', 'poi', 'water', 'park', 'other'];
+            cats.forEach(cat => {
+                const count = inventory.summary.byCategory[cat] || 0;
+                const badge = createEl('span', 'category-badge cat-' + cat, cat + ': ' + count);
+                catSummary.appendChild(badge);
+            });
+
+            // Layer list
+            const layerList = document.getElementById('layer-list');
+            layerList.replaceChildren();
+
+            if (inventory.summary.withTextField === 0) {
+                layerList.appendChild(createEl('div', 'layer-item', 'Inga label layers hittades'));
+            } else {
+                inventory.all.filter(l => l.hasTextField).forEach(layer => {
+                    const item = createEl('div', 'layer-item');
+
+                    const idDiv = createEl('div', 'id', layer.id + ' ');
+                    const badge = createEl('span', 'category-badge cat-' + layer.category, layer.category);
+                    idDiv.appendChild(badge);
+
+                    const metaDiv = createEl('div', 'meta', 'source-layer: ' + (layer.sourceLayer || 'N/A') + ' | visibility: ' + layer.visibility);
+
+                    item.appendChild(idDiv);
+                    item.appendChild(metaDiv);
+                    layerList.appendChild(item);
+                });
             }
+        }
+
+        function updateChangesDisplay(result) {
+            const changesList = document.getElementById('changes-list');
+            changesList.replaceChildren();
+
+            if (!result.changes || result.changes.length === 0) {
+                if (result.warnings && result.warnings.length > 0) {
+                    result.warnings.forEach(w => {
+                        changesList.appendChild(createEl('div', 'change-item', w));
+                    });
+                } else {
+                    changesList.appendChild(createEl('div', 'change-item', 'Inga andringar'));
+                }
+                return;
+            }
+
+            result.changes.forEach(change => {
+                const item = createEl('div', 'change-item ' + change.action,
+                    change.layerId + ': ' + change.action + ' (' + change.details.join(', ') + ')');
+                changesList.appendChild(item);
+            });
+        }
+
+        function updateLandmarksDiag(diag) {
+            const container = document.getElementById('landmarks-diag');
+            const warning = document.getElementById('landmarks-warning');
+            container.replaceChildren();
+
+            const cats = ['place', 'poi', 'water', 'park'];
+            let missingCats = [];
+
+            cats.forEach(cat => {
+                const data = diag[cat];
+                const foundClass = data.found ? 'found' : 'notfound';
+                let sampleText = data.found ? (data.count + ' features') : 'Ej hittat';
+                if (data.sample && data.sample.name) {
+                    sampleText += ' (ex: "' + data.sample.name + '")';
+                }
+
+                const item = createEl('div', 'diag-item ' + foundClass);
+                item.appendChild(createEl('div', 'name', cat));
+                item.appendChild(createEl('div', 'sample', sampleText));
+                container.appendChild(item);
+
+                if (!data.found) missingCats.push(cat);
+            });
+
+            if (missingCats.length > 0) {
+                warning.style.display = 'block';
+                warning.textContent = 'Varning: Inga features hittades for: ' + missingCats.join(', ') +
+                    '. Detta kan bero pa att tiles saknar data eller att features ar utanfor synligt omrade.';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        // Apply profile and update UI
+        function applyProfileAndUpdate(profile, typography) {
+            if (!map || !window.LabelProfiles) {
+                setStatus('Map eller LabelProfiles ej tillgangligt', 'error');
+                return;
+            }
+
+            typography = typography || currentTypography;
+            setStatus('Applicerar profil: ' + profile + ' (' + typography + ')...', 'loading');
+
+            setTimeout(function() {
+                const result = window.LabelProfiles.applyLabelProfile(map, profile, {
+                    typographyPreset: typography
+                });
+                console.log('[LabelProfiles] Apply result:', result);
+
+                if (result.success) {
+                    setStatus('Profil "' + profile + '" med typografi "' + typography + '"', 'success');
+                    if (result.inventory) {
+                        updateInventoryDisplay(result.inventory);
+                    }
+                    updateChangesDisplay(result);
+                } else {
+                    setStatus('Profil misslyckades: ' + result.warnings.join(', '), 'error');
+                    updateChangesDisplay(result);
+                }
+            }, 50);
         }
 
         // Initialize map
         async function initMap() {
-            updateStatus('Laddar tema...');
+            setStatus('Hamtar konfiguration...', 'loading');
 
-            // Try to get config from API, fallback to defaults
-            let config;
+            // Try to get config from API
             try {
                 const response = await fetch('/api/config');
                 if (response.ok) {
-                    config = await response.json();
+                    const config = await response.json();
                     tileserverUrl = config.tileserverUrl || tileserverUrl;
                     hillshadeTilesUrl = config.hillshadeTilesUrl || hillshadeTilesUrl;
                 }
@@ -154,16 +465,22 @@
                 console.warn('Could not fetch config, using defaults:', e);
             }
 
-            // Load default theme
-            const theme = await loadTheme('paper');
-            if (!theme) {
-                updateStatus('Kunde inte ladda tema. Kontrollera att servern körs.', true);
+            setStatus('Laddar tema...', 'loading');
+
+            // Load theme
+            let theme;
+            try {
+                const response = await fetch('/themes/paper.json');
+                if (!response.ok) throw new Error('Theme not found');
+                theme = await response.json();
+            } catch (e) {
+                setStatus('Kunde inte ladda tema: ' + e.message, 'error');
                 return;
             }
 
-            updateStatus('Skapar karta...');
+            setStatus('Skapar karta...', 'loading');
 
-            // Create map
+            // Create map with minimal initial style
             map = new maplibregl.Map({
                 container: 'map',
                 style: {
@@ -175,12 +492,12 @@
                         paint: { 'background-color': theme.background || '#faf8f5' }
                     }]
                 },
-                center: [18.04, 59.335], // Stockholm Core
+                center: [18.04, 59.335],
                 zoom: 13
             });
 
-            map.on('load', async () => {
-                updateStatus('Laddar kartstil...');
+            map.on('load', async function() {
+                setStatus('Kontrollerar coverage...', 'loading');
 
                 // Get coverage info
                 let coverage = { osm: true, contours: false, hillshade: false };
@@ -190,79 +507,133 @@
                         coverage = await response.json();
                     }
                 } catch (e) {
-                    console.warn('Could not fetch coverage, using defaults:', e);
+                    console.warn('Could not fetch coverage:', e);
                 }
 
-                // Apply style using themeToMapLibreStyle
-                if (typeof window.themeToMapLibreStyle === 'function') {
-                    const style = window.themeToMapLibreStyle(
-                        theme,
-                        tileserverUrl,
-                        hillshadeTilesUrl,
-                        'stockholm_core',
-                        'screen',
-                        coverage
-                    );
+                setStatus('Applicerar kartstil...', 'loading');
 
-                    map.setStyle(style);
+                // Generate and apply style
+                if (typeof window.themeToMapLibreStyle !== 'function') {
+                    setStatus('themeToMapLibreStyle ej tillganglig', 'error');
+                    return;
+                }
 
-                    map.once('style.load', () => {
-                        // Wait a bit for all layers to be fully loaded
-                        setTimeout(() => {
-                            updateStatus('Karta laddad. Kontrollerar label-layers...');
+                const style = window.themeToMapLibreStyle(
+                    theme,
+                    tileserverUrl,
+                    hillshadeTilesUrl,
+                    'stockholm_core',
+                    'screen',
+                    coverage
+                );
 
-                            // Debug: List all layers
-                            const style = map.getStyle();
-                            console.log('All layers in style:', style.layers.map(l => ({ id: l.id, type: l.type, sourceLayer: l['source-layer'] })));
+                // Override glyphs URL to use working font server
+                // Use Protomaps fonts (public, no API key required)
+                style.glyphs = 'https://protomaps.github.io/basemaps-assets/fonts/{fontstack}/{range}.pbf';
 
-                            // Check if label layers exist
-                            if (window.LabelProfiles) {
-                                const labelLayers = window.LabelProfiles.identifyLabelLayers(map);
-                                console.log('Identified label layers:', labelLayers);
-
-                                if (labelLayers.streetNames.length === 0 &&
-                                    labelLayers.placeNames.length === 0 &&
-                                    labelLayers.poiNames.length === 0 &&
-                                    labelLayers.waterNames.length === 0 &&
-                                    labelLayers.parkNames.length === 0) {
-                                    updateStatus('Inga label-layers hittades. Kontrollera att themeToStyle.js innehåller label-layers.', true);
-                                    console.error('No label layers found. Available layers:', style.layers.map(l => l.id));
-                                } else {
-                                    updateStatus('Karta laddad. Växla profil för att se labels.');
-                                    // Apply initial profile
-                                    window.LabelProfiles.applyLabelProfile(map, currentProfile);
-                                }
-                            } else {
-                                updateStatus('LabelProfiles inte tillgänglig. Kontrollera att labelProfiles.js är laddad.', true);
-                            }
-                        }, 200);
+                // Fix font families to use Noto Sans (available on Protomaps)
+                if (style.layers) {
+                    style.layers.forEach(function(layer) {
+                        if (layer.layout && layer.layout['text-font']) {
+                            // Replace all fonts with Noto Sans Regular
+                            layer.layout['text-font'] = ['Noto Sans Regular'];
+                        }
                     });
-                } else {
-                    updateStatus('themeToMapLibreStyle inte tillgänglig. Kontrollera att themeToStyle.js är laddad.', true);
                 }
+
+                // Register style.load listener BEFORE setStyle to avoid race condition
+                map.once('style.load', function() {
+                    initializeAfterStyleLoad();
+                });
+
+                map.setStyle(style);
+
+                // Fallback: also use idle event in case style.load was missed
+                map.once('idle', function() {
+                    // Check if we already initialized (style.load triggered)
+                    const statusEl = document.getElementById('main-status');
+                    if (statusEl.textContent.indexOf('Applicerar kartstil') !== -1) {
+                        // Still waiting, trigger initialization
+                        console.log('[LabelProfiles] Using idle event fallback');
+                        initializeAfterStyleLoad();
+                    }
+                });
             });
 
-            // Profile selector change handler
-            document.getElementById('profile-select').addEventListener('change', (e) => {
+            // Profile selector
+            document.getElementById('profile-select').addEventListener('change', function(e) {
                 currentProfile = e.target.value;
-                updateDescription(currentProfile);
-
-                if (map && map.isStyleLoaded() && window.LabelProfiles) {
-                    updateStatus(`Applicerar profil: ${currentProfile}...`);
-                    window.LabelProfiles.applyLabelProfile(map, currentProfile);
-                    updateStatus(`Profil "${currentProfile}" applicerad.`);
-                } else {
-                    updateStatus('Karta inte redo ännu. Vänta...');
-                }
+                updateProfileDesc(currentProfile);
+                applyProfileAndUpdate(currentProfile, currentTypography);
             });
 
-            // Note: style.load event is handled in map.on('load') above
-            // No need to register it again here
+            // Typography selector
+            document.getElementById('typography-select').addEventListener('change', function(e) {
+                currentTypography = e.target.value;
+                updateTypographyDesc(currentTypography);
+                // Reapply profile with new typography
+                applyProfileAndUpdate(currentProfile, currentTypography);
+            });
+
+            // Dump button
+            document.getElementById('btn-dump').addEventListener('click', function() {
+                if (!map || !window.LabelProfiles) {
+                    console.log('Map or LabelProfiles not available');
+                    return;
+                }
+                const inventory = window.LabelProfiles.inventorySymbolLayers(map);
+                console.log('=== SYMBOL LAYERS DUMP ===');
+                console.log('Summary:', inventory.summary);
+                console.log('All symbol layers:', inventory.all);
+                console.log('By category:', inventory.byCategory);
+                console.log('Full style layers:', map.getStyle().layers);
+                alert('Dump skrivet till console. Oppna Developer Tools -> Console for att se.');
+            });
+
+            // Diagnostics button
+            document.getElementById('btn-diag').addEventListener('click', function() {
+                if (!map || !window.LabelProfiles) {
+                    console.log('Map or LabelProfiles not available');
+                    return;
+                }
+                const diag = window.LabelProfiles.diagnosticLandmarks(map);
+                console.log('=== LANDMARKS DIAGNOSTICS ===', diag);
+                updateLandmarksDiag(diag);
+            });
         }
 
-        // Initialize on page load
+        function initializeAfterStyleLoad() {
+            setTimeout(function() {
+                setStatus('Inventerar symbol layers...', 'loading');
+
+                if (!window.LabelProfiles) {
+                    setStatus('LabelProfiles ej laddad', 'error');
+                    return;
+                }
+
+                // Get initial inventory
+                const inventory = window.LabelProfiles.inventorySymbolLayers(map);
+                console.log('[LabelProfiles] Initial inventory:', inventory);
+                updateInventoryDisplay(inventory);
+
+                // Check if we have label layers
+                if (inventory.summary.withTextField === 0) {
+                    setStatus('Inga label layers hittades i stilen', 'error');
+                    console.error('No label layers found. All layers:', map.getStyle().layers.map(function(l) { return { id: l.id, type: l.type }; }));
+                } else {
+                    setStatus('Klar! ' + inventory.summary.withTextField + ' label layers hittades.', 'success');
+                    applyProfileAndUpdate(currentProfile, currentTypography);
+                }
+
+                // Run initial landmarks diagnostics
+                const diag = window.LabelProfiles.diagnosticLandmarks(map);
+                updateLandmarksDiag(diag);
+
+            }, 500);
+        }
+
+        // Start
         initMap();
     </script>
 </body>
 </html>
-
