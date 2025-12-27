@@ -1,0 +1,50 @@
+{
+  "name": "Sunset",
+  "background": "#fdf6e3",
+  "meta": {
+    "intended_scale": "A2",
+    "label_density": "none",
+    "mood": "warm_golden"
+  },
+  "hillshade": {
+    "opacity": 0.15,
+    "gamma": 1.1,
+    "contrast": 0.9,
+    "blend": "multiply"
+  },
+  "water": {
+    "fill": "#e8a87c",
+    "stroke": "#c47a50",
+    "strokeWidth": 0.5
+  },
+  "parks": {
+    "fill": "#f4d4a8",
+    "stroke": "#d4a868",
+    "strokeWidth": 0.3
+  },
+  "roads": {
+    "stroke": "#8b4a2a",
+    "strokeWidth": {
+      "major": 1.0,
+      "minor": 0.5
+    }
+  },
+  "buildings": {
+    "fill": "#e8c89c",
+    "stroke": "#b08858",
+    "strokeWidth": 0.4
+  },
+  "contours": {
+    "stroke": "#c47850",
+    "strokeWidth": {
+      "major": 0.6,
+      "minor": 0.3
+    },
+    "opacity": {
+      "major": 0.55,
+      "minor": 0.28
+    },
+    "intervals": [2, 10, 50],
+    "noLabels": true
+  }
+}

@@ -32,6 +32,32 @@ Båda demos (Demo A och Demo B) är fullt fungerande med komplett exportfunktion
 
 ---
 
+### Fas 2: Nya Themes & Presets ✅ IMPLEMENTED (2025-12-27)
+
+5 nya expressiva teman och 5 matchande export presets.
+
+**Nya Themes:**
+| Theme | Beskrivning |
+|-------|-------------|
+| Arctic | Cool glacial blues, calm winter landscape |
+| Sunset | Warm golden hour tones, romantic atmosphere |
+| Lavender | Soft calming purples, relaxing aesthetic |
+| Swiss | Clean modernist, bold black/white/red accent |
+| Vaporwave | Retro 80s neon, pink/cyan/purple on dark |
+
+**Nya Export Presets:**
+| Preset | Paper | Theme |
+|--------|-------|-------|
+| A2 Arctic | A2 Portrait | Arctic 🔒 |
+| A2 Sunset | A2 Landscape | Sunset 🔒 |
+| A3 Lavender | A3 Portrait | Lavender 🔒 |
+| A2 Swiss | A2 Portrait | Swiss 🔒 |
+| A2 Vaporwave | A2 Landscape | Vaporwave 🔒 |
+
+**Verifiering:** ✅ Alla themes och presets testade i Print Editor (Chrome).
+
+---
+
 ### v1.1 Operational Hardening ✅ IMPLEMENTED (2025-12-27)
 
 v1.1 fokuserar på att skydda reproducerbarhet och korrekthet över tid.
