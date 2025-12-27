@@ -9,6 +9,70 @@ const PORT = process.env.PORT || 8082;
 const WEB_URL = process.env.WEB_URL || 'http://demo-a-web:3000';
 const EXPORTS_DIR = process.env.EXPORTS_DIR || '/exports/demo-a';
 
+// Layout templates (must match editor.js LAYOUT_TEMPLATES)
+const LAYOUT_TEMPLATES = {
+  classic: {
+    name: 'Classic',
+    titlePosition: 'top-center',
+    titleFont: 'Georgia, serif',
+    titleSize: 22,
+    subtitleSize: 13,
+    titleBackground: 'rgba(255,255,255,0.92)',
+    titleColor: '#2d3436',
+    frameStyle: 'solid',
+    frameColor: '#636e72',
+    frameWidth: 1
+  },
+  modern: {
+    name: 'Modern',
+    titlePosition: 'bottom-left',
+    titleFont: "'Inter', -apple-system, sans-serif",
+    titleSize: 24,
+    subtitleSize: 12,
+    titleBackground: 'linear-gradient(to top, rgba(45,52,54,0.85) 0%, transparent 100%)',
+    titleColor: '#fff',
+    frameStyle: 'none',
+    frameColor: 'transparent',
+    frameWidth: 0
+  },
+  minimal: {
+    name: 'Minimal',
+    titlePosition: 'none',
+    titleFont: 'system-ui, sans-serif',
+    titleSize: 0,
+    subtitleSize: 0,
+    titleBackground: 'transparent',
+    frameStyle: 'solid',
+    frameColor: '#b2bec3',
+    frameWidth: 1
+  },
+  elegant: {
+    name: 'Elegant',
+    titlePosition: 'top-center',
+    titleFont: "'Playfair Display', 'Times New Roman', serif",
+    titleSize: 24,
+    subtitleSize: 13,
+    titleBackground: 'rgba(253,251,248,0.95)',
+    titleColor: '#4a4a4a',
+    frameStyle: 'double',
+    frameColor: '#8b7355',
+    frameWidth: 3
+  },
+  bold: {
+    name: 'Bold',
+    titlePosition: 'center-overlay',
+    titleFont: "'Inter', 'Helvetica Neue', sans-serif",
+    titleSize: 42,
+    subtitleSize: 16,
+    titleBackground: 'transparent',
+    titleColor: 'rgba(255,255,255,0.95)',
+    titleShadow: '0 2px 12px rgba(0,0,0,0.6)',
+    frameStyle: 'solid',
+    frameColor: '#4a6fa5',
+    frameWidth: 2
+  }
+};
+
 // Ensure exports directory exists
 if (!fs.existsSync(EXPORTS_DIR)) {
   fs.mkdirSync(EXPORTS_DIR, { recursive: true });
@@ -41,10 +105,18 @@ app.get('/render', async (req, res) => {
     height_mm = 594,
     title = '',
     subtitle = '',
-    attribution = '',
+    attribution = 'OSM contributors',
     layers = '{}',
-    preset_id
+    preset_id,
+    layout_template = 'classic',
+    show_scale = 'false',
+    show_attribution = 'true'
   } = req.query;
+
+  // Parse boolean params
+  const shouldShowScale = show_scale === 'true';
+  const shouldShowAttribution = show_attribution === 'true';
+  const template = LAYOUT_TEMPLATES[layout_template] || LAYOUT_TEMPLATES.classic;
 
   const width_px = Math.round(width_mm * dpi / 25.4);
   const height_px = Math.round(height_mm * dpi / 25.4);
@@ -62,6 +134,7 @@ app.get('/render', async (req, res) => {
   console.log(`  Theme: ${theme}, Mode: ${render_mode}`);
   console.log(`  Size: ${width_mm}x${height_mm}mm @ ${dpi}dpi = ${width_px}x${height_px}px`);
   console.log(`  Title: "${title}", Subtitle: "${subtitle}"`);
+  console.log(`  Template: ${layout_template}, Scale: ${shouldShowScale}, Attribution: ${shouldShowAttribution}`);
   console.log(`  Layers:`, layerSettings);
 
   try {
@@ -150,10 +223,187 @@ app.get('/render', async (req, res) => {
     // Additional wait to ensure all rendering is complete
     await page.waitForTimeout(2000);
 
-    // Screenshot only the map element for clean export
+    // Inject print composition overlay for export
+    const hasComposition = title || subtitle || template.frameWidth > 0 || shouldShowScale || shouldShowAttribution;
+
+    if (hasComposition) {
+      console.log('[Exporter] Injecting print composition overlay...');
+
+      await page.evaluate(({ template, title, subtitle, shouldShowScale, shouldShowAttribution, attribution, width_px, height_px }) => {
+        const mapEl = document.getElementById('map');
+        if (!mapEl) return;
+
+        // Create wrapper to contain map + composition
+        const wrapper = document.createElement('div');
+        wrapper.id = 'export-wrapper';
+        wrapper.style.cssText = `
+          position: relative;
+          width: ${width_px}px;
+          height: ${height_px}px;
+          overflow: hidden;
+        `;
+
+        // Move map into wrapper
+        mapEl.parentNode.insertBefore(wrapper, mapEl);
+        wrapper.appendChild(mapEl);
+
+        // Create composition overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'print-composition';
+        overlay.style.cssText = `
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: ${width_px}px;
+          height: ${height_px}px;
+          pointer-events: none;
+          z-index: 100;
+          box-sizing: border-box;
+          border: ${template.frameWidth}px ${template.frameStyle} ${template.frameColor};
+        `;
+
+        // Add title based on template position
+        if (template.titlePosition !== 'none' && (title || subtitle)) {
+          const titleContainer = document.createElement('div');
+
+          if (template.titlePosition === 'top-center') {
+            titleContainer.style.cssText = `
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              padding: 14px 20px;
+              background: ${template.titleBackground};
+              text-align: center;
+            `;
+          } else if (template.titlePosition === 'bottom-left') {
+            titleContainer.style.cssText = `
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              padding: 24px 20px 16px;
+              background: ${template.titleBackground};
+            `;
+          } else if (template.titlePosition === 'center-overlay') {
+            titleContainer.style.cssText = `
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+              padding: 24px;
+            `;
+          }
+
+          if (title) {
+            const titleEl = document.createElement('div');
+            titleEl.style.cssText = `
+              font-family: ${template.titleFont};
+              font-size: ${template.titleSize}px;
+              font-weight: 600;
+              color: ${template.titleColor || '#2d3436'};
+              ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
+              letter-spacing: 0.5px;
+            `;
+            titleEl.textContent = title;
+            titleContainer.appendChild(titleEl);
+          }
+
+          if (subtitle) {
+            const subtitleEl = document.createElement('div');
+            subtitleEl.style.cssText = `
+              font-family: ${template.titleFont};
+              font-size: ${template.subtitleSize}px;
+              color: ${template.titleColor ? 'rgba(255,255,255,0.75)' : '#636e72'};
+              ${template.titleShadow ? `text-shadow: ${template.titleShadow};` : ''}
+              margin-top: 4px;
+              font-weight: 400;
+            `;
+            subtitleEl.textContent = subtitle;
+            titleContainer.appendChild(subtitleEl);
+          }
+
+          overlay.appendChild(titleContainer);
+        }
+
+        // Footer with scale and attribution
+        if (shouldShowScale || shouldShowAttribution) {
+          const footerBottom = template.titlePosition === 'bottom-left' ? 60 : 10;
+
+          const footerArea = document.createElement('div');
+          footerArea.style.cssText = `
+            position: absolute;
+            bottom: ${footerBottom}px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            pointer-events: none;
+          `;
+
+          // Scale placeholder (left side)
+          if (shouldShowScale) {
+            const scaleEl = document.createElement('div');
+            scaleEl.style.cssText = `
+              background: rgba(255,255,255,0.88);
+              padding: 5px 10px;
+              border-radius: 3px;
+              color: #2d3436;
+              font-family: 'Inter', system-ui, sans-serif;
+              font-size: 11px;
+              font-weight: 500;
+              box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            `;
+            scaleEl.textContent = '1:50 000'; // Placeholder scale
+            footerArea.appendChild(scaleEl);
+          } else {
+            footerArea.appendChild(document.createElement('div'));
+          }
+
+          // Attribution (right side)
+          if (shouldShowAttribution && template.titlePosition !== 'bottom-left') {
+            const attrEl = document.createElement('div');
+            attrEl.style.cssText = `
+              padding: 4px 8px;
+              color: rgba(99, 110, 114, 0.6);
+              font-family: 'Inter', system-ui, sans-serif;
+              font-size: 9px;
+              max-width: 45%;
+              text-align: right;
+              letter-spacing: 0.2px;
+            `;
+            attrEl.textContent = attribution || 'OSM contributors';
+            footerArea.appendChild(attrEl);
+          }
+
+          overlay.appendChild(footerArea);
+        }
+
+        wrapper.appendChild(overlay);
+      }, {
+        template,
+        title,
+        subtitle,
+        shouldShowScale,
+        shouldShowAttribution,
+        attribution: attribution || 'OSM contributors',
+        width_px,
+        height_px
+      });
+
+      // Wait for composition to render
+      await page.waitForTimeout(500);
+    }
+
+    // Screenshot the export wrapper (includes composition) or map if no wrapper
+    const exportWrapper = await page.$('#export-wrapper');
     const mapElement = await page.$('#map');
-    const screenshot = mapElement
-      ? await mapElement.screenshot({ type: 'png', omitBackground: false })
+    const targetElement = exportWrapper || mapElement;
+
+    const screenshot = targetElement
+      ? await targetElement.screenshot({ type: 'png', omitBackground: false })
       : await page.screenshot({ type: 'png', fullPage: false, omitBackground: false });
 
     await browser.close();

@@ -901,7 +901,11 @@ async function exportMap() {
                 subtitle: elements.subtitleInput.value || '',
                 layers: JSON.stringify(layers),
                 // Phase 9.2: include export preset if selected
-                export_preset: selectedExportPreset || ''
+                export_preset: selectedExportPreset || '',
+                // Layout template and composition settings
+                layout_template: currentLayoutTemplate || 'classic',
+                show_scale: elements.showScale?.checked ? 'true' : 'false',
+                show_attribution: elements.showAttribution?.checked ? 'true' : 'false'
             });
 
             const exportUrl = `http://localhost:8082/render?${params}`;
